@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+/* GitHub-inspired theme with light/dark mode */
+@theme {
+  /* Light mode colors (default) */
+  --color-bg: #ffffff;
+  --color-bg-secondary: #f6f8fa;
+  --color-bg-tertiary: #eaeef2;
+  --color-border: #d0d7de;
+  --color-text: #1f2328;
+  --color-text-secondary: #656d76;
+  --color-text-muted: #8c959f;
+  --color-link: #0969da;
+  --color-success: #1a7f37;
+  --color-danger: #cf222e;
+  --color-warning: #bf8700;
+  --color-accent: #bf3989;
+}
+
+/* Dark mode colors */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --color-bg: #0d1117;
+    --color-bg-secondary: #161b22;
+    --color-bg-tertiary: #21262d;
+    --color-border: #30363d;
+    --color-text: #e6edf3;
+    --color-text-secondary: #8b949e;
+    --color-text-muted: #6e7681;
+    --color-link: #58a6ff;
+    --color-success: #3fb950;
+    --color-danger: #f85149;
+    --color-warning: #f78166;
+    --color-accent: #f778ba;
+  }
+}
+
+/* Force dark mode when .dark class is set */
+:root.dark {
+  --color-bg: #0d1117;
+  --color-bg-secondary: #161b22;
+  --color-bg-tertiary: #21262d;
+  --color-border: #30363d;
+  --color-text: #e6edf3;
+  --color-text-secondary: #8b949e;
+  --color-text-muted: #6e7681;
+  --color-link: #58a6ff;
+  --color-success: #3fb950;
+  --color-danger: #f85149;
+  --color-warning: #f78166;
+  --color-accent: #f778ba;
+}
+
+/* Base styles */
+* { box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+a { 
+  color: var(--color-link); 
+  text-decoration: none; 
+}
+a:hover { text-decoration: underline; }
+

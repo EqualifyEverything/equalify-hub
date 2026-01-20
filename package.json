@@ -1,0 +1,25 @@
+{
+  "name": "equalifyuic-opensource-tool",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "npx @tailwindcss/cli -i ./styles/input.css -o ./styles/tailwind.css --minify",
+    "build:js": "esbuild ./index.ts --bundle --platform=node --outdir=dist --external:@aws-sdk --jsx=automatic --jsx-import-source=hono/jsx --loader:.tsx=tsx --loader:.css=text --minify",
+    "build:deploy": "cd dist && zip -r lambda.zip * > /dev/null && aws --profile equalify lambda update-function-code --function-name equalifyuic-opensource-tool --zip-file \"fileb://lambda.zip\" > /dev/null && rm -rf lambda.zip",
+    "build": "yarn build:css && yarn build:js && yarn build:deploy"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "hono": "^4.11.4"
+  },
+  "imports": {
+    "#src/*": "./*"
+  },
+  "type": "module",
+  "devDependencies": {
+    "esbuild": "^0.19.4",
+    "tailwindcss": "^4.1.18"
+  }
+}

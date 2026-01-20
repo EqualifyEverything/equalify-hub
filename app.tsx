@@ -1,0 +1,84 @@
+import { Hono } from 'hono';
+import { handle } from 'hono/aws-lambda';
+import type { LambdaEvent, LambdaContext } from 'hono/aws-lambda';
+import { setCookie } from 'hono/cookie';
+
+import { logView } from '#src/utils/db';
+import { setEvent } from '#src/utils/event';
+
+// Migrated pages (JSX components)
+import { AboutPage } from '#src/pages/about';
+import { feedbackHandler, submitFeatureHandler, voteHandler } from '#src/pages/feedback';
+import { homeHandler } from '#src/pages/home';
+
+// Route handlers (all native Hono now)
+import { github, githubPro, callback, logout } from '#src/routes/public/auth';
+import { robots, sitemap, security, humans } from '#src/routes/public/static';
+import { repo } from '#src/routes/public/repo';
+import { commits } from '#src/routes/public/commits';
+import { issues, issuesList } from '#src/routes/public/issues';
+
+// Create app
+const app = new Hono<{ Bindings: { event: LambdaEvent; context: LambdaContext } }>();
+
+// Middleware to set legacy event (for auth utils) and log views
+app.use('*', async (c, next) => {
+    const rawEvent = c.env?.event || {} as LambdaEvent;
+    setEvent(rawEvent); // Still needed for getCurrentUser/getGitHubToken which read cookies from event
+    logView(rawEvent.headers || {}, c.req.path);
+    await next();
+});
+
+// ============ THEME TOGGLE ============
+app.post('/theme', async (c) => {
+    const body = await c.req.parseBody();
+    const theme = body.theme as string;
+    if (theme === 'light' || theme === 'dark' || theme === 'system') {
+        setCookie(c, 'theme', theme, {
+            path: '/',
+            maxAge: 60 * 60 * 24 * 365,
+            sameSite: 'Lax',
+        });
+    }
+    const referer = c.req.header('referer') || '/';
+    return c.redirect(referer, 303);
+});
+
+// ============ STATIC FILES ============
+app.get('/robots.txt', robots);
+app.get('/sitemap.xml', sitemap);
+app.get('/humans.txt', humans);
+app.get('/.well-known/security.txt', security);
+
+// ============ AUTH ROUTES ============
+app.get('/github', github);
+app.get('/github-pro', githubPro);
+app.get('/callback', callback);
+app.get('/auth/github/callback', callback);
+app.get('/logout', logout);
+
+// ============ MIGRATED ROUTES (Hono native JSX) ============
+app.get('/', homeHandler);
+app.get('/about', (c) => c.html(<AboutPage />));
+app.get('/feedback', feedbackHandler);
+app.post('/feedback/submit', submitFeatureHandler);
+app.post('/feedback/vote', voteHandler);
+
+// ============ DYNAMIC ROUTES ============
+// Repo routes: /:owner, /:owner/:repo, /:owner/:repo/tree/:branch/...
+app.get('/:owner', repo);
+app.get('/:owner/:repo', repo);
+app.get('/:owner/:repo/tree/:branch/*', repo);
+app.get('/:owner/:repo/blob/:branch/*', repo);
+
+// Issues routes
+app.get('/:owner/:repo/issues', issuesList);
+app.get('/:owner/:repo/issues/:number', issues);
+
+// Commits routes: /:owner/:repo/commits, /:owner/:repo/commit/:sha
+app.get('/:owner/:repo/commits', commits);
+app.get('/:owner/:repo/commit/:sha', commits);
+
+// Export handler for Lambda
+export const handler = handle(app);
+

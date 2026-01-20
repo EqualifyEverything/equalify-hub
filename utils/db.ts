@@ -1,0 +1,403 @@
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, GetCommand, PutCommand, DeleteCommand, QueryCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
+
+const client = new DynamoDBClient({ region: 'us-east-2' });
+const docClient = DynamoDBDocumentClient.from(client);
+
+const TABLE_NAME = 'equalifyuic';
+
+export interface ProUser {
+    pk: string; // USER
+    sk: string; // <github_id>
+    github_id: string;
+    github_login: string;
+    pro_since: string;
+    status: 'active' | 'canceled' | 'past_due';
+}
+
+export async function getProUser(githubId: string): Promise<ProUser | null> {
+    try {
+        const result = await docClient.send(new GetCommand({
+            TableName: TABLE_NAME,
+            Key: { 
+                pk: 'USER',
+                sk: githubId
+            }
+        }));
+        return result.Item as ProUser || null;
+    } catch (error) {
+        console.error('Error getting pro user:', error);
+        return null;
+    }
+}
+
+export async function setProUser(user: Omit<ProUser, 'pk' | 'sk'>): Promise<boolean> {
+    try {
+        await docClient.send(new PutCommand({
+            TableName: TABLE_NAME,
+            Item: {
+                pk: 'USER',
+                sk: user.github_id,
+                ...user
+            }
+        }));
+        return true;
+    } catch (error) {
+        console.error('Error setting pro user:', error);
+        return false;
+    }
+}
+
+export async function updateProStatus(githubId: string, status: ProUser['status']): Promise<boolean> {
+    const user = await getProUser(githubId);
+    if (!user) return false;
+    
+    return setProUser({ ...user, status });
+}
+
+// Get count of active pro users
+export async function getProUserCount(): Promise<number> {
+    try {
+        let count = 0;
+        let lastKey: Record<string, any> | undefined;
+        
+        do {
+            const result = await docClient.send(new QueryCommand({
+                TableName: TABLE_NAME,
+                KeyConditionExpression: 'pk = :pk',
+                FilterExpression: '#status = :active',
+                ExpressionAttributeNames: {
+                    '#status': 'status'
+                },
+                ExpressionAttributeValues: {
+                    ':pk': 'USER',
+                    ':active': 'active'
+                },
+                Select: 'COUNT',
+                ExclusiveStartKey: lastKey
+            }));
+            count += result.Count || 0;
+            lastKey = result.LastEvaluatedKey;
+        } while (lastKey);
+        
+        return count;
+    } catch (error) {
+        console.error('Error getting pro user count:', error);
+        return 0;
+    }
+}
+
+export interface PageView {
+    pk: string; // VIEW
+    sk: string; // timestamp
+    ip: string;
+    country: string;
+    region: string;
+    city: string;
+    device: string;
+    os: string;
+    path: string;
+    userAgent: string;
+}
+
+function parseUserAgent(ua: string): { device: string; os: string } {
+    const uaLower = ua.toLowerCase();
+    
+    // Detect OS
+    let os = 'Unknown';
+    if (uaLower.includes('iphone')) os = 'iOS';
+    else if (uaLower.includes('ipad')) os = 'iPadOS';
+    else if (uaLower.includes('android')) os = 'Android';
+    else if (uaLower.includes('mac os')) os = 'macOS';
+    else if (uaLower.includes('windows')) os = 'Windows';
+    else if (uaLower.includes('linux')) os = 'Linux';
+    else if (uaLower.includes('cros')) os = 'ChromeOS';
+    
+    // Detect device type
+    let device = 'Desktop';
+    if (uaLower.includes('mobile') || uaLower.includes('iphone') || uaLower.includes('android')) {
+        device = 'Mobile';
+    } else if (uaLower.includes('tablet') || uaLower.includes('ipad')) {
+        device = 'Tablet';
+    } else if (uaLower.includes('bot') || uaLower.includes('crawler') || uaLower.includes('spider')) {
+        device = 'Bot';
+    }
+    
+    return { device, os };
+}
+
+export async function logView(headers: Record<string, string>, path: string): Promise<void> {
+    try {
+        // Get values from CloudFront headers (case-insensitive lookup)
+        const getHeader = (name: string) => {
+            const lower = name.toLowerCase();
+            for (const [key, value] of Object.entries(headers)) {
+                if (key.toLowerCase() === lower) return value;
+            }
+            return '';
+        };
+        
+        const ip = getHeader('x-forwarded-for')?.split(',')[0]?.trim() || 
+                   getHeader('cloudfront-viewer-address')?.split(':')[0] || 
+                   'Unknown';
+        const country = getHeader('cloudfront-viewer-country') || 'Unknown';
+        const region = getHeader('cloudfront-viewer-country-region') || 'Unknown';
+        const city = getHeader('cloudfront-viewer-city') || 'Unknown';
+        const userAgent = getHeader('user-agent') || '';
+        
+        const { device, os } = parseUserAgent(userAgent);
+        
+        await docClient.send(new PutCommand({
+            TableName: TABLE_NAME,
+            Item: {
+                pk: 'VIEW',
+                sk: new Date().toISOString(),
+                ip,
+                country,
+                region,
+                city,
+                device,
+                os,
+                path,
+                userAgent
+            }
+        }));
+    } catch (error) {
+        console.error('Error logging view:', error);
+    }
+}
+
+// Get view count for last 24 hours
+export async function getTodayViewCount(): Promise<number> {
+    try {
+        const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(); // 24 hours ago
+        let totalCount = 0;
+        let lastKey: Record<string, any> | undefined;
+        
+        // Paginate through all results (Query has 1MB limit per call)
+        do {
+            const result = await docClient.send(new QueryCommand({
+                TableName: TABLE_NAME,
+                KeyConditionExpression: 'pk = :pk AND sk >= :since',
+                ExpressionAttributeValues: {
+                    ':pk': 'VIEW',
+                    ':since': since
+                },
+                Select: 'COUNT',
+                ExclusiveStartKey: lastKey
+            }));
+            totalCount += result.Count || 0;
+            lastKey = result.LastEvaluatedKey;
+        } while (lastKey);
+        
+        return totalCount;
+    } catch (error) {
+        console.error('Error getting today view count:', error);
+        return 0;
+    }
+}
+
+// Get count of unique IPs in last X minutes (for "browsing now")
+export async function getRecentViewCount(minutes: number = 5): Promise<number> {
+    try {
+        const since = new Date(Date.now() - minutes * 60 * 1000).toISOString();
+        const uniqueIps = new Set<string>();
+        let lastKey: Record<string, any> | undefined;
+        
+        // Paginate and collect unique IPs
+        do {
+            const result = await docClient.send(new QueryCommand({
+                TableName: TABLE_NAME,
+                KeyConditionExpression: 'pk = :pk AND sk >= :since',
+                ExpressionAttributeValues: {
+                    ':pk': 'VIEW',
+                    ':since': since
+                },
+                ProjectionExpression: 'ip',
+                ExclusiveStartKey: lastKey
+            }));
+            
+            for (const item of result.Items || []) {
+                if (item.ip) uniqueIps.add(item.ip);
+            }
+            lastKey = result.LastEvaluatedKey;
+        } while (lastKey);
+        
+        return uniqueIps.size;
+    } catch (error) {
+        console.error('Error getting recent view count:', error);
+        return 0;
+    }
+}
+
+// Log a search query
+export async function logSearch(query: string): Promise<void> {
+    try {
+        await docClient.send(new PutCommand({
+            TableName: TABLE_NAME,
+            Item: {
+                pk: 'SEARCH',
+                sk: new Date().toISOString(),
+                query: query.substring(0, 100) // Limit length
+            }
+        }));
+    } catch (error) {
+        console.error('Error logging search:', error);
+    }
+}
+
+// Get recent searches
+export async function getRecentSearches(limit: number = 10): Promise<string[]> {
+    try {
+        const result = await docClient.send(new QueryCommand({
+            TableName: TABLE_NAME,
+            KeyConditionExpression: 'pk = :pk',
+            ExpressionAttributeValues: {
+                ':pk': 'SEARCH'
+            },
+            ScanIndexForward: false, // Descending (newest first)
+            Limit: limit * 2 // Get extra to dedupe
+        }));
+        
+        // Dedupe and limit
+        const seen = new Set<string>();
+        const searches: string[] = [];
+        for (const item of result.Items || []) {
+            const q = (item.query as string)?.toLowerCase();
+            if (q && !seen.has(q) && q.length > 1) {
+                seen.add(q);
+                searches.push(item.query as string);
+                if (searches.length >= limit) break;
+            }
+        }
+        return searches;
+    } catch (error) {
+        console.error('Error getting recent searches:', error);
+        return [];
+    }
+}
+
+// ============ FEATURE REQUESTS ============
+
+export interface FeatureRequest {
+    pk: string; // 'FEATURE'
+    sk: string; // timestamp-based ID
+    id: string;
+    title: string;
+    description?: string;
+    created_by: string; // name or "Anonymous"
+    created_by_ip: string; // IP for spam prevention
+    created_at: string;
+    upvotes: string[]; // array of IPs
+    downvotes: string[]; // array of IPs
+}
+
+export async function createFeatureRequest(
+    title: string, 
+    description: string, 
+    ip: string,
+    name?: string
+): Promise<FeatureRequest | null> {
+    try {
+        const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const feature: FeatureRequest = {
+            pk: 'FEATURE',
+            sk: id,
+            id,
+            title: title.substring(0, 200),
+            description: description?.substring(0, 500) || '',
+            created_by: name || 'Anonymous',
+            created_by_ip: ip,
+            created_at: new Date().toISOString(),
+            upvotes: [ip], // Creator auto-upvotes
+            downvotes: []
+        };
+        
+        await docClient.send(new PutCommand({
+            TableName: TABLE_NAME,
+            Item: feature
+        }));
+        
+        return feature;
+    } catch (error) {
+        console.error('Error creating feature request:', error);
+        return null;
+    }
+}
+
+export async function getFeatureRequests(): Promise<FeatureRequest[]> {
+    try {
+        const result = await docClient.send(new QueryCommand({
+            TableName: TABLE_NAME,
+            KeyConditionExpression: 'pk = :pk',
+            ExpressionAttributeValues: {
+                ':pk': 'FEATURE'
+            }
+        }));
+        
+        const features = (result.Items || []) as FeatureRequest[];
+        
+        // Sort by score (upvotes - downvotes), then by date
+        features.sort((a, b) => {
+            const scoreA = (a.upvotes?.length || 0) - (a.downvotes?.length || 0);
+            const scoreB = (b.upvotes?.length || 0) - (b.downvotes?.length || 0);
+            if (scoreB !== scoreA) return scoreB - scoreA;
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        });
+        
+        return features;
+    } catch (error) {
+        console.error('Error getting feature requests:', error);
+        return [];
+    }
+}
+
+export async function voteFeature(
+    featureId: string, 
+    visitorIp: string, 
+    voteType: 'up' | 'down'
+): Promise<boolean> {
+    try {
+        // First get the current feature
+        const result = await docClient.send(new GetCommand({
+            TableName: TABLE_NAME,
+            Key: { pk: 'FEATURE', sk: featureId }
+        }));
+        
+        if (!result.Item) return false;
+        
+        const feature = result.Item as FeatureRequest;
+        let upvotes = feature.upvotes || [];
+        let downvotes = feature.downvotes || [];
+        
+        // Remove from both arrays first
+        upvotes = upvotes.filter(ip => ip !== visitorIp);
+        downvotes = downvotes.filter(ip => ip !== visitorIp);
+        
+        // Add to appropriate array (toggle off if already voted same way)
+        const wasUpvoted = feature.upvotes?.includes(visitorIp);
+        const wasDownvoted = feature.downvotes?.includes(visitorIp);
+        
+        if (voteType === 'up' && !wasUpvoted) {
+            upvotes.push(visitorIp);
+        } else if (voteType === 'down' && !wasDownvoted) {
+            downvotes.push(visitorIp);
+        }
+        // If they clicked the same vote again, it just removes (toggle off)
+        
+        await docClient.send(new UpdateCommand({
+            TableName: TABLE_NAME,
+            Key: { pk: 'FEATURE', sk: featureId },
+            UpdateExpression: 'SET upvotes = :up, downvotes = :down',
+            ExpressionAttributeValues: {
+                ':up': upvotes,
+                ':down': downvotes
+            }
+        }));
+        
+        return true;
+    } catch (error) {
+        console.error('Error voting on feature:', error);
+        return false;
+    }
+}
