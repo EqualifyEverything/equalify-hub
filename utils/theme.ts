@@ -2,11 +2,11 @@ import { event } from '#src/utils/event';
 
 export type Theme = 'light' | 'dark' | 'system';
 
-// Parse theme from cookie
+// Parse theme from cookie - default to light mode for UIC branding
 export function getTheme(): Theme {
     const cookies = event.headers?.cookie || event.headers?.Cookie || '';
     const match = cookies.match(/theme=(light|dark|system)/);
-    return (match?.[1] as Theme) || 'system';
+    return (match?.[1] as Theme) || 'light'; // Default to light for UIC theme
 }
 
 // Get the class to add to <html> based on theme preference

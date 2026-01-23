@@ -12,43 +12,43 @@ const styles = `
     margin: 0 auto;
     padding: 32px 20px;
 }
-h1 { margin: 0 0 8px 0; font-size: 28px; }
-.subtitle { color: #8b949e; margin: 0 0 32px 0; }
+h1 { margin: 0 0 8px 0; font-size: 28px; color: #1f2937; }
+.subtitle { color: #6b7280; margin: 0 0 32px 0; }
 .alert {
     padding: 12px 16px;
     border-radius: 6px;
     margin-bottom: 24px;
     font-size: 14px;
 }
-.alert-error { background: #3d1a1a; border: 1px solid #f85149; color: #f85149; }
-.alert-success { background: #1a3d1a; border: 1px solid #3fb950; color: #3fb950; }
+.alert-error { background: #fef2f2; border: 1px solid #C8102E; color: #C8102E; }
+.alert-success { background: #f0fdf4; border: 1px solid #059669; color: #059669; }
 .submit-form {
-    background: #161b22;
-    border: 1px solid #30363d;
+    background: #f8f9fa;
+    border: 1px solid #d1d5db;
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 32px;
 }
-.submit-form h2 { margin: 0 0 16px 0; font-size: 16px; }
+.submit-form h2 { margin: 0 0 16px 0; font-size: 16px; color: #1f2937; }
 .form-group { margin-bottom: 16px; }
-.form-group label { display: block; font-size: 13px; color: #8b949e; margin-bottom: 6px; }
+.form-group label { display: block; font-size: 13px; color: #6b7280; margin-bottom: 6px; }
 .form-group input, .form-group textarea {
     width: 100%;
     padding: 10px 12px;
-    background: #0d1117;
-    border: 1px solid #30363d;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
     border-radius: 6px;
-    color: #e6edf3;
+    color: #1f2937;
     font-size: 14px;
     font-family: inherit;
 }
 .form-group input:focus, .form-group textarea:focus {
     outline: none;
-    border-color: #58a6ff;
+    border-color: #C8102E;
 }
 .form-group textarea { resize: vertical; min-height: 80px; }
 .submit-btn {
-    background: #238636;
+    background: #C8102E;
     color: #fff;
     border: none;
     padding: 10px 20px;
@@ -57,13 +57,13 @@ h1 { margin: 0 0 8px 0; font-size: 28px; }
     font-weight: 600;
     cursor: pointer;
 }
-.submit-btn:hover { background: #2ea043; }
+.submit-btn:hover { background: #9a0c23; }
 .feature-list { display: flex; flex-direction: column; gap: 12px; }
 .feature-item {
     display: flex;
     gap: 16px;
-    background: #161b22;
-    border: 1px solid #30363d;
+    background: #f8f9fa;
+    border: 1px solid #d1d5db;
     border-radius: 8px;
     padding: 16px;
 }
@@ -77,25 +77,26 @@ h1 { margin: 0 0 8px 0; font-size: 28px; }
 .vote-btn {
     background: none;
     border: none;
-    color: #8b949e;
+    color: #6b7280;
     cursor: pointer;
     font-size: 14px;
     padding: 4px 8px;
     border-radius: 4px;
 }
-.vote-btn:hover { background: #21262d; color: #e6edf3; }
-.vote-btn.voted { color: #58a6ff; }
-.score { font-size: 16px; font-weight: 600; }
-.score.positive { color: #3fb950; }
-.score.negative { color: #f85149; }
+.vote-btn:hover { background: #e5e7eb; color: #1f2937; }
+.vote-btn.voted { color: #C8102E; }
+.score { font-size: 16px; font-weight: 600; color: #1f2937; }
+.score.positive { color: #059669; }
+.score.negative { color: #C8102E; }
 .feature-content { flex: 1; min-width: 0; }
-.feature-content h3 { margin: 0 0 4px 0; font-size: 15px; }
-.feature-content p { margin: 0 0 8px 0; font-size: 13px; color: #8b949e; }
-.feature-meta { font-size: 12px; color: #6e7681; }
+.feature-content h3 { margin: 0 0 4px 0; font-size: 15px; color: #1f2937; }
+.feature-content p { margin: 0 0 8px 0; font-size: 13px; color: #6b7280; }
+.feature-meta { font-size: 12px; color: #9ca3af; }
+.feature-meta a { color: #C8102E; }
 .empty-state {
     text-align: center;
     padding: 40px 20px;
-    color: #8b949e;
+    color: #6b7280;
 }
 `;
 

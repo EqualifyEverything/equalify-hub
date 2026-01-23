@@ -6,6 +6,78 @@ const docClient = DynamoDBDocumentClient.from(client);
 
 const TABLE_NAME = 'equalifyuic';
 
+// ============ GITHUB CACHE (15 min TTL) ============
+const CACHE_TTL_SECONDS = 15 * 60; // 15 minutes
+
+export interface GitHubCacheEntry {
+    pk: string; // GHCACHE
+    sk: string; // URL hash/key
+    data: any;
+    cachedAt: number; // Unix timestamp
+    expiresAt: number; // Unix timestamp for TTL
+}
+
+// Create a simple hash for the URL to use as sort key
+function hashUrl(url: string): string {
+    // Simple hash - just use the URL path after api.github.com
+    return url.replace('https://api.github.com/', '').replace(/[^a-zA-Z0-9]/g, '_');
+}
+
+// Get cached GitHub response
+export async function getGitHubCache(url: string): Promise<any | null> {
+    try {
+        const sk = hashUrl(url);
+        const result = await docClient.send(new GetCommand({
+            TableName: TABLE_NAME,
+            Key: { 
+                pk: 'GHCACHE',
+                sk
+            }
+        }));
+        
+        if (!result.Item) return null;
+        
+        const entry = result.Item as GitHubCacheEntry;
+        const now = Math.floor(Date.now() / 1000);
+        
+        // Check if cache is still valid
+        if (entry.expiresAt < now) {
+            return null; // Cache expired
+        }
+        
+        console.log(`[GHCACHE] HIT for ${url}`);
+        return entry.data;
+    } catch (error) {
+        console.error('Error getting GitHub cache:', error);
+        return null;
+    }
+}
+
+// Set cached GitHub response
+export async function setGitHubCache(url: string, data: any): Promise<void> {
+    try {
+        const sk = hashUrl(url);
+        const now = Math.floor(Date.now() / 1000);
+        
+        await docClient.send(new PutCommand({
+            TableName: TABLE_NAME,
+            Item: {
+                pk: 'GHCACHE',
+                sk,
+                data,
+                cachedAt: now,
+                expiresAt: now + CACHE_TTL_SECONDS,
+                ttl: now + CACHE_TTL_SECONDS // DynamoDB TTL attribute for auto-deletion
+            }
+        }));
+        console.log(`[GHCACHE] SET for ${url}`);
+    } catch (error) {
+        console.error('Error setting GitHub cache:', error);
+    }
+}
+
+// ============ PRO USERS ============
+
 export interface ProUser {
     pk: string; // USER
     sk: string; // <github_id>

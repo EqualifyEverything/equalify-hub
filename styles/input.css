@@ -1,54 +1,63 @@
 @import "tailwindcss";
 
-/* GitHub-inspired theme with light/dark mode */
+/* UIC Red Theme with light/dark mode */
 @theme {
-  /* Light mode colors (default) */
+  /* Light mode colors (default) - UIC branded */
   --color-bg: #ffffff;
-  --color-bg-secondary: #f6f8fa;
-  --color-bg-tertiary: #eaeef2;
-  --color-border: #d0d7de;
-  --color-text: #1f2328;
-  --color-text-secondary: #656d76;
-  --color-text-muted: #8c959f;
-  --color-link: #0969da;
-  --color-success: #1a7f37;
-  --color-danger: #cf222e;
-  --color-warning: #bf8700;
-  --color-accent: #bf3989;
+  --color-bg-secondary: #f8f9fa;
+  --color-bg-tertiary: #eef0f2;
+  --color-border: #d1d5db;
+  --color-text: #1f2937;
+  --color-text-secondary: #4b5563;
+  --color-text-muted: #6b7280;
+  --color-link: #C8102E; /* UIC Red */
+  --color-success: #059669;
+  --color-danger: #C8102E;
+  --color-warning: #d97706;
+  --color-accent: #C8102E; /* UIC Red */
+  --color-primary: #C8102E; /* UIC Red */
+  --color-primary-dark: #9a0c23; /* Darker UIC Red for hover */
+  --color-navy: #001e62; /* UIC Navy */
 }
 
 /* Dark mode colors */
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
-    --color-bg: #0d1117;
-    --color-bg-secondary: #161b22;
-    --color-bg-tertiary: #21262d;
-    --color-border: #30363d;
-    --color-text: #e6edf3;
-    --color-text-secondary: #8b949e;
-    --color-text-muted: #6e7681;
-    --color-link: #58a6ff;
-    --color-success: #3fb950;
-    --color-danger: #f85149;
-    --color-warning: #f78166;
-    --color-accent: #f778ba;
+    --color-bg: #111827;
+    --color-bg-secondary: #1f2937;
+    --color-bg-tertiary: #374151;
+    --color-border: #4b5563;
+    --color-text: #f9fafb;
+    --color-text-secondary: #d1d5db;
+    --color-text-muted: #9ca3af;
+    --color-link: #ef4444; /* Lighter red for dark mode */
+    --color-success: #34d399;
+    --color-danger: #f87171;
+    --color-warning: #fbbf24;
+    --color-accent: #ef4444;
+    --color-primary: #ef4444;
+    --color-primary-dark: #dc2626;
+    --color-navy: #60a5fa;
   }
 }
 
 /* Force dark mode when .dark class is set */
 :root.dark {
-  --color-bg: #0d1117;
-  --color-bg-secondary: #161b22;
-  --color-bg-tertiary: #21262d;
-  --color-border: #30363d;
-  --color-text: #e6edf3;
-  --color-text-secondary: #8b949e;
-  --color-text-muted: #6e7681;
-  --color-link: #58a6ff;
-  --color-success: #3fb950;
-  --color-danger: #f85149;
-  --color-warning: #f78166;
-  --color-accent: #f778ba;
+  --color-bg: #111827;
+  --color-bg-secondary: #1f2937;
+  --color-bg-tertiary: #374151;
+  --color-border: #4b5563;
+  --color-text: #f9fafb;
+  --color-text-secondary: #d1d5db;
+  --color-text-muted: #9ca3af;
+  --color-link: #ef4444;
+  --color-success: #34d399;
+  --color-danger: #f87171;
+  --color-warning: #fbbf24;
+  --color-accent: #ef4444;
+  --color-primary: #ef4444;
+  --color-primary-dark: #dc2626;
+  --color-navy: #60a5fa;
 }
 
 /* Base styles */

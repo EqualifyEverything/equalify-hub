@@ -8,6 +8,9 @@ import { setEvent } from '#src/utils/event';
 
 // Migrated pages (JSX components)
 import { AboutPage } from '#src/pages/about';
+import { UserGuidePage } from '#src/pages/user-guide';
+import { TechnicalDocsPage } from '#src/pages/technical-docs';
+import { RoadmapPage } from '#src/pages/roadmap';
 import { feedbackHandler, submitFeatureHandler, voteHandler } from '#src/pages/feedback';
 import { homeHandler } from '#src/pages/home';
 
@@ -60,6 +63,9 @@ app.get('/logout', logout);
 // ============ MIGRATED ROUTES (Hono native JSX) ============
 app.get('/', homeHandler);
 app.get('/about', (c) => c.html(<AboutPage />));
+app.get('/user-guide', (c) => c.html(<UserGuidePage />));
+app.get('/technical-docs', (c) => c.html(<TechnicalDocsPage />));
+app.get('/roadmap', (c) => c.html(<RoadmapPage />));
 app.get('/feedback', feedbackHandler);
 app.post('/feedback/submit', submitFeatureHandler);
 app.post('/feedback/vote', voteHandler);

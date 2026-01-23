@@ -99,8 +99,18 @@ export async function exchangeCodeForToken(code: string): Promise<{ access_token
 // Fallback token for unauthenticated users (5000 req/hour vs 60)
 const GITHUB_FALLBACK_TOKEN = process.env.GITHUB_FALLBACK_TOKEN || '';
 
-// Fetch from GitHub with optional auth
-export async function fetchGitHub(url: string, token?: string | null) {
+import { getGitHubCache, setGitHubCache } from './db';
+
+// Fetch from GitHub with optional auth and 15-min caching
+export async function fetchGitHub(url: string, token?: string | null, skipCache = false) {
+    // Check cache first (only for non-user-specific requests)
+    if (!skipCache) {
+        const cached = await getGitHubCache(url);
+        if (cached) {
+            return cached;
+        }
+    }
+    
     const headers: Record<string, string> = {
         'Accept': 'application/vnd.github.v3+json',
         'User-Agent': 'EqualifyOpenSource'
@@ -113,10 +123,17 @@ export async function fetchGitHub(url: string, token?: string | null) {
     }
     
     const response = await fetch(url, { headers });
-    return response.json();
+    const data = await response.json();
+    
+    // Cache successful responses (only for public API endpoints, not user-specific)
+    if (!skipCache && response.ok && !url.includes('/user')) {
+        await setGitHubCache(url, data);
+    }
+    
+    return data;
 }
 
-// Fetch current user from GitHub
+// Fetch current user from GitHub (skip cache - user-specific)
 export async function fetchCurrentUser(token: string) {
-    return fetchGitHub('https://api.github.com/user', token);
+    return fetchGitHub('https://api.github.com/user', token, true);
 }

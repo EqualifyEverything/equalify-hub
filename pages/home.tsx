@@ -9,8 +9,19 @@ const ORG_NAME = 'EqualifyEverything';
 const styles = `
 body {
     min-height: 100vh;
+    background: #ffffff;
 }
-.container { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #ffffff;
+}
+.top-bar {
+    height: 4px;
+    background: #C8102E;
+}
+.container { max-width: 1200px; margin: 0 auto; padding: 24px 48px; }
 
 /* Org header */
 .org-header {
@@ -18,20 +29,20 @@ body {
     align-items: flex-start;
     gap: 24px;
     padding-bottom: 24px;
-    border-bottom: 1px solid #30363d;
+    border-bottom: 1px solid #d1d5db;
     margin-bottom: 24px;
 }
 .org-avatar {
     width: 100px;
     height: 100px;
     border-radius: 6px;
-    border: 1px solid #30363d;
+    border: 1px solid #d1d5db;
 }
-.org-info h1 { margin: 0 0 8px 0; font-size: 28px; }
-.org-info .org-name { color: #8b949e; font-size: 18px; margin-bottom: 8px; }
-.org-info .org-bio { color: #8b949e; margin-bottom: 12px; }
-.org-links { display: flex; gap: 16px; font-size: 14px; color: #8b949e; flex-wrap: wrap; }
-.org-links a { color: #58a6ff; }
+.org-info h1 { margin: 0 0 8px 0; font-size: 28px; color: #1f2937; }
+.org-info .org-name { color: #4b5563; font-size: 18px; margin-bottom: 8px; }
+.org-info .org-bio { color: #4b5563; margin-bottom: 12px; }
+.org-links { display: flex; gap: 16px; font-size: 14px; color: #4b5563; flex-wrap: wrap; }
+.org-links a { color: #C8102E; }
 
 /* Stats */
 .stats {
@@ -41,18 +52,18 @@ body {
     margin-bottom: 32px;
 }
 .stat-card {
-    background: #161b22;
-    border: 1px solid #30363d;
+    background: #f8f9fa;
+    border: 1px solid #d1d5db;
     border-radius: 6px;
     padding: 16px;
     text-align: center;
 }
-.stat-value { font-size: 32px; font-weight: 600; color: #e6edf3; }
-.stat-label { font-size: 14px; color: #8b949e; margin-top: 4px; }
-.stat-value.stars { color: #f1e05a; }
-.stat-value.forks { color: #58a6ff; }
-.stat-value.issues { color: #f85149; }
-.stat-value.repos { color: #3fb950; }
+.stat-value { font-size: 32px; font-weight: 600; color: #1f2937; }
+.stat-label { font-size: 14px; color: #4b5563; margin-top: 4px; }
+.stat-value.stars { color: #d97706; }
+.stat-value.forks { color: #2563eb; }
+.stat-value.issues { color: #C8102E; }
+.stat-value.repos { color: #059669; }
 
 /* Two column layout */
 .main-content {
@@ -72,43 +83,192 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+    color: #1f2937;
 }
 .repo-card {
-    background: #161b22;
-    border: 1px solid #30363d;
+    background: #f8f9fa;
+    border: 1px solid #d1d5db;
     border-radius: 6px;
     padding: 16px;
     margin-bottom: 12px;
 }
-.repo-card h3 { margin: 0 0 8px 0; font-size: 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.repo-card h3 a { color: #58a6ff; }
-.repo-card .desc { color: #8b949e; font-size: 14px; margin-bottom: 12px; }
-.repo-card .meta { display: flex; gap: 16px; font-size: 12px; color: #8b949e; flex-wrap: wrap; }
+.repo-card h3 { margin: 0 0 8px 0; font-size: 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: #1f2937; }
+.repo-card h3 a { color: #C8102E; }
+.repo-card .desc { color: #4b5563; font-size: 14px; margin-bottom: 12px; }
+.repo-card .meta { display: flex; gap: 16px; font-size: 12px; color: #6b7280; flex-wrap: wrap; }
 .lang-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
 .badge { font-size: 12px; font-weight: 400; padding: 2px 8px; border-radius: 24px; }
-.badge.private { background: #30363d; color: #8b949e; }
-.badge.archived { background: #f8514940; color: #f85149; }
+.badge.private { background: #e5e7eb; color: #6b7280; }
+.badge.archived { background: #fee2e2; color: #C8102E; }
 
 /* Issues */
 .issues-section {
-    background: #161b22;
-    border: 1px solid #30363d;
+    background: #f8f9fa;
+    border: 1px solid #d1d5db;
     border-radius: 6px;
     padding: 16px;
 }
 .issue-item {
     padding: 12px 0;
-    border-bottom: 1px solid #21262d;
+    border-bottom: 1px solid #e5e7eb;
 }
 .issue-item:last-child { border-bottom: none; }
 .issue-title { margin-bottom: 4px; }
-.issue-title a { color: #e6edf3; font-weight: 500; }
-.issue-title a:hover { color: #58a6ff; }
-.issue-meta { font-size: 12px; color: #8b949e; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-.issue-meta a { color: #8b949e; }
-.issue-meta a:hover { color: #58a6ff; }
+.issue-title a { color: #1f2937; font-weight: 500; }
+.issue-title a:hover { color: #C8102E; }
+.issue-meta { font-size: 12px; color: #6b7280; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.issue-meta a { color: #6b7280; }
+.issue-meta a:hover { color: #C8102E; }
 .repo-link { font-weight: 500; }
 .label { font-size: 11px; padding: 2px 6px; border-radius: 12px; font-weight: 500; }
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, #001e62 0%, #001845 100%);
+    padding: 80px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.5;
+}
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+.hero-badge {
+    display: inline-block;
+    background: rgba(200, 16, 46, 0.9);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.hero h1 {
+    color: #ffffff;
+    font-size: 48px;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    line-height: 1.2;
+}
+@media (max-width: 768px) {
+    .hero h1 { font-size: 32px; }
+    .hero { padding: 48px 24px; }
+}
+.hero p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 20px;
+    line-height: 1.6;
+    margin: 0 0 32px 0;
+}
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+.hero-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.hero-btn-primary {
+    background: #C8102E;
+    color: #ffffff;
+}
+.hero-btn-primary:hover {
+    background: #9a0c23;
+    text-decoration: none;
+    transform: translateY(-2px);
+}
+.hero-btn-secondary {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+.hero-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.25);
+    text-decoration: none;
+    transform: translateY(-2px);
+}
+
+/* Quick Links below hero */
+.quick-links {
+    background: #f8f9fa;
+    padding: 24px 48px;
+    border-bottom: 1px solid #d1d5db;
+}
+.quick-links-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    flex-wrap: wrap;
+}
+.quick-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #4b5563;
+    font-size: 14px;
+    text-decoration: none;
+}
+.quick-link:hover {
+    color: #C8102E;
+}
+.quick-link-icon {
+    width: 40px;
+    height: 40px;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+/* Section divider */
+.section-divider {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 48px 16px;
+}
+.section-divider h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.section-divider p {
+    color: #6b7280;
+    margin: 8px 0 0 0;
+    font-size: 15px;
+}
 `;
 
 function formatNumber(num: number): string {
@@ -210,23 +370,101 @@ export const HomePage: FC<{
     
     return (
         <BaseLayout title={`${site.name} – Developer tools for EqualifyEverything`} styles={styles}>
-            <nav style="background:#161b22;border-bottom:1px solid #30363d;padding:12px 16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-                <a href="/" class="logo" style="font-size:18px;font-weight:600;color:#e6edf3;text-decoration:none;display:flex;align-items:center;gap:8px;">
-                    <img src={org?.avatar_url || `https://github.com/${ORG_NAME}.png`} alt="Equalify" style="width:24px;height:24px;border-radius:4px;" />
-                    Equalify Open Source
-                </a>
-                {user ? (
-                    <div style="display:flex;align-items:center;gap:12px;margin-left:auto;">
-                        <a href={`/${user.login}`} style="display:flex;align-items:center;gap:8px;color:#8b949e;font-size:14px;">
-                            <img src={user.avatar_url} alt={user.login} style="width:20px;height:20px;border-radius:50%;" />
-                            {user.login}
+            <header class="site-header">
+                <div class="top-bar"></div>
+                <nav style="background:#ffffff;border-bottom:1px solid #d1d5db;padding:0;">
+                    <div style="max-width:1200px;margin:0 auto;padding:16px 48px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
+                        <a href="/" class="logo" style="font-size:20px;font-weight:600;color:#001e62;text-decoration:none;display:flex;align-items:center;gap:10px;">
+                            <img src={org?.avatar_url || `https://github.com/${ORG_NAME}.png`} alt="Equalify" style="width:32px;height:32px;border-radius:4px;" />
+                            Equalify Hub
                         </a>
-                        <a href="/logout" style="color:#8b949e;font-size:14px;">Sign out</a>
+                        <div style="display:flex;align-items:center;gap:32px;">
+                            <a href="/user-guide" style="color:#4b5563;font-size:15px;">User Guide</a>
+                            <a href="/technical-docs" style="color:#4b5563;font-size:15px;">Technical</a>
+                            <a href="/roadmap" style="color:#4b5563;font-size:15px;">Roadmap</a>
+                            <a href="/about" style="color:#4b5563;font-size:15px;">About</a>
+                            {user ? (
+                                <>
+                                    <a href={`/${user.login}`} style="display:flex;align-items:center;gap:8px;color:#4b5563;font-size:15px;">
+                                        <img src={user.avatar_url} alt={user.login} style="width:20px;height:20px;border-radius:50%;" />
+                                        {user.login}
+                                    </a>
+                                    <a href="/logout" style="color:#4b5563;font-size:15px;">Sign out</a>
+                                </>
+                            ) : (
+                                <a href="/github" style="background:#C8102E;color:#ffffff;padding:8px 16px;border-radius:4px;font-size:14px;font-weight:500;">Sign in with GitHub</a>
+                            )}
+                        </div>
                     </div>
-                ) : (
-                    <a href="/github" style="margin-left:auto;color:#8b949e;font-size:14px;">Sign in with GitHub</a>
-                )}
-            </nav>
+                </nav>
+            </header>
+            
+            {/* Hero Section */}
+            <section class="hero">
+                <div class="hero-content">
+                    <span class="hero-badge">UIC Digital Accessibility</span>
+                    <h1>Welcome to the Equalify Hub</h1>
+                    <p>
+                        Your central resource for Equalify – UIC's open-source web accessibility platform. 
+                        Find documentation, track development progress, and learn how to contribute.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="/user-guide" class="hero-btn hero-btn-primary">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                                <polyline points="10 9 9 9 8 9"/>
+                            </svg>
+                            User Guide
+                        </a>
+                        <a href="https://app.equalify.uic.edu" class="hero-btn hero-btn-secondary" rel="noopener">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="2" y1="12" x2="22" y2="12"/>
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                            </svg>
+                            Go to Equalify App
+                        </a>
+                    </div>
+                </div>
+            </section>
+            
+            {/* Quick Links */}
+            <div class="quick-links">
+                <div class="quick-links-inner">
+                    <a href="/user-guide" class="quick-link">
+                        <span class="quick-link-icon">📖</span>
+                        <span><strong>User Guide</strong><br/>How to use Equalify</span>
+                    </a>
+                    <a href={`https://github.com/${ORG_NAME}`} class="quick-link" rel="noopener">
+                        <span class="quick-link-icon">💻</span>
+                        <span><strong>Source Code</strong><br/>View on GitHub</span>
+                    </a>
+                    <a href="/feedback" class="quick-link">
+                        <span class="quick-link-icon">💬</span>
+                        <span><strong>Feedback</strong><br/>Request features</span>
+                    </a>
+                    <a href="https://osf.it.uic.edu/" class="quick-link" rel="noopener">
+                        <span class="quick-link-icon">🎓</span>
+                        <span><strong>Open Source Fund</strong><br/>UIC initiative</span>
+                    </a>
+                </div>
+            </div>
+
+            {/* Section Header for Dashboard */}
+            <div class="section-divider">
+                <h2>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="3" y1="9" x2="21" y2="9"/>
+                        <line x1="9" y1="21" x2="9" y2="9"/>
+                    </svg>
+                    Development Dashboard
+                </h2>
+                <p>Live activity from the EqualifyEverything GitHub organization</p>
+            </div>
             
             <div class="container">
                 {/* Org Header */}
