@@ -392,7 +392,7 @@ export const HomePage: FC<{
                                     <a href="/logout" style="color:#4b5563;font-size:15px;">Sign out</a>
                                 </>
                             ) : (
-                                <a href="/github" style="background:#C8102E;color:#ffffff;padding:8px 16px;border-radius:4px;font-size:14px;font-weight:500;">Sign in with GitHub</a>
+                                <a href="https://app.equalify.uic.edu" style="background:#C8102E;color:#ffffff;padding:8px 16px;border-radius:4px;font-size:14px;font-weight:500;">Sign into Equalify</a>
                             )}
                         </div>
                     </div>

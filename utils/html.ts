@@ -51,7 +51,7 @@ footer {
 // Generate auth section based on current user
 export function getAuthSection(user = getCurrentUser()) {
     if (!user) {
-        return `<a href="/github" style="margin-left:auto;">Sign in</a>`;
+        return `<a href="https://app.equalify.uic.edu" style="margin-left:auto;">Sign into Equalify</a>`;
     }
     
     return `<div style="display:flex;align-items:center;gap:12px;margin-left:auto;">

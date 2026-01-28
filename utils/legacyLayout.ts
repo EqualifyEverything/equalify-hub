@@ -127,7 +127,7 @@ export function renderNav(): string {
                </a>
                <a href="/logout">Sign out</a>
            </div>`
-        : `<a href="/github" style="margin-left:auto;">Sign in</a>`;
+        : `<a href="https://app.equalify.uic.edu" style="margin-left:auto;">Sign into Equalify</a>`;
     
     return `<nav>
         <a href="/" class="logo" style="display:flex;align-items:center;gap:8px;">

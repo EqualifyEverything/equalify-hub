@@ -111,7 +111,7 @@ export const home = async () => {
                </a>
                <a href="/logout">Sign out</a>
            </div>`
-        : `<a href="/github" style="margin-left:auto;">Sign in with GitHub</a>`;
+        : `<a href="https://app.equalify.uic.edu" style="margin-left:auto;">Sign into Equalify</a>`;
 
     // Fetch org data
     const { org, repos } = await fetchOrgData();
