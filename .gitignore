@@ -1,2 +1,7 @@
 node_modules/
 dist/
+
+# Environment variables (use .env.example as template)
+.env
+.env.local
+.env.*.local

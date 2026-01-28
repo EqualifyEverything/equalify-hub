@@ -3,6 +3,7 @@
 
 import { getThemeClass } from './theme';
 import { getCurrentUser } from './auth';
+import config from './config';
 
 export const baseCss = `
 :root {
@@ -127,12 +128,12 @@ export function renderNav(): string {
                </a>
                <a href="/logout">Sign out</a>
            </div>`
-        : `<a href="https://app.equalify.uic.edu" style="margin-left:auto;">Sign into Equalify</a>`;
+        : `<a href="${config.equalifyAppUrl}" style="margin-left:auto;">Sign into Equalify</a>`;
     
     return `<nav>
         <a href="/" class="logo" style="display:flex;align-items:center;gap:8px;">
-            <img src="https://github.com/EqualifyEverything.png" alt="EqualifyEverything" style="width:24px;height:24px;border-radius:4px;">
-            Equalify Open Source
+            <img src="${config.orgLogo}" alt="${config.githubOrg}" style="width:24px;height:24px;border-radius:4px;">
+            ${config.siteName}
         </a>
         ${authSection}
     </nav>`;
@@ -140,7 +141,7 @@ export function renderNav(): string {
 
 export function renderFooter(): string {
     return `<footer>
-        <a href="/about">About</a> · <a href="https://github.com/EqualifyEverything">GitHub</a> · <a href="https://app.equalify.uic.edu">Equalify</a>
+        <a href="/about">About</a> · <a href="https://github.com/${config.githubOrg}">GitHub</a> · <a href="${config.equalifyAppUrl}">Equalify</a>
     </footer>`;
 }
 
@@ -152,8 +153,8 @@ export function renderPage(title: string, content: string, extraCss: string = ''
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${escapeHtml(title)} – Equalify Open Source</title>
-    <link rel="icon" href="https://app.equalify.uic.edu/favicon.ico">
+    <title>${escapeHtml(title)} – ${config.siteName}</title>
+    <link rel="icon" href="${config.favicon}">
     <style>${baseCss}${extraCss}</style>
 </head>
 <body>

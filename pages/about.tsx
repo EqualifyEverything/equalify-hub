@@ -1,6 +1,7 @@
 import type { FC } from 'hono/jsx';
 import { Layout } from '#src/components/Layout';
 import { getCurrentUser } from '#src/utils/auth';
+import config from '#src/utils/config';
 
 export const AboutPage: FC = () => {
     const user = getCurrentUser();
@@ -19,7 +20,7 @@ export const AboutPage: FC = () => {
                 </p>
                 
                 <p class="text-[var(--color-text)] mb-5 text-[15px] leading-relaxed">
-                    <a href="https://app.equalify.uic.edu">Equalify</a> is on a mission to make the web accessible to everyone. Our open source tools help organizations identify and fix accessibility issues at scale.
+                    <a href={config.equalifyAppUrl}>Equalify</a> is on a mission to make the web accessible to everyone. Our open source tools help organizations identify and fix accessibility issues at scale.
                 </p>
 
                 <div class="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-md p-6 my-8">
@@ -63,13 +64,13 @@ export const AboutPage: FC = () => {
 
                 <div class="flex items-center gap-4 mt-10 pt-6 border-t border-[var(--color-border)]">
                     <img 
-                        src="https://github.com/EqualifyEverything.png" 
-                        alt="EqualifyEverything" 
+                        src={config.orgLogo}
+                        alt={config.githubOrg}
                         class="w-16 h-16 rounded-md border-2 border-[var(--color-border)]"
                     />
                     <div class="flex-1">
                         <div class="font-semibold text-[var(--color-text)]">
-                            <a href="https://app.equalify.uic.edu">Equalify</a>
+                            <a href={config.equalifyAppUrl}>Equalify</a>
                         </div>
                         <div class="text-[13px] text-[var(--color-text-secondary)]">
                             Making the web accessible to everyone

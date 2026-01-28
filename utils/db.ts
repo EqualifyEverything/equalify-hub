@@ -4,7 +4,7 @@ import { DynamoDBDocumentClient, GetCommand, PutCommand, DeleteCommand, QueryCom
 const client = new DynamoDBClient({ region: 'us-east-2' });
 const docClient = DynamoDBDocumentClient.from(client);
 
-const TABLE_NAME = 'equalifyuic';
+const TABLE_NAME = 'equalifyuic-hub';
 
 // ============ GITHUB CACHE (15 min TTL) ============
 const CACHE_TTL_SECONDS = 15 * 60; // 15 minutes

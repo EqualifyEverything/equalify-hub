@@ -3,11 +3,12 @@ import type { FC, PropsWithChildren } from 'hono/jsx';
 // Import built Tailwind CSS (esbuild loads it as text)
 import tailwindCss from '#src/styles/tailwind.css';
 import { getTheme, getThemeClass, getThemeLabel } from '#src/utils/theme';
+import config from '#src/utils/config';
 
-// Site configuration
+// Site configuration (using config from environment)
 export const site = {
-    name: 'Equalify Hub',
-    favicon: 'https://app.equalify.uic.edu/favicon.ico',
+    name: config.siteName,
+    favicon: config.favicon,
 };
 
 export const Logo: FC = () => (
@@ -48,7 +49,7 @@ export const Nav: FC<{ user?: User }> = ({ user }) => {
             <nav>
                 <div class="nav-inner">
                     <a href="/" class="logo" style="display:flex;align-items:center;gap:10px;">
-                        <img src="https://github.com/EqualifyEverything.png" alt="Equalify" style="width:32px;height:32px;border-radius:4px;" />
+                        <img src={config.orgLogo} alt={config.siteName} style="width:32px;height:32px;border-radius:4px;" />
                         {site.name}
                     </a>
                     <div class="nav-links">
@@ -65,7 +66,7 @@ export const Nav: FC<{ user?: User }> = ({ user }) => {
                                 <a href="/logout">Sign out</a>
                             </>
                         ) : (
-                            <a href="https://app.equalify.uic.edu" class="sign-in-btn">Sign into Equalify</a>
+                            <a href={config.equalifyAppUrl} class="sign-in-btn">Sign into Equalify</a>
                         )}
                     </div>
                 </div>
@@ -92,7 +93,7 @@ export const CallToAction: FC = () => {
                     We're building accessible technology for everyone. Join us in making 
                     the web more inclusive through open source contributions.
                 </p>
-                <a href="https://app.equalify.uic.edu" class="cta-button">
+                <a href={config.equalifyAppUrl} class="cta-button">
                     Sign into Equalify
                 </a>
             </div>
@@ -117,7 +118,7 @@ export const Footer: FC = () => {
                 
                 <div class="footer-links">
                     <div class="footer-column">
-                        <h3>Equalify Hub</h3>
+                        <h3>{config.siteName}</h3>
                         <a href="/">Dashboard</a>
                         <a href="/docs">Documentation</a>
                         <a href="/about">About</a>
@@ -126,8 +127,8 @@ export const Footer: FC = () => {
                     
                     <div class="footer-column">
                         <h3>Quick Links</h3>
-                        <a href="https://github.com/EqualifyEverything" rel="noopener">GitHub</a>
-                        <a href="https://app.equalify.uic.edu" rel="noopener">Equalify App</a>
+                        <a href={`https://github.com/${config.githubOrg}`} rel="noopener">GitHub</a>
+                        <a href={config.equalifyAppUrl} rel="noopener">Equalify App</a>
                         <a href="https://osf.it.uic.edu/" rel="noopener">Open Source Fund</a>
                         <a href="https://it.uic.edu/accessibility/" rel="noopener">Digital Accessibility</a>
                     </div>

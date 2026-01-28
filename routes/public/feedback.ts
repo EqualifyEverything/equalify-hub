@@ -1,6 +1,7 @@
 import { event } from '#src/utils';
 import { getCurrentUser } from '#src/utils/auth';
 import { getFeatureRequests, createFeatureRequest, voteFeature, FeatureRequest } from '#src/utils/db';
+import config from '#src/utils/config';
 
 function getVisitorIp(): string {
     const headers = event.headers || {};
@@ -172,8 +173,8 @@ function renderFeedbackPage(
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feature Requests – Equalify Open Source</title>
-    <link rel="icon" href="https://app.equalify.uic.edu/favicon.ico">
+    <title>Feature Requests – ${config.siteName}</title>
+    <link rel="icon" href="${config.favicon}">
     <style>
         * { box-sizing: border-box; }
         body {

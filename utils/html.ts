@@ -1,10 +1,11 @@
 import { getCurrentUser } from '#src/utils/auth';
+import config from '#src/utils/config';
 
-// Site configuration - customize these for your project
+// Site configuration - uses environment variables from config
 export const site = {
-    name: 'Equalify Open Source',
-    tagline: 'Developer tools for the EqualifyEverything organization',
-    favicon: 'https://app.equalify.uic.edu/favicon.ico',
+    name: config.siteName,
+    tagline: `Developer tools for the ${config.githubOrg} organization`,
+    favicon: config.favicon,
     logo: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="20" height="20" style="margin-top:1px;"><circle cx="100" cy="100" r="65" fill="none" stroke="#e6edf3" stroke-width="28"/><line x1="100" y1="125" x2="100" y2="90" stroke="#e6edf3" stroke-width="8" stroke-linecap="round"/><line x1="100" y1="90" x2="65" y2="50" stroke="#e6edf3" stroke-width="8" stroke-linecap="round"/><line x1="100" y1="90" x2="120" y2="112" stroke="#e6edf3" stroke-width="8" stroke-linecap="round"/><circle cx="100" cy="125" r="10" fill="#e6edf3"/><circle cx="100" cy="90" r="10" fill="#e6edf3"/><circle cx="120" cy="112" r="10" fill="#e6edf3"/></svg>`,
 };
 
@@ -51,7 +52,7 @@ footer {
 // Generate auth section based on current user
 export function getAuthSection(user = getCurrentUser()) {
     if (!user) {
-        return `<a href="https://app.equalify.uic.edu" style="margin-left:auto;">Sign into Equalify</a>`;
+        return `<a href="${config.equalifyAppUrl}" style="margin-left:auto;">Sign into Equalify</a>`;
     }
     
     return `<div style="display:flex;align-items:center;gap:12px;margin-left:auto;">
@@ -68,7 +69,7 @@ export function nav(user = getCurrentUser()) {
     const links = navLinks.map(l => `<a href="${l.href}">${l.label}</a>`).join('\n        ');
     return `<nav>
         <a href="/" class="logo" style="display:flex;align-items:center;gap:8px;">
-            <img src="https://github.com/EqualifyEverything.png" alt="EqualifyEverything" style="width:24px;height:24px;border-radius:4px;">
+            <img src="${config.orgLogo}" alt="${config.githubOrg}" style="width:24px;height:24px;border-radius:4px;">
             ${site.name}
         </a>
         ${links}
@@ -79,8 +80,8 @@ export function nav(user = getCurrentUser()) {
 // Generate footer
 export function footer(links: { href: string; label: string }[] = [
     { href: '/about', label: 'About' },
-    { href: 'https://github.com/EqualifyEverything', label: 'GitHub' },
-    { href: 'https://app.equalify.uic.edu', label: 'Equalify' }
+    { href: `https://github.com/${config.githubOrg}`, label: 'GitHub' },
+    { href: config.equalifyAppUrl, label: 'Equalify' }
 ]) {
     const linkHtml = links.map(l => `<a href="${l.href}">${l.label}</a>`).join(' · ');
     return `<footer>

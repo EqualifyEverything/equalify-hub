@@ -1,7 +1,8 @@
 import { getCurrentUser, getGitHubToken, fetchGitHub as fetchGitHubWithAuth } from '#src/utils/auth';
 import { event } from '#src/utils';
+import config from '#src/utils/config';
 
-const ORG_NAME = 'EqualifyEverything';
+const ORG_NAME = config.githubOrg;
 
 function escapeHtml(text: string): string {
     if (!text) return '';
@@ -111,7 +112,7 @@ export const home = async () => {
                </a>
                <a href="/logout">Sign out</a>
            </div>`
-        : `<a href="https://app.equalify.uic.edu" style="margin-left:auto;">Sign into Equalify</a>`;
+        : `<a href="${config.equalifyAppUrl}" style="margin-left:auto;">Sign into Equalify</a>`;
 
     // Fetch org data
     const { org, repos } = await fetchOrgData();
@@ -176,8 +177,8 @@ export const home = async () => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Equalify Open Source – Developer tools for EqualifyEverything</title>
-    <link rel="icon" href="https://app.equalify.uic.edu/favicon.ico">
+    <title>${config.siteName} – Developer tools for ${config.githubOrg}</title>
+    <link rel="icon" href="${config.favicon}">
     <style>
         * { box-sizing: border-box; }
         body {
@@ -379,7 +380,7 @@ export const home = async () => {
     <footer>
         <a href="/about">About</a> · 
         <a href="https://github.com/${ORG_NAME}" rel="noopener">GitHub</a> · 
-        <a href="https://app.equalify.uic.edu" rel="noopener">Equalify</a>
+        <a href="${config.equalifyAppUrl}" rel="noopener">Equalify</a>
     </footer>
 </body>
 </html>`

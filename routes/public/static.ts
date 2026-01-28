@@ -1,11 +1,12 @@
 // Static files: robots.txt, sitemap.xml, security.txt, humans.txt
 import type { Context } from 'hono';
+import config from '#src/utils/config';
 
 export const robots = (c: Context) => {
     return c.text(`User-agent: *
 Allow: /
 
-# Equalify Open Source - Developer tools for EqualifyEverything
+# ${config.siteName} - Developer tools for ${config.githubOrg}
 # https://opensource.equalifyapp.com
 
 Sitemap: https://opensource.equalifyapp.com/sitemap.xml`);
@@ -15,7 +16,7 @@ export const sitemap = (c: Context) => {
     const pages = [
         { loc: 'https://opensource.equalifyapp.com/', priority: '1.0', changefreq: 'daily' },
         { loc: 'https://opensource.equalifyapp.com/about', priority: '0.8', changefreq: 'monthly' },
-        { loc: 'https://opensource.equalifyapp.com/EqualifyEverything', priority: '0.9', changefreq: 'daily' },
+        { loc: `https://opensource.equalifyapp.com/${config.githubOrg}`, priority: '0.9', changefreq: 'daily' },
     ];
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -31,16 +32,16 @@ ${pages.map(p => `  <url>
 };
 
 export const security = (c: Context) => {
-    return c.text(`Contact: https://github.com/EqualifyEverything
+    return c.text(`Contact: https://github.com/${config.githubOrg}
 Preferred-Languages: en
 Canonical: https://opensource.equalifyapp.com/.well-known/security.txt`);
 };
 
 export const humans = (c: Context) => {
     return c.text(`/* TEAM */
-Organization: EqualifyEverything
-Site: https://app.equalify.uic.edu
-GitHub: @EqualifyEverything
+Organization: ${config.githubOrg}
+Site: ${config.equalifyAppUrl}
+GitHub: @${config.githubOrg}
 
 /* SITE */
 Built with: TypeScript, Node.js, AWS Lambda

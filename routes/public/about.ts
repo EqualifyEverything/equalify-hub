@@ -1,4 +1,5 @@
 import { htmlResponse } from '#src/utils/html';
+import config from '#src/utils/config';
 
 export const about = async () => {
     return htmlResponse({
@@ -54,7 +55,7 @@ export const about = async () => {
         </p>
         
         <p class="story">
-            <a href="https://app.equalify.uic.edu">Equalify</a> is on a mission to make the web accessible to everyone. Our open source tools help organizations identify and fix accessibility issues at scale.
+            <a href="${config.equalifyAppUrl}">Equalify</a> is on a mission to make the web accessible to everyone. Our open source tools help organizations identify and fix accessibility issues at scale.
         </p>
 
         <div class="features">
@@ -72,9 +73,9 @@ export const about = async () => {
         </p>
 
         <div class="org-card">
-            <img src="https://github.com/EqualifyEverything.png" alt="EqualifyEverything">
+            <img src="${config.orgLogo}" alt="${config.githubOrg}">
             <div class="org-info">
-                <div class="name"><a href="https://app.equalify.uic.edu">Equalify</a></div>
+                <div class="name"><a href="${config.equalifyAppUrl}">Equalify</a></div>
                 <div class="meta">Making the web accessible to everyone</div>
                 <div class="meta">Built by <a href="https://uic.edu">UIC</a></div>
             </div>

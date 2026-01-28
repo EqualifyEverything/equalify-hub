@@ -3,8 +3,9 @@ import type { Context } from 'hono';
 import { BaseLayout, Nav, Footer, site } from '#src/components/Layout';
 import { escapeHtml } from '#src/components/utils';
 import { getCurrentUser, getGitHubToken, fetchGitHub as fetchGitHubWithAuth } from '#src/utils/auth';
+import config from '#src/utils/config';
 
-const ORG_NAME = 'EqualifyEverything';
+const ORG_NAME = config.githubOrg;
 
 const styles = `
 body {
@@ -392,7 +393,7 @@ export const HomePage: FC<{
                                     <a href="/logout" style="color:#4b5563;font-size:15px;">Sign out</a>
                                 </>
                             ) : (
-                                <a href="https://app.equalify.uic.edu" style="background:#C8102E;color:#ffffff;padding:8px 16px;border-radius:4px;font-size:14px;font-weight:500;">Sign into Equalify</a>
+                                <a href={config.equalifyAppUrl} style="background:#C8102E;color:#ffffff;padding:8px 16px;border-radius:4px;font-size:14px;font-weight:500;">Sign into Equalify</a>
                             )}
                         </div>
                     </div>
@@ -419,7 +420,7 @@ export const HomePage: FC<{
                             </svg>
                             User Guide
                         </a>
-                        <a href="https://app.equalify.uic.edu" class="hero-btn hero-btn-secondary" rel="noopener">
+                        <a href={config.equalifyAppUrl} class="hero-btn hero-btn-secondary" rel="noopener">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="12" r="10"/>
                                 <line x1="2" y1="12" x2="22" y2="12"/>
@@ -527,7 +528,7 @@ export const HomePage: FC<{
             <footer style="text-align:center;padding:24px 16px;color:#8b949e;font-size:12px;border-top:1px solid #30363d;margin-top:48px;">
                 <a href="/about">About</a> · 
                 <a href={`https://github.com/${ORG_NAME}`} rel="noopener">GitHub</a> · 
-                <a href="https://app.equalify.uic.edu" rel="noopener">Equalify</a>
+                <a href={config.equalifyAppUrl} rel="noopener">Equalify</a>
             </footer>
         </BaseLayout>
     );
