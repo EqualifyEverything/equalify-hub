@@ -19,10 +19,51 @@ body {
     background: #ffffff;
 }
 .top-bar {
-    height: 4px;
+    height: 8px;
     background: #C8102E;
 }
 .container { max-width: 1200px; margin: 0 auto; padding: 24px 48px; }
+@media (max-width: 768px) {
+    .container { padding: 16px 20px; }
+}
+
+/* Mobile nav */
+.nav-desktop { display: flex; align-items: center; gap: 32px; }
+.nav-mobile-toggle { display: none; background: none; border: none; padding: 8px; cursor: pointer; color: #4b5563; }
+.nav-mobile { display: none; }
+@media (max-width: 900px) {
+    .nav-desktop { display: none; }
+    .nav-mobile-toggle { display: block; }
+    .nav-mobile {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #ffffff;
+        border-bottom: 1px solid #d1d5db;
+        padding: 16px 24px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .nav-mobile.open { display: block; }
+    .nav-mobile a {
+        display: block;
+        padding: 12px 0;
+        color: #4b5563;
+        font-size: 15px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    .nav-mobile a:last-child { border-bottom: none; }
+    .nav-mobile .sign-in-mobile {
+        display: inline-block;
+        margin-top: 12px;
+        background: #C8102E;
+        color: #ffffff;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-weight: 500;
+    }
+}
 
 /* Org header */
 .org-header {
@@ -33,16 +74,41 @@ body {
     border-bottom: 1px solid #d1d5db;
     margin-bottom: 24px;
 }
+@media (max-width: 768px) {
+    .org-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 16px;
+        padding-bottom: 16px;
+        margin-bottom: 16px;
+    }
+}
 .org-avatar {
     width: 100px;
     height: 100px;
     border-radius: 6px;
     border: 1px solid #d1d5db;
 }
+@media (max-width: 768px) {
+    .org-avatar { width: 80px; height: 80px; }
+}
 .org-info h1 { margin: 0 0 8px 0; font-size: 28px; color: #1f2937; }
+@media (max-width: 768px) {
+    .org-info h1 { font-size: 22px; }
+}
 .org-info .org-name { color: #4b5563; font-size: 18px; margin-bottom: 8px; }
+@media (max-width: 768px) {
+    .org-info .org-name { font-size: 15px; }
+}
 .org-info .org-bio { color: #4b5563; margin-bottom: 12px; }
+@media (max-width: 768px) {
+    .org-info .org-bio { font-size: 14px; margin-bottom: 8px; }
+}
 .org-links { display: flex; gap: 16px; font-size: 14px; color: #4b5563; flex-wrap: wrap; }
+@media (max-width: 768px) {
+    .org-links { justify-content: center; gap: 12px; font-size: 13px; }
+}
 .org-links a { color: #C8102E; }
 
 /* Stats */
@@ -52,6 +118,13 @@ body {
     gap: 16px;
     margin-bottom: 32px;
 }
+@media (max-width: 768px) {
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 24px;
+    }
+}
 .stat-card {
     background: #f8f9fa;
     border: 1px solid #d1d5db;
@@ -59,7 +132,13 @@ body {
     padding: 16px;
     text-align: center;
 }
+@media (max-width: 768px) {
+    .stat-card { padding: 12px 8px; }
+}
 .stat-value { font-size: 32px; font-weight: 600; color: #1f2937; }
+@media (max-width: 768px) {
+    .stat-value { font-size: 24px; }
+}
 .stat-label { font-size: 14px; color: #4b5563; margin-top: 4px; }
 .stat-value.stars { color: #d97706; }
 .stat-value.forks { color: #2563eb; }
@@ -219,6 +298,9 @@ body {
     padding: 24px 48px;
     border-bottom: 1px solid #d1d5db;
 }
+@media (max-width: 768px) {
+    .quick-links { padding: 16px 20px; }
+}
 .quick-links-inner {
     max-width: 1200px;
     margin: 0 auto;
@@ -227,6 +309,13 @@ body {
     gap: 48px;
     flex-wrap: wrap;
 }
+@media (max-width: 768px) {
+    .quick-links-inner {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+}
 .quick-link {
     display: flex;
     align-items: center;
@@ -234,6 +323,18 @@ body {
     color: #4b5563;
     font-size: 14px;
     text-decoration: none;
+}
+@media (max-width: 768px) {
+    .quick-link {
+        flex-direction: column;
+        text-align: center;
+        gap: 6px;
+        font-size: 12px;
+        padding: 12px 8px;
+        background: #ffffff;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+    }
 }
 .quick-link:hover {
     color: #C8102E;
@@ -249,12 +350,24 @@ body {
     justify-content: center;
     font-size: 18px;
 }
+@media (max-width: 768px) {
+    .quick-link-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+        border: none;
+        background: transparent;
+    }
+}
 
 /* Section divider */
 .section-divider {
     max-width: 1200px;
     margin: 0 auto;
     padding: 32px 48px 16px;
+}
+@media (max-width: 768px) {
+    .section-divider { padding: 24px 20px 12px; }
 }
 .section-divider h2 {
     font-size: 24px;
@@ -265,10 +378,17 @@ body {
     align-items: center;
     gap: 12px;
 }
+@media (max-width: 768px) {
+    .section-divider h2 { font-size: 20px; gap: 8px; }
+    .section-divider h2 svg { width: 20px; height: 20px; }
+}
 .section-divider p {
     color: #6b7280;
     margin: 8px 0 0 0;
     font-size: 15px;
+}
+@media (max-width: 768px) {
+    .section-divider p { font-size: 13px; }
 }
 `;
 
@@ -375,13 +495,14 @@ export const HomePage: FC<{
         <BaseLayout title={`${site.name} – Developer tools for EqualifyEverything`} styles={styles}>
             <header class="site-header">
                 <div class="top-bar"></div>
-                <nav style="background:#ffffff;border-bottom:1px solid #d1d5db;padding:0;">
-                    <div style="max-width:1200px;margin:0 auto;padding:16px 48px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
-                        <a href="/" class="logo" style="font-size:20px;font-weight:600;color:#001e62;text-decoration:none;display:flex;align-items:center;gap:10px;">
-                            <img src={org?.avatar_url || `https://github.com/${ORG_NAME}.png`} alt="Equalify" style="width:32px;height:32px;border-radius:4px;" />
-                            Equalify Hub
+                <nav style="background:#ffffff;border-bottom:1px solid #d1d5db;padding:0;position:relative;">
+                    <div style="max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
+                        <a href="/" class="logo" style="font-size:20px;font-weight:600;color:#001e62;text-decoration:none;display:flex;align-items:center;gap:14px;">
+                            <img src={org?.avatar_url || `https://github.com/${ORG_NAME}.png`} alt="UIC" style="width:64px;height:64px;border-radius:50%;" />
+                            <span style="width:1px;height:48px;background:#d1d5db;"></span>
+                            <span>Equalify Hub</span>
                         </a>
-                        <div style="display:flex;align-items:center;gap:32px;">
+                        <div class="nav-desktop">
                             <a href="/user-guide" style="color:#4b5563;font-size:15px;">User Guide</a>
                             <a href="/technical-docs" style="color:#4b5563;font-size:15px;">Technical</a>
                             <a href="/roadmap" style="color:#4b5563;font-size:15px;">Roadmap</a>
@@ -396,9 +517,31 @@ export const HomePage: FC<{
                                     <a href="/logout" style="color:#4b5563;font-size:15px;">Sign out</a>
                                 </>
                             ) : (
-                                <a href={config.equalifyAppUrl} style="background:#C8102E;color:#ffffff;padding:8px 16px;border-radius:4px;font-size:14px;font-weight:500;">Sign into Equalify</a>
+                                <a href={config.equalifyAppUrl} style="background:#C8102E;color:#ffffff;padding:10px 20px;border-radius:4px;font-size:14px;font-weight:500;">Sign into Equalify</a>
                             )}
                         </div>
+                        <button class="nav-mobile-toggle" onclick="document.querySelector('.nav-mobile').classList.toggle('open')" aria-label="Toggle menu">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="3" y1="6" x2="21" y2="6"/>
+                                <line x1="3" y1="12" x2="21" y2="12"/>
+                                <line x1="3" y1="18" x2="21" y2="18"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="nav-mobile">
+                        <a href="/user-guide">User Guide</a>
+                        <a href="/technical-docs">Technical</a>
+                        <a href="/roadmap">Roadmap</a>
+                        <a href="/feature-request">Feature Request</a>
+                        <a href="/about">About</a>
+                        {user ? (
+                            <>
+                                <a href={`/${user.login}`}>{user.login}</a>
+                                <a href="/logout">Sign out</a>
+                            </>
+                        ) : (
+                            <a href={config.equalifyAppUrl} class="sign-in-mobile">Sign into Equalify</a>
+                        )}
                     </div>
                 </nav>
             </header>

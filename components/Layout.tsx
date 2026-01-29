@@ -48,9 +48,10 @@ export const Nav: FC<{ user?: User }> = ({ user }) => {
             <div class="top-bar"></div>
             <nav>
                 <div class="nav-inner">
-                    <a href="/" class="logo" style="display:flex;align-items:center;gap:10px;">
-                        <img src={config.orgLogo} alt={config.siteName} style="width:32px;height:32px;border-radius:4px;" />
-                        {site.name}
+                    <a href="/" class="logo" style="display:flex;align-items:center;gap:14px;">
+                        <img src={config.orgLogo} alt="UIC" style="width:64px;height:64px;border-radius:50%;" />
+                        <span style="width:1px;height:48px;background:#d1d5db;"></span>
+                        <span>{site.name}</span>
                     </a>
                     <div class="nav-links">
                         <a href="/user-guide">User Guide</a>
@@ -70,6 +71,28 @@ export const Nav: FC<{ user?: User }> = ({ user }) => {
                             <a href={config.equalifyAppUrl} class="sign-in-btn">Sign into Equalify</a>
                         )}
                     </div>
+                    <button class="nav-mobile-toggle" onclick="document.querySelector('.nav-mobile').classList.toggle('open')" aria-label="Toggle menu">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="3" y1="6" x2="21" y2="6"/>
+                            <line x1="3" y1="12" x2="21" y2="12"/>
+                            <line x1="3" y1="18" x2="21" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="nav-mobile">
+                    <a href="/user-guide">User Guide</a>
+                    <a href="/technical-docs">Technical</a>
+                    <a href="/roadmap">Roadmap</a>
+                    <a href="/feature-request">Feature Request</a>
+                    <a href="/about">About</a>
+                    {user ? (
+                        <>
+                            <a href={`/${user.login}`}>{user.login}</a>
+                            <a href="/logout">Sign out</a>
+                        </>
+                    ) : (
+                        <a href={config.equalifyAppUrl} class="sign-in-mobile">Sign into Equalify</a>
+                    )}
                 </div>
             </nav>
         </header>
@@ -163,27 +186,78 @@ export const baseStyles = `
     background: #ffffff;
 }
 .top-bar {
-    height: 4px;
+    height: 8px;
     background: #C8102E;
 }
 nav {
     background: #ffffff;
     border-bottom: 1px solid var(--color-border);
     padding: 0;
+    position: relative;
 }
 .nav-inner {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 16px 48px;
+    padding: 16px 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 24px;
 }
-@media (max-width: 768px) {
+.nav-mobile-toggle {
+    display: none;
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: #4b5563;
+}
+.nav-mobile {
+    display: none;
+}
+@media (max-width: 900px) {
     .nav-inner {
         padding: 12px 20px;
-        flex-wrap: wrap;
+    }
+    .nav-links {
+        display: none !important;
+    }
+    .nav-mobile-toggle {
+        display: block;
+    }
+    .nav-mobile {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #ffffff;
+        border-bottom: 1px solid #d1d5db;
+        padding: 16px 24px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        z-index: 100;
+    }
+    .nav-mobile.open {
+        display: block;
+    }
+    .nav-mobile a {
+        display: block;
+        padding: 12px 0;
+        color: #4b5563;
+        font-size: 15px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    .nav-mobile a:last-child {
+        border-bottom: none;
+    }
+    .sign-in-mobile {
+        display: inline-block;
+        margin-top: 12px;
+        background: #C8102E !important;
+        color: #ffffff !important;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-weight: 500;
     }
 }
 nav .logo { 
@@ -339,8 +413,8 @@ nav a:hover {
     color: #C8102E;
 }
 .footer-bar {
-    height: 4px;
-    background: #C8102E;
+    height: 8px;
+    background: #001e62;
 }
 
 @media (min-width: 600px) {
