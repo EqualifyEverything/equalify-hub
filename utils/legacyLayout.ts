@@ -140,8 +140,8 @@ export function renderNav(): string {
 }
 
 export function renderFooter(): string {
-    return `<footer>
-        <a href="/about">About</a> · <a href="https://github.com/${config.githubOrg}">GitHub</a> · <a href="${config.equalifyAppUrl}">Equalify</a>
+    return `<footer style="background:#f8f9fa;border-top:1px solid #d1d5db;padding:24px;text-align:center;font-size:13px;color:#6b7280;">
+        <p style="margin:0;">1200 West Harrison St. · Chicago, IL 60607 · (312) 996-7000</p>
     </footer>`;
 }
 

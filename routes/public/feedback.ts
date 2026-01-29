@@ -54,7 +54,7 @@ export const submitFeature = async () => {
     if (!title) {
         return {
             statusCode: 302,
-            headers: { 'Location': '/feedback?error=Title+is+required' },
+            headers: { 'Location': '/feature-request?error=Title+is+required' },
             body: ''
         };
     }
@@ -63,7 +63,7 @@ export const submitFeature = async () => {
     
     return {
         statusCode: 302,
-        headers: { 'Location': '/feedback?success=1' },
+        headers: { 'Location': '/feature-request?success=1' },
         body: ''
     };
 };
@@ -93,7 +93,7 @@ export const vote = async () => {
     
     return {
         statusCode: 302,
-        headers: { 'Location': '/feedback' },
+        headers: { 'Location': '/feature-request' },
         body: ''
     };
 };
@@ -145,13 +145,13 @@ function renderFeedbackPage(
         return `
             <div class="feature-item">
                 <div class="vote-section">
-                    <form method="post" action="/feedback/vote">
+                    <form method="post" action="/feature-request/vote">
                         <input type="hidden" name="id" value="${f.id}">
                         <input type="hidden" name="vote" value="up">
                         <button type="submit" class="vote-btn ${userUpvoted ? 'voted' : ''}">▲</button>
                     </form>
                     <span class="score ${score > 0 ? 'positive' : score < 0 ? 'negative' : ''}">${score}</span>
-                    <form method="post" action="/feedback/vote">
+                    <form method="post" action="/feature-request/vote">
                         <input type="hidden" name="id" value="${f.id}">
                         <input type="hidden" name="vote" value="down">
                         <button type="submit" class="vote-btn ${userDownvoted ? 'voted' : ''}">▼</button>
@@ -321,7 +321,7 @@ function renderFeedbackPage(
         
         <div class="submit-form">
             <h2>💡 Suggest a feature</h2>
-            <form method="post" action="/feedback/submit">
+            <form method="post" action="/feature-request/submit">
                 <div class="form-group">
                     <label for="title">What do you want?</label>
                     <input type="text" id="title" name="title" placeholder="e.g., Contribution graph" required maxlength="200">

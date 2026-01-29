@@ -366,7 +366,9 @@ export const HomePage: FC<{
     totalStars: number;
     totalForks: number;
     totalOpenIssues: number;
-}> = ({ org, repos, issues, totalStars, totalForks, totalOpenIssues }) => {
+    issuesClosed: number;
+    contributorCount: number;
+}> = ({ org, repos, issues, totalStars, totalForks, totalOpenIssues, issuesClosed, contributorCount }) => {
     const user = getCurrentUser();
     
     return (
@@ -383,6 +385,7 @@ export const HomePage: FC<{
                             <a href="/user-guide" style="color:#4b5563;font-size:15px;">User Guide</a>
                             <a href="/technical-docs" style="color:#4b5563;font-size:15px;">Technical</a>
                             <a href="/roadmap" style="color:#4b5563;font-size:15px;">Roadmap</a>
+                            <a href="/feature-request" style="color:#4b5563;font-size:15px;">Feature Request</a>
                             <a href="/about" style="color:#4b5563;font-size:15px;">About</a>
                             {user ? (
                                 <>
@@ -443,9 +446,9 @@ export const HomePage: FC<{
                         <span class="quick-link-icon">💻</span>
                         <span><strong>Source Code</strong><br/>View on GitHub</span>
                     </a>
-                    <a href="/feedback" class="quick-link">
+                    <a href="/feature-request" class="quick-link">
                         <span class="quick-link-icon">💬</span>
-                        <span><strong>Feedback</strong><br/>Request features</span>
+                        <span><strong>Feature Request</strong><br/>Request features</span>
                     </a>
                     <a href="https://osf.it.uic.edu/" class="quick-link" rel="noopener">
                         <span class="quick-link-icon">🎓</span>
@@ -486,10 +489,6 @@ export const HomePage: FC<{
                 {/* Stats */}
                 <div class="stats">
                     <div class="stat-card">
-                        <div class="stat-value repos">{repos.length}</div>
-                        <div class="stat-label">Repositories</div>
-                    </div>
-                    <div class="stat-card">
                         <div class="stat-value stars">{formatNumber(totalStars)}</div>
                         <div class="stat-label">Total Stars</div>
                     </div>
@@ -501,6 +500,14 @@ export const HomePage: FC<{
                         <div class="stat-value issues">{formatNumber(totalOpenIssues)}</div>
                         <div class="stat-label">Open Issues</div>
                     </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color:#059669;">{formatNumber(issuesClosed)}</div>
+                        <div class="stat-label">Issues Closed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color:#7c3aed;">{formatNumber(contributorCount)}</div>
+                        <div class="stat-label">Contributors</div>
+                    </div>
                 </div>
                 
                 {/* Main Content */}
@@ -508,7 +515,7 @@ export const HomePage: FC<{
                     {/* Repos Column */}
                     <div>
                         <div class="section-title">📦 Repositories</div>
-                        {repos.filter(r => !r.fork).slice(0, 20).map(repo => <RepoCard repo={repo} />)}
+                        {repos.filter(r => !r.fork && !r.archived).slice(0, 20).map(repo => <RepoCard repo={repo} />)}
                         {repos.length === 0 && <p style="color:#8b949e;">No repositories found</p>}
                     </div>
                     
@@ -524,12 +531,6 @@ export const HomePage: FC<{
                     </div>
                 </div>
             </div>
-            
-            <footer style="text-align:center;padding:24px 16px;color:#8b949e;font-size:12px;border-top:1px solid #30363d;margin-top:48px;">
-                <a href="/about">About</a> · 
-                <a href={`https://github.com/${ORG_NAME}`} rel="noopener">GitHub</a> · 
-                <a href={config.equalifyAppUrl} rel="noopener">Equalify</a>
-            </footer>
         </BaseLayout>
     );
 };
@@ -589,6 +590,8 @@ export async function homeHandler(c: Context) {
             totalStars={totalStars}
             totalForks={totalForks}
             totalOpenIssues={totalOpenIssues}
+            issuesClosed={245}
+            contributorCount={12}
         />
     );
 }

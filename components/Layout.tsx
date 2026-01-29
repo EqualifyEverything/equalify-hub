@@ -56,6 +56,7 @@ export const Nav: FC<{ user?: User }> = ({ user }) => {
                         <a href="/user-guide">User Guide</a>
                         <a href="/technical-docs">Technical</a>
                         <a href="/roadmap">Roadmap</a>
+                        <a href="/feature-request">Feature Request</a>
                         <a href="/about">About</a>
                         {user ? (
                             <>
@@ -118,33 +119,35 @@ export const Footer: FC = () => {
                 
                 <div class="footer-links">
                     <div class="footer-column">
-                        <h3>{config.siteName}</h3>
-                        <a href="/">Dashboard</a>
-                        <a href="/docs">Documentation</a>
-                        <a href="/about">About</a>
-                        <a href="/feedback">Feedback</a>
+                        <h3>Resources</h3>
+                        <a href="https://catalog.uic.edu/ucat/academic-calendar/" rel="noopener">Academic Calendar</a>
+                        <a href="https://library.uic.edu/" rel="noopener">Library</a>
+                        <a href="https://maps.uic.edu/" rel="noopener">Maps</a>
+                        <a href="https://www.uic.edu/apps/departments-az/search" rel="noopener">Directory</a>
+                        <a href="https://today.uic.edu/events" rel="noopener">Event Calendar</a>
                     </div>
                     
                     <div class="footer-column">
                         <h3>Quick Links</h3>
-                        <a href={`https://github.com/${config.githubOrg}`} rel="noopener">GitHub</a>
-                        <a href={config.equalifyAppUrl} rel="noopener">Equalify App</a>
-                        <a href="https://osf.it.uic.edu/" rel="noopener">Open Source Fund</a>
-                        <a href="https://it.uic.edu/accessibility/" rel="noopener">Digital Accessibility</a>
+                        <a href="https://it.uic.edu/support/" rel="noopener">Get Support</a>
+                        <a href="https://uic.edu/about/job-opportunities" rel="noopener">Job Openings</a>
+                        <a href="https://emergency.uic.edu/" rel="noopener">Emergency Information</a>
+                        <a href="https://reportaconcern.uic.edu/" rel="noopener">Report a Concern</a>
+                        <a href="https://uihealth.uic.edu/" rel="noopener">UI Health</a>
                     </div>
                     
                     <div class="footer-column">
                         <h3>University</h3>
-                        <a href="https://www.uillinois.edu" rel="noopener">U of I System</a>
+                        <a href="https://www.uillinois.edu" rel="noopener">University of Illinois System</a>
                         <a href="https://illinois.edu" rel="noopener">Urbana-Champaign</a>
                         <a href="https://www.uis.edu" rel="noopener">Springfield</a>
                     </div>
                 </div>
             </div>
             
-            {/* <div class="footer-bottom">
-                <p>© {currentYear} The Board of Trustees of the University of Illinois | <a href="https://www.uic.edu/privacy-statement" rel="noopener">Privacy Statement</a></p>
-            </div> */}
+            <div class="footer-bottom">
+                <p>© {currentYear} The Board of Trustees of the University of Illinois | <a href="https://www.vpaa.uillinois.edu/resources/web_privacy" rel="noopener">Privacy Statement</a></p>
+            </div>
             
             <div class="footer-bar"></div>
         </footer>
@@ -366,7 +369,6 @@ export const Layout: FC<LayoutProps> = ({ title, styles, user, children }) => {
             <body>
                 <Nav user={user} />
                 {children}
-                <CallToAction />
                 <Footer />
             </body>
         </html>
@@ -393,7 +395,6 @@ export const BaseLayout: FC<BaseLayoutProps> = ({ title, styles, children }) => 
             </head>
             <body>
                 {children}
-                <CallToAction />
                 <Footer />
             </body>
         </html>

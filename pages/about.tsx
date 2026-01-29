@@ -7,7 +7,7 @@ export const AboutPage: FC = () => {
     const user = getCurrentUser();
     
     return (
-        <Layout title="About - Equalify Hub" user={user}>
+        <Layout title="About" user={user}>
             <div class="max-w-[640px] mx-auto px-5 py-12 pb-20">
                 <h1 class="text-3xl font-semibold mb-8 text-[var(--color-text)]">About Equalify Hub</h1>
                 

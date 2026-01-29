@@ -96,16 +96,16 @@ export const RoadmapPage: FC = () => {
                 {/* KPIs */}
                 <div class="kpi-grid">
                     <div class="kpi-card">
-                        <div class="kpi-value">62</div>
-                        <div class="kpi-label">Repositories</div>
-                    </div>
-                    <div class="kpi-card">
                         <div class="kpi-value">158</div>
                         <div class="kpi-label">GitHub Stars</div>
                     </div>
                     <div class="kpi-card">
+                        <div class="kpi-value">245</div>
+                        <div class="kpi-label">Issues Closed</div>
+                    </div>
+                    <div class="kpi-card">
                         <div class="kpi-value">12</div>
-                        <div class="kpi-label">Contributors</div>
+                        <div class="kpi-label">Contributor Count</div>
                     </div>
                     <div class="kpi-card">
                         <div class="kpi-value">Q1 2026</div>
@@ -133,8 +133,8 @@ export const RoadmapPage: FC = () => {
                         <span class="status-badge status-in-progress">In Progress</span>
                     </div>
                     <div class="roadmap-content">
-                        <h3>User Testing Integration</h3>
-                        <p>Ensure Equalify retains accessibility across all builds and scenarios.</p>
+                        <h3>Equalify 1.0 Release</h3>
+                        <p>Meet or exceed feature set of existing commercial platforms.</p>
                         <div class="roadmap-date">Q1 2026</div>
                     </div>
                 </div>
@@ -144,8 +144,19 @@ export const RoadmapPage: FC = () => {
                         <span class="status-badge status-in-progress">In Progress</span>
                     </div>
                     <div class="roadmap-content">
-                        <h3>PDF Converter Maintenance Plan</h3>
-                        <p>Establishing long-term support for the Equalify PDF Converter.</p>
+                        <h3>AI PDF Accessibility Converter</h3>
+                        <p>Turn PDFs into accessible markdown.</p>
+                        <div class="roadmap-date">Q1 2026</div>
+                    </div>
+                </div>
+                
+                <div class="roadmap-item">
+                    <div class="roadmap-status">
+                        <span class="status-badge status-in-progress">In Progress</span>
+                    </div>
+                    <div class="roadmap-content">
+                        <h3>Guided User Testing</h3>
+                        <p>Report on user testing results inside Equalify.</p>
                         <div class="roadmap-date">Q1 2026</div>
                     </div>
                 </div>
@@ -167,7 +178,7 @@ export const RoadmapPage: FC = () => {
                     </div>
                     <div class="roadmap-content">
                         <h3>Equalify 2.0 Release</h3>
-                        <p>Major platform update with enhanced scanning, new integrations, and improved reporting.</p>
+                        <p>Add user feedback into new features.</p>
                         <div class="roadmap-date">Q2 2026</div>
                     </div>
                 </div>
@@ -176,7 +187,7 @@ export const RoadmapPage: FC = () => {
                     <strong style="color:#92400e;">📢 Have a suggestion?</strong>
                     <p style="margin:8px 0 0 0;font-size:14px;color:#92400e;">
                         We'd love to hear what features matter most to you. 
-                        <a href="/feedback" style="color:#92400e;text-decoration:underline;">
+                        <a href="/feature-request" style="color:#92400e;text-decoration:underline;">
                             Submit a feature request →
                         </a>
                     </p>

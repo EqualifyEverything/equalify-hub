@@ -473,3 +473,32 @@ export async function voteFeature(
         return false;
     }
 }
+
+export async function deleteFeatureRequest(featureId: string, username: string): Promise<boolean> {
+    try {
+        // First get the feature to verify ownership
+        const result = await docClient.send(new GetCommand({
+            TableName: TABLE_NAME,
+            Key: { pk: 'FEATURE', sk: featureId }
+        }));
+        
+        if (!result.Item) return false;
+        
+        const feature = result.Item as FeatureRequest;
+        
+        // Only allow deletion by the creator
+        if (feature.created_by !== username) {
+            return false;
+        }
+        
+        await docClient.send(new DeleteCommand({
+            TableName: TABLE_NAME,
+            Key: { pk: 'FEATURE', sk: featureId }
+        }));
+        
+        return true;
+    } catch (error) {
+        console.error('Error deleting feature request:', error);
+        return false;
+    }
+}

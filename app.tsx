@@ -8,10 +8,10 @@ import { setEvent } from '#src/utils/event';
 
 // Migrated pages (JSX components)
 import { AboutPage } from '#src/pages/about';
-import { UserGuidePage } from '#src/pages/user-guide';
-import { TechnicalDocsPage } from '#src/pages/technical-docs';
+import { userGuideHandler, userGuideDocHandler } from '#src/pages/user-guide';
+import { technicalDocsHandler, technicalDocsDocHandler } from '#src/pages/technical-docs';
 import { RoadmapPage } from '#src/pages/roadmap';
-import { feedbackHandler, submitFeatureHandler, voteHandler } from '#src/pages/feedback';
+import { feedbackHandler, submitFeatureHandler, voteHandler, deleteFeatureHandler } from '#src/pages/feedback';
 import { homeHandler } from '#src/pages/home';
 
 // Route handlers (all native Hono now)
@@ -63,12 +63,19 @@ app.get('/logout', logout);
 // ============ MIGRATED ROUTES (Hono native JSX) ============
 app.get('/', homeHandler);
 app.get('/about', (c) => c.html(<AboutPage />));
-app.get('/user-guide', (c) => c.html(<UserGuidePage />));
-app.get('/technical-docs', (c) => c.html(<TechnicalDocsPage />));
+app.get('/user-guide', userGuideHandler);
+app.get('/user-guide/:slug', userGuideDocHandler);
+app.get('/technical-docs', technicalDocsHandler);
+app.get('/technical-docs/:slug', technicalDocsDocHandler);
 app.get('/roadmap', (c) => c.html(<RoadmapPage />));
 app.get('/feedback', feedbackHandler);
 app.post('/feedback/submit', submitFeatureHandler);
 app.post('/feedback/vote', voteHandler);
+app.post('/feedback/delete', deleteFeatureHandler);
+app.get('/feature-request', feedbackHandler);
+app.post('/feature-request/submit', submitFeatureHandler);
+app.post('/feature-request/vote', voteHandler);
+app.post('/feature-request/delete', deleteFeatureHandler);
 
 // ============ DYNAMIC ROUTES ============
 // Repo routes: /:owner, /:owner/:repo, /:owner/:repo/tree/:branch/...
