@@ -506,6 +506,7 @@ export const HomePage: FC<{
                             <a href="/user-guide" style="color:#4b5563;font-size:15px;">User Guide</a>
                             <a href="/technical-docs" style="color:#4b5563;font-size:15px;">Technical</a>
                             <a href="/roadmap" style="color:#4b5563;font-size:15px;">Roadmap</a>
+                            <a href="/updates" style="color:#4b5563;font-size:15px;">Updates</a>
                             <a href="/feature-request" style="color:#4b5563;font-size:15px;">Feature Request</a>
                             <a href="/about" style="color:#4b5563;font-size:15px;">About</a>
                             {user ? (
@@ -532,6 +533,7 @@ export const HomePage: FC<{
                         <a href="/user-guide">User Guide</a>
                         <a href="/technical-docs">Technical</a>
                         <a href="/roadmap">Roadmap</a>
+                        <a href="/updates">Updates</a>
                         <a href="/feature-request">Feature Request</a>
                         <a href="/about">About</a>
                         {user ? (

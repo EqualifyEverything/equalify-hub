@@ -57,6 +57,7 @@ export const Nav: FC<{ user?: User }> = ({ user }) => {
                         <a href="/user-guide">User Guide</a>
                         <a href="/technical-docs">Technical</a>
                         <a href="/roadmap">Roadmap</a>
+                        <a href="/updates">Updates</a>
                         <a href="/feature-request">Feature Request</a>
                         <a href="/about">About</a>
                         {user ? (
@@ -83,6 +84,7 @@ export const Nav: FC<{ user?: User }> = ({ user }) => {
                     <a href="/user-guide">User Guide</a>
                     <a href="/technical-docs">Technical</a>
                     <a href="/roadmap">Roadmap</a>
+                    <a href="/updates">Updates</a>
                     <a href="/feature-request">Feature Request</a>
                     <a href="/about">About</a>
                     {user ? (

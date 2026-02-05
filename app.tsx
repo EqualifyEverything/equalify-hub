@@ -11,6 +11,7 @@ import { AboutPage } from '#src/pages/about';
 import { userGuideHandler, userGuideDocHandler } from '#src/pages/user-guide';
 import { technicalDocsHandler, technicalDocsDocHandler } from '#src/pages/technical-docs';
 import { RoadmapPage } from '#src/pages/roadmap';
+import { updatesHandler, updatesDocHandler } from '#src/pages/updates';
 import { feedbackHandler, submitFeatureHandler, voteHandler, deleteFeatureHandler } from '#src/pages/feedback';
 import { homeHandler } from '#src/pages/home';
 
@@ -63,6 +64,8 @@ app.get('/logout', logout);
 // ============ MIGRATED ROUTES (Hono native JSX) ============
 app.get('/', homeHandler);
 app.get('/about', (c) => c.html(<AboutPage />));
+app.get('/updates', updatesHandler);
+app.get('/updates/:slug', updatesDocHandler);
 app.get('/user-guide', userGuideHandler);
 app.get('/user-guide/:slug', userGuideDocHandler);
 app.get('/technical-docs', technicalDocsHandler);
