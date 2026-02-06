@@ -1,35 +1,26 @@
 import type { Context } from 'hono';
-import { getGitHubToken } from '#src/utils/auth';
+import { getGitHubToken, fetchGitHub as fetchGitHubWithAuth } from '#src/utils/auth';
 import { renderPage } from '#src/utils/legacyLayout';
 
-async function fetchIssue(owner: string, repo: string, issueNumber: string, token?: string) {
-    const headers: Record<string, string> = {
-        'Accept': 'application/vnd.github.v3+json',
-        'User-Agent': 'Equalify-Open-Source'
-    };
-    if (token) headers['Authorization'] = `token ${token}`;
-
-    const response = await fetch(
-        `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}`,
-        { headers }
-    );
-    if (!response.ok) return null;
-    return response.json();
+// Wrapper to use current user's token with caching
+function fetchGitHub(url: string) {
+    const token = getGitHubToken();
+    return fetchGitHubWithAuth(url, token);
 }
 
-async function fetchComments(owner: string, repo: string, issueNumber: string, token?: string) {
-    const headers: Record<string, string> = {
-        'Accept': 'application/vnd.github.v3+json',
-        'User-Agent': 'Equalify-Open-Source'
-    };
-    if (token) headers['Authorization'] = `token ${token}`;
-
-    const response = await fetch(
-        `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}/comments`,
-        { headers }
+async function fetchIssue(owner: string, repo: string, issueNumber: string) {
+    const data = await fetchGitHub(
+        `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}`
     );
-    if (!response.ok) return [];
-    return response.json();
+    // Return null if we got an error response instead of issue data
+    return data && !data.message ? data : null;
+}
+
+async function fetchComments(owner: string, repo: string, issueNumber: string) {
+    const data = await fetchGitHub(
+        `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}/comments`
+    );
+    return Array.isArray(data) ? data : [];
 }
 
 function formatDate(dateStr: string): string {
@@ -49,9 +40,8 @@ export const issues = async (c: Context) => {
     const owner = c.req.param('owner');
     const repo = c.req.param('repo');
     const issueNumber = c.req.param('number');
-    const token = getGitHubToken();
 
-    const issue = await fetchIssue(owner, repo, issueNumber, token);
+    const issue = await fetchIssue(owner, repo, issueNumber);
     if (!issue) {
         return c.html(renderPage('Issue Not Found', `
             <div class="container">
@@ -62,7 +52,7 @@ export const issues = async (c: Context) => {
         `), 404);
     }
 
-    const comments = await fetchComments(owner, repo, issueNumber, token);
+    const comments = await fetchComments(owner, repo, issueNumber);
     const stateColor = issue.state === 'open' ? '#3fb950' : '#a371f7';
     const stateIcon = issue.state === 'open' 
         ? '<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"></path><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Z"></path></svg>'
@@ -142,20 +132,11 @@ export const issues = async (c: Context) => {
 export const issuesList = async (c: Context) => {
     const owner = c.req.param('owner');
     const repo = c.req.param('repo');
-    const token = getGitHubToken();
 
-    const headers: Record<string, string> = {
-        'Accept': 'application/vnd.github.v3+json',
-        'User-Agent': 'Equalify-Open-Source'
-    };
-    if (token) headers['Authorization'] = `token ${token}`;
-
-    const response = await fetch(
-        `https://api.github.com/repos/${owner}/${repo}/issues?state=open&per_page=50`,
-        { headers }
+    const data = await fetchGitHub(
+        `https://api.github.com/repos/${owner}/${repo}/issues?state=open&per_page=50`
     );
-    
-    const issues = response.ok ? await response.json() : [];
+    const issues = Array.isArray(data) ? data : [];
 
     const issuesHtml = issues.length ? issues.map((issue: any) => `
         <div class="issue-row">

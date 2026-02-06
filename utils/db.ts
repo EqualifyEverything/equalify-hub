@@ -6,8 +6,8 @@ const docClient = DynamoDBDocumentClient.from(client);
 
 const TABLE_NAME = 'equalifyuic-hub';
 
-// ============ GITHUB CACHE (15 min TTL) ============
-const CACHE_TTL_SECONDS = 15 * 60; // 15 minutes
+// ============ GITHUB CACHE (60 min TTL) ============
+const CACHE_TTL_SECONDS = 60 * 60; // 60 minutes
 
 export interface GitHubCacheEntry {
     pk: string; // GHCACHE
@@ -43,6 +43,13 @@ export async function getGitHubCache(url: string): Promise<any | null> {
         // Check if cache is still valid
         if (entry.expiresAt < now) {
             return null; // Cache expired
+        }
+        
+        // Reject cached error responses or empty arrays (bad data from rate limits)
+        const data = entry.data;
+        if (data?.message || data?.error || (Array.isArray(data) && data.length === 0)) {
+            console.log(`[GHCACHE] REJECT bad cached data for ${url}`);
+            return null;
         }
         
         console.log(`[GHCACHE] HIT for ${url}`);

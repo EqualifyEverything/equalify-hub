@@ -67,7 +67,7 @@ async function fetchOrgData() {
             fetchGitHubWithAuth(`https://api.github.com/orgs/${ORG_NAME}/repos?sort=updated&per_page=100&type=all`, token)
         ]);
         
-        return { org, repos: repos || [] };
+        return { org, repos: Array.isArray(repos) ? repos : [] };
     } catch (error) {
         console.error('Error fetching org data:', error);
         return { org: null, repos: [] };
@@ -84,7 +84,7 @@ async function fetchOrgIssues(repos: any[]) {
             fetchGitHubWithAuth(
                 `https://api.github.com/repos/${ORG_NAME}/${repo.name}/issues?state=open&per_page=5`,
                 token
-            ).catch(() => [])
+            ).then(result => Array.isArray(result) ? result : []).catch(() => [])
         );
         
         const issueResults = await Promise.all(issuePromises);

@@ -96,12 +96,20 @@ export async function exchangeCodeForToken(code: string): Promise<{ access_token
     return response.json();
 }
 
-// Fallback token for unauthenticated users (5000 req/hour vs 60)
-const GITHUB_FALLBACK_TOKEN = process.env.GITHUB_FALLBACK_TOKEN || '';
+// Fallback tokens for unauthenticated users (5000 req/hour each)
+const GITHUB_FALLBACK_TOKENS = [
+    process.env.GITHUB_FALLBACK_TOKEN_1,
+    process.env.GITHUB_FALLBACK_TOKEN_2,
+    process.env.GITHUB_FALLBACK_TOKEN_3,
+].filter(Boolean) as string[];
+
+// Start from the first working token — bumped forward when tokens fail.
+// Persists across requests in the same Lambda container (warm starts).
+let firstWorkingTokenIndex = 0;
 
 import { getGitHubCache, setGitHubCache } from './db';
 
-// Fetch from GitHub with optional auth and 15-min caching
+// Fetch from GitHub with optional auth and 60-min caching
 export async function fetchGitHub(url: string, token?: string | null, skipCache = false) {
     // Check cache first (only for non-user-specific requests)
     if (!skipCache) {
@@ -111,22 +119,53 @@ export async function fetchGitHub(url: string, token?: string | null, skipCache 
         }
     }
     
+    // If user has a token, use it directly
+    if (token) {
+        return fetchWithToken(url, token, skipCache);
+    }
+    
+    // Start from the first known-working token
+    for (let i = firstWorkingTokenIndex; i < GITHUB_FALLBACK_TOKENS.length; i++) {
+        const result = await fetchWithToken(url, GITHUB_FALLBACK_TOKENS[i], skipCache);
+        
+        // If we got any error response, permanently skip this token
+        if (result?.message) {
+            console.log(`[GITHUB] Token ${i + 1} failed: ${result.message} — skipping permanently`);
+            // Bump the starting index so ALL concurrent requests skip this token immediately
+            if (i === firstWorkingTokenIndex) {
+                firstWorkingTokenIndex = i + 1;
+            }
+            continue;
+        }
+        
+        return result;
+    }
+    
+    // All tokens exhausted or none configured — try public (no auth, 60 req/hour)
+    console.log(`[GITHUB] All tokens failed, falling back to public API for ${url}`);
+    return fetchWithToken(url, null, skipCache);
+}
+
+async function fetchWithToken(url: string, token: string | null, skipCache: boolean) {
     const headers: Record<string, string> = {
         'Accept': 'application/vnd.github.v3+json',
         'User-Agent': 'EqualifyOpenSource'
     };
     
-    // Use user's token, or fallback token for unauthenticated users
-    const authToken = token || GITHUB_FALLBACK_TOKEN;
-    if (authToken) {
-        headers['Authorization'] = `Bearer ${authToken}`;
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
     }
     
     const response = await fetch(url, { headers });
     const data = await response.json();
     
-    // Cache successful responses (only for public API endpoints, not user-specific)
-    if (!skipCache && response.ok && !url.includes('/user')) {
+    // Only cache successful responses with actual data
+    // Don't cache: errors, empty arrays, or rate limit responses
+    const isError = data?.message || data?.error;
+    const isEmpty = Array.isArray(data) && data.length === 0;
+    const shouldCache = !skipCache && response.ok && !url.includes('/user') && !isError && !isEmpty;
+    
+    if (shouldCache) {
         await setGitHubCache(url, data);
     }
     
