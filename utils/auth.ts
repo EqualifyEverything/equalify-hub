@@ -107,9 +107,10 @@ const GITHUB_FALLBACK_TOKENS = [
 // Persists across requests in the same Lambda container (warm starts).
 let firstWorkingTokenIndex = 0;
 
-import { getGitHubCache, setGitHubCache } from './db';
+import { getGitHubCache, getStaleGitHubCache, setGitHubCache } from './db';
 
 // Fetch from GitHub with optional auth and 60-min caching
+// Falls back to stale cached data if all API attempts fail
 export async function fetchGitHub(url: string, token?: string | null, skipCache = false) {
     // Check cache first (only for non-user-specific requests)
     if (!skipCache) {
@@ -119,6 +120,28 @@ export async function fetchGitHub(url: string, token?: string | null, skipCache 
         }
     }
     
+    // Try fetching fresh data
+    const freshResult = await fetchGitHubFresh(url, token, skipCache);
+    
+    // If we got good data, return it
+    if (freshResult && !freshResult.message && !freshResult.error) {
+        return freshResult;
+    }
+    
+    // Fresh fetch failed — try stale cache as last resort
+    if (!skipCache) {
+        const stale = await getStaleGitHubCache(url);
+        if (stale) {
+            return stale;
+        }
+    }
+    
+    // Nothing worked — return whatever we got (error or empty)
+    return freshResult;
+}
+
+// Attempt a fresh fetch from GitHub API with token cycling
+async function fetchGitHubFresh(url: string, token?: string | null, skipCache = false) {
     // If user has a token, use it directly
     if (token) {
         return fetchWithToken(url, token, skipCache);

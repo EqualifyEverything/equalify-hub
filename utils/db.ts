@@ -42,7 +42,7 @@ export async function getGitHubCache(url: string): Promise<any | null> {
         
         // Check if cache is still valid
         if (entry.expiresAt < now) {
-            return null; // Cache expired
+            return null; // Cache expired — caller should fetch fresh
         }
         
         // Reject cached error responses or empty arrays (bad data from rate limits)
@@ -56,6 +56,35 @@ export async function getGitHubCache(url: string): Promise<any | null> {
         return entry.data;
     } catch (error) {
         console.error('Error getting GitHub cache:', error);
+        return null;
+    }
+}
+
+// Get stale cached data as a last resort (ignores expiry, rejects errors)
+export async function getStaleGitHubCache(url: string): Promise<any | null> {
+    try {
+        const sk = hashUrl(url);
+        const result = await docClient.send(new GetCommand({
+            TableName: TABLE_NAME,
+            Key: { 
+                pk: 'GHCACHE',
+                sk
+            }
+        }));
+        
+        if (!result.Item) return null;
+        
+        const data = (result.Item as GitHubCacheEntry).data;
+        
+        // Still reject error responses — stale errors are useless
+        if (data?.message || data?.error || (Array.isArray(data) && data.length === 0)) {
+            return null;
+        }
+        
+        console.log(`[GHCACHE] STALE HIT for ${url}`);
+        return data;
+    } catch (error) {
+        console.error('Error getting stale GitHub cache:', error);
         return null;
     }
 }
@@ -74,7 +103,7 @@ export async function setGitHubCache(url: string, data: any): Promise<void> {
                 data,
                 cachedAt: now,
                 expiresAt: now + CACHE_TTL_SECONDS,
-                ttl: now + CACHE_TTL_SECONDS // DynamoDB TTL attribute for auto-deletion
+                ttl: now + (7 * 24 * 60 * 60) // Keep in DynamoDB for 7 days as stale fallback
             }
         }));
         console.log(`[GHCACHE] SET for ${url}`);
