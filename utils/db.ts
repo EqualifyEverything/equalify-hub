@@ -538,3 +538,40 @@ export async function deleteFeatureRequest(featureId: string, username: string):
         return false;
     }
 }
+
+// ============ WAITLIST ============
+
+export interface WaitlistEntry {
+    pk: string; // 'WAITLIST'
+    sk: string; // timestamp-based ID
+    id: string;
+    name: string;
+    email: string;
+    created_at: string;
+    ip: string;
+}
+
+export async function addToWaitlist(name: string, email: string, ip: string): Promise<WaitlistEntry | null> {
+    try {
+        const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const entry: WaitlistEntry = {
+            pk: 'WAITLIST',
+            sk: id,
+            id,
+            name: name.substring(0, 100) || '(none)',
+            email: email.substring(0, 200) || '(none)',
+            created_at: new Date().toISOString(),
+            ip: ip || 'Unknown'
+        };
+
+        await docClient.send(new PutCommand({
+            TableName: TABLE_NAME,
+            Item: entry
+        }));
+
+        return entry;
+    } catch (error) {
+        console.error('Error adding to waitlist:', error);
+        return null;
+    }
+}

@@ -12,57 +12,10 @@ body {
     min-height: 100vh;
     background: #ffffff;
 }
-.site-header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: #ffffff;
-}
-.top-bar {
-    height: 8px;
-    background: #C8102E;
-}
 .container { max-width: 1200px; margin: 0 auto; padding: 24px 48px; }
 @media (max-width: 768px) {
     .container { padding: 16px 20px; }
 }
-
-/* Mobile nav */
-.nav-desktop { display: flex; align-items: center; gap: 32px; }
-.nav-mobile-toggle { display: none; background: none; border: none; padding: 8px; cursor: pointer; color: #4b5563; }
-.nav-mobile { display: none; }
-@media (max-width: 900px) {
-    .nav-desktop { display: none; }
-    .nav-mobile-toggle { display: block; }
-    .nav-mobile {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: #ffffff;
-        border-bottom: 1px solid #d1d5db;
-        padding: 16px 24px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    .nav-mobile.open { display: block; }
-    .nav-mobile a {
-        display: block;
-        padding: 12px 0;
-        color: #4b5563;
-        font-size: 15px;
-        border-bottom: 1px solid #e5e7eb;
-    }
-    .nav-mobile a:last-child { border-bottom: none; }
-    .nav-mobile .sign-in-mobile {
-        display: inline-block;
-        margin-top: 12px;
-        background: #C8102E;
-        color: #ffffff;
-        padding: 10px 20px;
-        border-radius: 4px;
-        font-weight: 500;
-    }
 }
 
 /* Org header */
@@ -493,60 +446,7 @@ export const HomePage: FC<{
     
     return (
         <BaseLayout title={`${site.name} – Developer tools for EqualifyEverything`} styles={styles}>
-            <header class="site-header">
-                <div class="top-bar"></div>
-                <nav style="background:#ffffff;border-bottom:1px solid #d1d5db;padding:0;position:relative;">
-                    <div style="max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
-                        <a href="/" class="logo" style="font-size:20px;font-weight:600;color:#001e62;text-decoration:none;display:flex;align-items:center;gap:14px;">
-                            <img src={org?.avatar_url || `https://github.com/${ORG_NAME}.png`} alt="UIC" style="width:64px;height:64px;border-radius:50%;" />
-                            <span style="width:1px;height:48px;background:#d1d5db;"></span>
-                            <span>Equalify Hub</span>
-                        </a>
-                        <div class="nav-desktop">
-                            <a href="/user-guide" style="color:#4b5563;font-size:15px;">User Guide</a>
-                            <a href="/technical-docs" style="color:#4b5563;font-size:15px;">Technical</a>
-                            <a href="/roadmap" style="color:#4b5563;font-size:15px;">Roadmap</a>
-                            <a href="/updates" style="color:#4b5563;font-size:15px;">Updates</a>
-                            <a href="/feature-request" style="color:#4b5563;font-size:15px;">Feature Request</a>
-                            <a href="/about" style="color:#4b5563;font-size:15px;">About</a>
-                            {user ? (
-                                <>
-                                    <a href={`/${user.login}`} style="display:flex;align-items:center;gap:8px;color:#4b5563;font-size:15px;">
-                                        <img src={user.avatar_url} alt={user.login} style="width:20px;height:20px;border-radius:50%;" />
-                                        {user.login}
-                                    </a>
-                                    <a href="/logout" style="color:#4b5563;font-size:15px;">Sign out</a>
-                                </>
-                            ) : (
-                                <a href={config.equalifyAppUrl} style="background:#C8102E;color:#ffffff;padding:10px 20px;border-radius:4px;font-size:14px;font-weight:500;">Sign into Equalify</a>
-                            )}
-                        </div>
-                        <button class="nav-mobile-toggle" onclick="document.querySelector('.nav-mobile').classList.toggle('open')" aria-label="Toggle menu">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="3" y1="6" x2="21" y2="6"/>
-                                <line x1="3" y1="12" x2="21" y2="12"/>
-                                <line x1="3" y1="18" x2="21" y2="18"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="nav-mobile">
-                        <a href="/user-guide">User Guide</a>
-                        <a href="/technical-docs">Technical</a>
-                        <a href="/roadmap">Roadmap</a>
-                        <a href="/updates">Updates</a>
-                        <a href="/feature-request">Feature Request</a>
-                        <a href="/about">About</a>
-                        {user ? (
-                            <>
-                                <a href={`/${user.login}`}>{user.login}</a>
-                                <a href="/logout">Sign out</a>
-                            </>
-                        ) : (
-                            <a href={config.equalifyAppUrl} class="sign-in-mobile">Sign into Equalify</a>
-                        )}
-                    </div>
-                </nav>
-            </header>
+            <Nav user={user} />
             
             {/* Hero Section */}
             <section class="hero">

@@ -58,7 +58,6 @@ export const Nav: FC<{ user?: User }> = ({ user }) => {
                         <a href="/technical-docs">Technical</a>
                         <a href="/roadmap">Roadmap</a>
                         <a href="/updates">Updates</a>
-                        <a href="/feature-request">Feature Request</a>
                         <a href="/about">About</a>
                         {user ? (
                             <>
@@ -69,7 +68,7 @@ export const Nav: FC<{ user?: User }> = ({ user }) => {
                                 <a href="/logout">Sign out</a>
                             </>
                         ) : (
-                            <a href={config.equalifyAppUrl} class="sign-in-btn">Sign into Equalify</a>
+                            <a href="/signup" class="sign-in-btn">Sign Up for Equalify</a>
                         )}
                     </div>
                     <button class="nav-mobile-toggle" onclick="document.querySelector('.nav-mobile').classList.toggle('open')" aria-label="Toggle menu">
@@ -85,7 +84,6 @@ export const Nav: FC<{ user?: User }> = ({ user }) => {
                     <a href="/technical-docs">Technical</a>
                     <a href="/roadmap">Roadmap</a>
                     <a href="/updates">Updates</a>
-                    <a href="/feature-request">Feature Request</a>
                     <a href="/about">About</a>
                     {user ? (
                         <>
@@ -93,7 +91,7 @@ export const Nav: FC<{ user?: User }> = ({ user }) => {
                             <a href="/logout">Sign out</a>
                         </>
                     ) : (
-                        <a href={config.equalifyAppUrl} class="sign-in-mobile">Sign into Equalify</a>
+                        <a href="/signup" class="sign-in-mobile">Sign Up for Equalify</a>
                     )}
                 </div>
             </nav>
@@ -253,13 +251,14 @@ nav {
         border-bottom: none;
     }
     .sign-in-mobile {
-        display: inline-block;
-        margin-top: 12px;
+        display: block;
+        margin: 12px 16px 0;
         background: #C8102E !important;
         color: #ffffff !important;
-        padding: 10px 20px;
+        padding: 12px 20px;
         border-radius: 4px;
         font-weight: 500;
+        text-align: center;
     }
 }
 nav .logo { 

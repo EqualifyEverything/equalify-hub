@@ -13,6 +13,7 @@ import { technicalDocsHandler, technicalDocsDocHandler } from '#src/pages/techni
 import { RoadmapPage } from '#src/pages/roadmap';
 import { updatesHandler, updatesDocHandler } from '#src/pages/updates';
 import { feedbackHandler, submitFeatureHandler, voteHandler, deleteFeatureHandler } from '#src/pages/feedback';
+import { signupHandler, signupSubmitHandler } from '#src/pages/signup';
 import { homeHandler } from '#src/pages/home';
 
 // Route handlers (all native Hono now)
@@ -21,6 +22,7 @@ import { robots, sitemap, security, humans } from '#src/routes/public/static';
 import { repo } from '#src/routes/public/repo';
 import { commits } from '#src/routes/public/commits';
 import { issues, issuesList } from '#src/routes/public/issues';
+import config from '#src/utils/config';
 
 // Create app
 const app = new Hono<{ Bindings: { event: LambdaEvent; context: LambdaContext } }>();
@@ -71,6 +73,8 @@ app.get('/user-guide/:slug', userGuideDocHandler);
 app.get('/technical-docs', technicalDocsHandler);
 app.get('/technical-docs/:slug', technicalDocsDocHandler);
 app.get('/roadmap', (c) => c.html(<RoadmapPage />));
+app.get('/signup', signupHandler);
+app.post('/signup/submit', signupSubmitHandler);
 app.get('/feedback', feedbackHandler);
 app.post('/feedback/submit', submitFeatureHandler);
 app.post('/feedback/vote', voteHandler);
@@ -81,6 +85,24 @@ app.post('/feature-request/vote', voteHandler);
 app.post('/feature-request/delete', deleteFeatureHandler);
 
 // ============ DYNAMIC ROUTES ============
+// Only allow repos/issues/commits for our own org
+const ALLOWED_OWNER = config.githubOrg.toLowerCase();
+
+app.use('/:owner{[^/]+}/*', async (c, next) => {
+    const owner = c.req.param('owner')?.toLowerCase();
+    if (owner && owner !== ALLOWED_OWNER) {
+        return c.text('Not Found', 404);
+    }
+    await next();
+});
+app.use('/:owner', async (c, next) => {
+    const owner = c.req.param('owner')?.toLowerCase();
+    if (owner && owner !== ALLOWED_OWNER) {
+        return c.text('Not Found', 404);
+    }
+    await next();
+});
+
 // Repo routes: /:owner, /:owner/:repo, /:owner/:repo/tree/:branch/...
 app.get('/:owner', repo);
 app.get('/:owner/:repo', repo);
