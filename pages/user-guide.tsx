@@ -128,10 +128,15 @@ const docMetadata: Record<string, { title: string; description: string; order: n
         description: 'Set up notifications and share reports with your team.',
         order: 6
     },
+    'user-roles.md': {
+        title: 'User Roles and Permissions',
+        description: 'Understand admin and user roles, teams, and data access.',
+        order: 7
+    },
     'technical-support.md': {
         title: 'Technical Support',
         description: 'Get help and support for technical issues.',
-        order: 7
+        order: 8
     }
 };
 
