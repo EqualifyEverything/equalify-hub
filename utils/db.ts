@@ -6,8 +6,8 @@ const docClient = DynamoDBDocumentClient.from(client);
 
 const TABLE_NAME = 'equalifyuic-hub';
 
-// ============ GITHUB CACHE (60 min TTL) ============
-const CACHE_TTL_SECONDS = 60 * 60; // 60 minutes
+// ============ GITHUB CACHE (1 min TTL) ============
+const CACHE_TTL_SECONDS = 60; // 1 minute
 
 export interface GitHubCacheEntry {
     pk: string; // GHCACHE

@@ -186,7 +186,8 @@ async function fetchWithToken(url: string, token: string | null, skipCache: bool
     // Don't cache: errors, empty arrays, or rate limit responses
     const isError = data?.message || data?.error;
     const isEmpty = Array.isArray(data) && data.length === 0;
-    const shouldCache = !skipCache && response.ok && !url.includes('/user') && !isError && !isEmpty;
+    const isUserEndpoint = url === 'https://api.github.com/user';
+    const shouldCache = !skipCache && response.ok && !isUserEndpoint && !isError && !isEmpty;
     
     if (shouldCache) {
         await setGitHubCache(url, data);

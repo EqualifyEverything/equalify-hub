@@ -17,6 +17,7 @@ export const sitemap = (c: Context) => {
         { loc: 'https://opensource.equalifyapp.com/', priority: '1.0', changefreq: 'daily' },
         { loc: 'https://opensource.equalifyapp.com/about', priority: '0.8', changefreq: 'monthly' },
         { loc: `https://opensource.equalifyapp.com/${config.githubOrg}`, priority: '0.9', changefreq: 'daily' },
+        { loc: 'https://opensource.equalifyapp.com/reports', priority: '0.7', changefreq: 'monthly' },
     ];
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
