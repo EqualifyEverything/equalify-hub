@@ -7,17 +7,18 @@ export const robots = (c: Context) => {
 Allow: /
 
 # ${config.siteName} - Developer tools for ${config.githubOrg}
-# https://opensource.equalifyapp.com
+# https://equalify.uic.edu
 
-Sitemap: https://opensource.equalifyapp.com/sitemap.xml`);
+Sitemap: https://equalify.uic.edu/sitemap.xml`);
 };
 
 export const sitemap = (c: Context) => {
     const pages = [
-        { loc: 'https://opensource.equalifyapp.com/', priority: '1.0', changefreq: 'daily' },
-        { loc: 'https://opensource.equalifyapp.com/about', priority: '0.8', changefreq: 'monthly' },
-        { loc: `https://opensource.equalifyapp.com/${config.githubOrg}`, priority: '0.9', changefreq: 'daily' },
-        { loc: 'https://opensource.equalifyapp.com/reports', priority: '0.7', changefreq: 'monthly' },
+        { loc: 'https://equalify.uic.edu/', priority: '1.0', changefreq: 'daily' },
+        { loc: 'https://equalify.uic.edu/about', priority: '0.8', changefreq: 'monthly' },
+        { loc: `https://equalify.uic.edu/${config.githubOrg}`, priority: '0.9', changefreq: 'daily' },
+        { loc: 'https://equalify.uic.edu/reports', priority: '0.7', changefreq: 'monthly' },
+        { loc: 'https://equalify.uic.edu/reflow', priority: '0.7', changefreq: 'monthly' },
     ];
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -35,7 +36,7 @@ ${pages.map(p => `  <url>
 export const security = (c: Context) => {
     return c.text(`Contact: https://github.com/${config.githubOrg}
 Preferred-Languages: en
-Canonical: https://opensource.equalifyapp.com/.well-known/security.txt`);
+Canonical: https://equalify.uic.edu/.well-known/security.txt`);
 };
 
 export const humans = (c: Context) => {

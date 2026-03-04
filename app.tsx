@@ -13,6 +13,7 @@ import { technicalDocsHandler, technicalDocsDocHandler } from '#src/pages/techni
 import { RoadmapPage } from '#src/pages/roadmap';
 import { updatesHandler, updatesDocHandler } from '#src/pages/updates';
 import { reportsHandler, reportsDocHandler } from '#src/pages/reports';
+import { reflowHandler, reflowDocHandler } from '#src/pages/reflow';
 import { feedbackHandler, submitFeatureHandler, voteHandler, deleteFeatureHandler } from '#src/pages/feedback';
 import { signupHandler, signupSubmitHandler } from '#src/pages/signup';
 import { homeHandler } from '#src/pages/home';
@@ -71,6 +72,8 @@ app.get('/updates', updatesHandler);
 app.get('/updates/:slug', updatesDocHandler);
 app.get('/reports', reportsHandler);
 app.get('/reports/:slug', reportsDocHandler);
+app.get('/reflow', reflowHandler);
+app.get('/reflow/:slug', reflowDocHandler);
 app.get('/user-guide', userGuideHandler);
 app.get('/user-guide/:slug', userGuideDocHandler);
 app.get('/technical-docs', technicalDocsHandler);
