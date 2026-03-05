@@ -43,8 +43,8 @@ type User = {
 } | null;
 
 export const Nav: FC<{ user?: User; product?: string }> = ({ user, product }) => {
-    const signupLabel = product === 'reflow' ? 'Sign Up for Reflow' : 'Sign Up for Equalify';
-    const signupHref = product === 'reflow' ? '/signup/reflow' : '/signup';
+    const signupLabel = 'Sign Up for Equalify';
+    const signupHref = '/signup';
     return (
         <header class="site-header">
             <div class="top-bar"></div>

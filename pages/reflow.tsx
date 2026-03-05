@@ -73,147 +73,29 @@ const styles = `
     margin: 0 auto 40px;
     line-height: 1.6;
 }
-.reflow-section-alt {
-    background: #f8f9fa;
-}
-
-/* Stats */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 32px;
-    text-align: center;
-}
-@media (max-width: 600px) {
-    .stats-grid { grid-template-columns: 1fr; }
-}
-.stat-value {
-    font-size: 36px;
-    font-weight: 700;
-    margin: 0 0 4px;
-}
-.stat-value.blue { color: #001e62; }
-.stat-value.red { color: #C8102E; }
-.stat-label {
-    font-size: 14px;
-    color: #6b7280;
-    margin: 0;
-}
-
-/* Flow diagram */
-.flow-diagram {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    flex-wrap: wrap;
-    margin-bottom: 40px;
-}
-.flow-card {
-    border-radius: 8px;
-    padding: 24px;
-    text-align: center;
-    min-width: 150px;
-}
-.flow-card-dark {
-    background: #001e62;
-    color: #ffffff;
-}
-.flow-card-light {
-    background: #ffffff;
-    color: #1f2937;
-    border: 2px solid #f59e0b;
-}
-.flow-card h3 { font-size: 22px; font-weight: 700; margin: 0 0 4px; }
-.flow-card p { font-size: 13px; opacity: 0.8; margin: 0; }
-.flow-arrow {
-    color: #C8102E;
-    font-size: 24px;
-    font-weight: 700;
-}
-
-/* Pipeline */
-.pipeline-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
-}
-@media (max-width: 900px) {
-    .pipeline-grid { grid-template-columns: repeat(3, 1fr); }
-}
-@media (max-width: 600px) {
-    .pipeline-grid { grid-template-columns: 1fr; }
-}
-.pipeline-card {
-    text-align: center;
-    padding: 20px 16px;
-    background: #f8f9fa;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-}
-.pipeline-stage {
-    font-size: 11px;
-    font-weight: 600;
-    color: #C8102E;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin: 0 0 4px;
-}
-.pipeline-card h3 {
-    font-size: 14px;
-    font-weight: 700;
-    color: #1f2937;
-    margin: 0 0 8px;
-}
-.pipeline-card p {
-    font-size: 12px;
-    color: #6b7280;
-    line-height: 1.5;
-    margin: 0;
-}
-
 /* Economics */
 .econ-section {
-    background: linear-gradient(135deg, #001e62 0%, #001845 100%);
-    color: #ffffff;
+    background: #f8f9fa;
     padding: 64px 24px;
+    text-align: center;
 }
 .econ-section h2 {
     font-size: 28px;
     font-weight: 700;
     text-align: center;
-    margin: 0 0 40px;
-    color: #ffffff;
-}
-.econ-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    max-width: 700px;
-    margin: 0 auto 24px;
-}
-@media (max-width: 600px) {
-    .econ-grid { grid-template-columns: 1fr; }
+    margin: 0 0 24px;
+    color: #001e62;
 }
 .econ-card {
+    display: inline-block;
     background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 8px;
-    padding: 32px;
+    padding: 32px 48px;
     text-align: center;
 }
-.econ-card .label { font-size: 13px; color: #6b7280; margin: 0 0 8px; }
-.econ-card .price { font-size: 32px; font-weight: 700; margin: 0 0 4px; }
-.econ-card .price.red { color: #C8102E; }
-.econ-card .price.blue { color: #001e62; }
-.econ-card .total { font-size: 14px; color: #6b7280; margin: 0; }
-.econ-card .note { font-size: 12px; color: #9ca3af; font-style: italic; margin: 4px 0 0; }
-.econ-highlight {
-    text-align: center;
-    font-size: 28px;
-    font-weight: 700;
-    color: #67e8f9;
-    margin: 0 0 16px;
-}
+.econ-card .price { font-size: 36px; font-weight: 700; margin: 0 0 4px; color: #001e62; }
+.econ-card .note { font-size: 14px; color: #6b7280; font-style: italic; margin: 0; }
 
 /* Phases */
 .phases-grid {
@@ -499,120 +381,18 @@ export const ReflowListPage: FC<{ docs: ReflowListItem[] }> = ({ docs }) => {
                         Documentation
                     </a>
                     <a href="/signup/reflow" class="btn-secondary">
-                        Become a Partner
+                        Sign Up for Reflow
                     </a>
-                </div>
-            </section>
-
-            {/* The Problem */}
-            <section class="reflow-section">
-                <h2>The Problem</h2>
-                <p class="section-desc">
-                    PDFs are visual-first documents designed for print fidelity. Accessibility is bolted on after the fact, the spec is controlled by a private company, and every document update means redoing its tagging.
-                </p>
-                <div class="stats-grid">
-                    <div>
-                        <p class="stat-value blue">200,000+</p>
-                        <p class="stat-label">PDFs uploaded at UIC in 2023 alone</p>
-                    </div>
-                    <div>
-                        <p class="stat-value red">$5-12</p>
-                        <p class="stat-label">per page for manual remediation</p>
-                    </div>
-                    <div>
-                        <p class="stat-value blue">$1M+</p>
-                        <p class="stat-label">annual cost at even the cheapest rate</p>
-                    </div>
-                </div>
-            </section>
-
-            {/* The Escape */}
-            <div class="reflow-section-alt">
-                <section class="reflow-section" style="padding-top:64px;padding-bottom:64px;">
-                    <h2>The Escape</h2>
-                    <p class="section-desc">
-                        Stop fixing the container. Extract the content and rebuild it in a format that is natively accessible.
-                    </p>
-                    <div class="flow-diagram">
-                        <div class="flow-card flow-card-dark">
-                            <h3>PDF</h3>
-                            <p>Visual-first</p>
-                            <p>Print fidelity</p>
-                        </div>
-                        <span class="flow-arrow">&rarr;</span>
-                        <div class="flow-card flow-card-light">
-                            <h3>Markdown</h3>
-                            <p>Semantic</p>
-                            <p>Human-readable, open</p>
-                        </div>
-                        <span class="flow-arrow">&rarr;</span>
-                        <div class="flow-card flow-card-dark">
-                            <h3>HTML</h3>
-                            <p>Accessible by</p>
-                            <p>construction</p>
-                        </div>
-                    </div>
-                    <div style="background:#ffffff;border:1px solid #e5e7eb;border-radius:8px;padding:24px;max-width:600px;margin:0 auto;text-align:center;">
-                        <p style="color:#4b5563;margin:0;line-height:1.6;">
-                            <strong style="color:#001e62;">AI acting as a semantic translator.</strong> Multimodal AI models can process both images and text, giving them an understanding of visual language and the coding knowledge to express it as semantic structure. This means translating from a visual layout to accessible HTML is a natural fit for what these models already do.
-                        </p>
-                    </div>
-                </section>
-            </div>
-
-            {/* The Pipeline */}
-            <section class="reflow-section">
-                <h2>The Pipeline</h2>
-                <p class="section-desc">
-                    Five stages, from raw PDF to reflowable, accessible content.
-                </p>
-                <div class="pipeline-grid">
-                    <div class="pipeline-card">
-                        <p class="pipeline-stage">Stage 1</p>
-                        <h3>Docling Extraction</h3>
-                        <p>IBM Docling handles the first pass using smaller, efficient models. Produces a first-pass markdown covering text blocks, tables, images, and reading order.</p>
-                    </div>
-                    <div class="pipeline-card">
-                        <p class="pipeline-stage">Stage 2</p>
-                        <h3>Structure Analysis</h3>
-                        <p>Classifies the document type and flags key elements like columns, tables, and images. This context dynamically tunes how later stages process each page.</p>
-                    </div>
-                    <div class="pipeline-card">
-                        <p class="pipeline-stage">Stage 3</p>
-                        <h3>Headings First</h3>
-                        <p>Heading hierarchy is the backbone of document accessibility. A dedicated pass infers heading levels from visual signals: size, weight, position, spacing.</p>
-                    </div>
-                    <div class="pipeline-card">
-                        <p class="pipeline-stage">Stage 4</p>
-                        <h3>The Translator</h3>
-                        <p>A multimodal LLM compares each visual page to its markdown and makes tool-call edits with reasoning. Alt text and table tasks spawn specialist sub-agents.</p>
-                    </div>
-                    <div class="pipeline-card">
-                        <p class="pipeline-stage">Stage 5</p>
-                        <h3>Escape the Page</h3>
-                        <p>Merges all pages into one document. AI fixes boundary artifacts — split words, broken tables and lists — producing reflowable, responsive content.</p>
-                    </div>
                 </div>
             </section>
 
             {/* The Economics */}
             <section class="econ-section">
                 <h2>The Economics</h2>
-                <div class="econ-grid">
-                    <div class="econ-card">
-                        <p class="label">Manual Remediation</p>
-                        <p class="price red">$5-12 / page</p>
-                        <p class="total">= $1,000,000+ annually</p>
-                        <p class="note">Recurring cost. Resets with every update.</p>
-                    </div>
-                    <div class="econ-card">
-                        <p class="label">Equalify Reflow</p>
-                        <p class="price blue">~$0.20 / page</p>
-                        <p class="total">= ~$40,000 annually</p>
-                        <p class="note">Improves as models improve. Compounds.</p>
-                    </div>
+                <div class="econ-card">
+                    <p class="price blue">~$0.20 / page</p>
+                    <p class="note">Improves as models improve. Compounds.</p>
                 </div>
-                <p class="econ-highlight">25x cost reduction</p>
             </section>
 
             {/* Open Source & Partnership */}
