@@ -547,11 +547,12 @@ export interface WaitlistEntry {
     id: string;
     name: string;
     email: string;
+    product: string;
     created_at: string;
     ip: string;
 }
 
-export async function addToWaitlist(name: string, email: string, ip: string): Promise<WaitlistEntry | null> {
+export async function addToWaitlist(name: string, email: string, ip: string, product: string = 'equalify'): Promise<WaitlistEntry | null> {
     try {
         const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
         const entry: WaitlistEntry = {
@@ -560,6 +561,7 @@ export async function addToWaitlist(name: string, email: string, ip: string): Pr
             id,
             name: name.substring(0, 100) || '(none)',
             email: email.substring(0, 200) || '(none)',
+            product: product || 'equalify',
             created_at: new Date().toISOString(),
             ip: ip || 'Unknown'
         };

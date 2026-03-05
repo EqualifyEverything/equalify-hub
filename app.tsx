@@ -15,7 +15,7 @@ import { updatesHandler, updatesDocHandler } from '#src/pages/updates';
 import { reportsHandler, reportsDocHandler } from '#src/pages/reports';
 import { reflowHandler, reflowDocHandler } from '#src/pages/reflow';
 import { feedbackHandler, submitFeatureHandler, voteHandler, deleteFeatureHandler } from '#src/pages/feedback';
-import { signupHandler, signupSubmitHandler } from '#src/pages/signup';
+import { signupHandler, signupReflowHandler, signupSubmitHandler } from '#src/pages/signup';
 import { homeHandler } from '#src/pages/home';
 
 // Route handlers (all native Hono now)
@@ -80,6 +80,7 @@ app.get('/technical-docs', technicalDocsHandler);
 app.get('/technical-docs/:slug', technicalDocsDocHandler);
 app.get('/roadmap', (c) => c.html(<RoadmapPage />));
 app.get('/signup', signupHandler);
+app.get('/signup/reflow', signupReflowHandler);
 app.post('/signup/submit', signupSubmitHandler);
 app.get('/feedback', feedbackHandler);
 app.post('/feedback/submit', submitFeatureHandler);

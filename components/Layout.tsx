@@ -42,7 +42,9 @@ type User = {
     isPro?: boolean;
 } | null;
 
-export const Nav: FC<{ user?: User }> = ({ user }) => {
+export const Nav: FC<{ user?: User; product?: string }> = ({ user, product }) => {
+    const signupLabel = product === 'reflow' ? 'Sign Up for Reflow' : 'Sign Up for Equalify';
+    const signupHref = product === 'reflow' ? '/signup/reflow' : '/signup';
     return (
         <header class="site-header">
             <div class="top-bar"></div>
@@ -70,7 +72,7 @@ export const Nav: FC<{ user?: User }> = ({ user }) => {
                                 <a href="/logout">Sign out</a>
                             </>
                         ) : (
-                            <a href="/signup" class="sign-in-btn">Sign Up for Equalify</a>
+                            <a href={signupHref} class="sign-in-btn">{signupLabel}</a>
                         )}
                     </div>
                     <button class="nav-mobile-toggle" onclick="document.querySelector('.nav-mobile').classList.toggle('open')" aria-label="Toggle menu">
@@ -95,7 +97,7 @@ export const Nav: FC<{ user?: User }> = ({ user }) => {
                             <a href="/logout">Sign out</a>
                         </>
                     ) : (
-                        <a href="/signup" class="sign-in-mobile">Sign Up for Equalify</a>
+                        <a href={signupHref} class="sign-in-mobile">{signupLabel}</a>
                     )}
                 </div>
             </nav>
@@ -431,11 +433,12 @@ type LayoutProps = PropsWithChildren<{
     title: string;
     styles?: string;
     user?: User;
+    product?: string;
 }>;
 
-export const Layout: FC<LayoutProps> = ({ title, styles, user, children }) => {
+export const Layout: FC<LayoutProps> = ({ title, styles, user, product, children }) => {
     const themeClass = getThemeClass();
-    
+
     return (
         <html lang="en" class={themeClass || undefined}>
             <head>
@@ -446,7 +449,7 @@ export const Layout: FC<LayoutProps> = ({ title, styles, user, children }) => {
                 <style dangerouslySetInnerHTML={{ __html: tailwindCss + baseStyles + (styles || '') }} />
             </head>
             <body>
-                <Nav user={user} />
+                <Nav user={user} product={product} />
                 {children}
                 <Footer />
             </body>

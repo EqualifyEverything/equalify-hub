@@ -30,7 +30,7 @@ h1 { margin: 0 0 8px 0; font-size: 28px; color: #1f2937; }
 .signup-form h2 { margin: 0 0 16px 0; font-size: 16px; color: #1f2937; }
 .form-group { margin-bottom: 16px; }
 .form-group label { display: block; font-size: 13px; color: #6b7280; margin-bottom: 6px; }
-.form-group input {
+.form-group input, .form-group select {
     width: 100%;
     padding: 10px 12px;
     background: #ffffff;
@@ -41,7 +41,7 @@ h1 { margin: 0 0 8px 0; font-size: 28px; color: #1f2937; }
     font-family: inherit;
     box-sizing: border-box;
 }
-.form-group input:focus {
+.form-group input:focus, .form-group select:focus {
     outline: none;
     border-color: #C8102E;
 }
@@ -75,12 +75,26 @@ h1 { margin: 0 0 8px 0; font-size: 28px; color: #1f2937; }
 }
 `;
 
-const SignupForm: FC<{ error?: string }> = ({ error }) => {
+const SignupForm: FC<{ error?: string; product?: string }> = ({ error, product }) => {
     return (
         <div class="signup-form">
             <h2>Request Access</h2>
             {error && <div class="alert alert-error">{error}</div>}
             <form method="post" action="/signup/submit">
+                <div class="form-group">
+                    <label>Product</label>
+                    {product === 'reflow' ? (
+                        <select name="product">
+                            <option value="equalify">Equalify</option>
+                            <option value="reflow" selected>Reflow</option>
+                        </select>
+                    ) : (
+                        <select name="product">
+                            <option value="equalify" selected>Equalify</option>
+                            <option value="reflow">Reflow</option>
+                        </select>
+                    )}
+                </div>
                 <div class="form-group">
                     <label>Name</label>
                     <input type="text" name="name" placeholder="Your name" required maxlength={100} />
@@ -95,55 +109,59 @@ const SignupForm: FC<{ error?: string }> = ({ error }) => {
     );
 };
 
-const SignupPage: FC<{ onList: boolean; error?: string }> = ({ onList, error }) => {
+const SignupPage: FC<{ onList: boolean; error?: string; product?: string }> = ({ onList, error, product }) => {
     const user = getCurrentUser();
+    const productName = product === 'reflow' ? 'Reflow' : 'Equalify';
 
     return (
-        <Layout title="Sign Up - Equalify Hub" styles={styles} user={user}>
+        <Layout title={`Sign Up - ${productName}`} styles={styles} user={user} product={product}>
             <div class="container">
-                <h1>Sign Up for Equalify</h1>
-                <p class="subtitle">Request early access to Equalify. We'll reach out when your spot is ready.</p>
+                <h1>Sign Up for {productName}</h1>
+                <p class="subtitle">Request early access to {productName}. We'll reach out when your spot is ready.</p>
 
                 {onList ? (
                     <div class="success-box">
-                        <h2>🎉 You're on the list!</h2>
-                        <p>We'll be in touch soon. Thanks for your interest in Equalify!</p>
+                        <h2>You're on the list!</h2>
+                        <p>We'll be in touch soon. Thanks for your interest in {productName}!</p>
                     </div>
                 ) : (
-                    <SignupForm error={error} />
+                    <SignupForm error={error} product={product} />
                 )}
             </div>
         </Layout>
     );
 };
 
-export async function signupHandler(c: Context) {
-    const onList = c.req.query('success') === '1';
-    const error = c.req.query('error') || undefined;
-    return c.html(<SignupPage onList={onList} error={error} />);
+export async function signupHandler(c: Context, product?: string) {
+    return c.html(<SignupPage onList={false} product={product} />);
+}
+
+export async function signupReflowHandler(c: Context) {
+    return signupHandler(c, 'reflow');
 }
 
 export async function signupSubmitHandler(c: Context) {
     const body = await c.req.parseBody();
     const name = String(body.name || '').trim();
     const email = String(body.email || '').trim();
+    const product = String(body.product || 'equalify').trim();
     const ip = c.req.header('x-forwarded-for')?.split(',')[0]?.trim()
         || c.req.header('cloudfront-viewer-address')?.split(':')[0]
         || 'Unknown';
 
     if (!name) {
-        return c.redirect('/signup?error=Name+is+required');
+        return c.html(<SignupPage onList={false} error="Name is required" product={product} />);
     }
     if (!email) {
-        return c.redirect('/signup?error=Email+is+required');
+        return c.html(<SignupPage onList={false} error="Email is required" product={product} />);
     }
 
-    const result = await addToWaitlist(name, email, ip);
+    const result = await addToWaitlist(name, email, ip, product);
 
     if (!result) {
-        return c.redirect('/signup?error=Something+went+wrong.+Please+try+again.');
+        return c.html(<SignupPage onList={false} error="Something went wrong. Please try again." product={product} />);
     }
 
     // Render the success page directly — no redirect needed
-    return c.html(<SignupPage onList={true} />);
+    return c.html(<SignupPage onList={true} product={product} />);
 }
