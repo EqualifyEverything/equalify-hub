@@ -94,7 +94,8 @@ const styles = `
 .update-content h2 { font-size: 20px; margin: 24px 0 12px; color: var(--color-text); border-bottom: 1px solid var(--color-border); padding-bottom: 8px; }
 .update-content h3 { font-size: 16px; margin: 20px 0 10px; color: var(--color-text); }
 .update-content p { margin: 0 0 16px; }
-.update-content ul, .update-content ol { margin: 0 0 16px; padding-left: 24px; }
+.update-content ul { margin: 0 0 16px; padding-left: 24px; list-style: disc; }
+.update-content ol { margin: 0 0 16px; padding-left: 24px; list-style: decimal; }
 .update-content li { margin: 4px 0; }
 .update-content code { background: var(--color-bg-secondary); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
 .update-content pre { background: #1f2937; color: #e5e7eb; padding: 16px; border-radius: 6px; overflow-x: auto; margin: 0 0 16px; }

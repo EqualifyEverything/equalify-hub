@@ -24,6 +24,7 @@ import { robots, sitemap, security, humans } from '#src/routes/public/static';
 import { repo } from '#src/routes/public/repo';
 import { commits } from '#src/routes/public/commits';
 import { issues, issuesList } from '#src/routes/public/issues';
+import { generateReport } from '#src/routes/internal/generate-report';
 import config from '#src/utils/config';
 
 // Create app
@@ -125,5 +126,22 @@ app.get('/:owner/:repo/commits', commits);
 app.get('/:owner/:repo/commit/:sha', commits);
 
 // Export handler for Lambda
-export const handler = handle(app);
+// Wraps Hono handler to intercept non-HTTP events (Lambda Test, EventBridge)
+const honoHandler = handle(app);
+
+export const handler = async (event: any, context: any) => {
+    // Internal: generate report via Lambda Test or EventBridge
+    // Event shape: { "report": { "issueNumber": 587, "month": "2026-03", "polish": true, "push": false } }
+    if (event.report) {
+        try {
+            const result = await generateReport(event.report);
+            return { statusCode: 200, body: JSON.stringify(result, null, 2) };
+        } catch (err: any) {
+            return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
+        }
+    }
+
+    // Normal HTTP request — pass to Hono
+    return honoHandler(event, context);
+};
 

@@ -73,30 +73,6 @@ const styles = `
     margin: 0 auto 40px;
     line-height: 1.6;
 }
-/* Economics */
-.econ-section {
-    background: #f8f9fa;
-    padding: 64px 24px;
-    text-align: center;
-}
-.econ-section h2 {
-    font-size: 28px;
-    font-weight: 700;
-    text-align: center;
-    margin: 0 0 24px;
-    color: #001e62;
-}
-.econ-card {
-    display: inline-block;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 32px 48px;
-    text-align: center;
-}
-.econ-card .price { font-size: 36px; font-weight: 700; margin: 0 0 4px; color: #001e62; }
-.econ-card .note { font-size: 14px; color: #6b7280; font-style: italic; margin: 0; }
-
 /* Phases */
 .phases-grid {
     display: grid;
@@ -262,7 +238,8 @@ const styles = `
 .reflow-content h2 { font-size: 20px; margin: 24px 0 12px; color: var(--color-text); border-bottom: 1px solid var(--color-border); padding-bottom: 8px; }
 .reflow-content h3 { font-size: 16px; margin: 20px 0 10px; color: var(--color-text); }
 .reflow-content p { margin: 0 0 16px; }
-.reflow-content ul, .reflow-content ol { margin: 0 0 16px; padding-left: 24px; }
+.reflow-content ul { margin: 0 0 16px; padding-left: 24px; list-style: disc; }
+.reflow-content ol { margin: 0 0 16px; padding-left: 24px; list-style: decimal; }
 .reflow-content li { margin: 4px 0; }
 .reflow-content code { background: var(--color-bg-secondary); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
 .reflow-content pre { background: #1f2937; color: #e5e7eb; padding: 16px; border-radius: 6px; overflow-x: auto; margin: 0 0 16px; }
@@ -386,18 +363,9 @@ export const ReflowListPage: FC<{ docs: ReflowListItem[] }> = ({ docs }) => {
                 </div>
             </section>
 
-            {/* The Economics */}
-            <section class="econ-section">
-                <h2>The Economics</h2>
-                <div class="econ-card">
-                    <p class="price blue">~$0.20 / page</p>
-                    <p class="note">Improves as models improve. Compounds.</p>
-                </div>
-            </section>
-
             {/* Open Source & Partnership */}
             <section class="reflow-section">
-                <h2>Open Source</h2>
+                <h2>Open Source PDF Conversion</h2>
                 <p class="section-desc">
                     Built in the open. Shaped by the community. Licensed under AGPL.
                     Supported by the <a href="https://osf.it.uic.edu/" style="color:#001e62;text-decoration:underline;">UIC Technology Solutions Open Source Fund</a>.

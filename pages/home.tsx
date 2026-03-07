@@ -16,58 +16,11 @@ body {
 @media (max-width: 768px) {
     .container { padding: 16px 20px; }
 }
-}
-
-/* Org header */
-.org-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 24px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid #d1d5db;
-    margin-bottom: 24px;
-}
-@media (max-width: 768px) {
-    .org-header {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap: 16px;
-        padding-bottom: 16px;
-        margin-bottom: 16px;
-    }
-}
-.org-avatar {
-    width: 100px;
-    height: 100px;
-    border-radius: 6px;
-    border: 1px solid #d1d5db;
-}
-@media (max-width: 768px) {
-    .org-avatar { width: 80px; height: 80px; }
-}
-.org-info h1 { margin: 0 0 8px 0; font-size: 28px; color: #1f2937; }
-@media (max-width: 768px) {
-    .org-info h1 { font-size: 22px; }
-}
-.org-info .org-name { color: #4b5563; font-size: 18px; margin-bottom: 8px; }
-@media (max-width: 768px) {
-    .org-info .org-name { font-size: 15px; }
-}
-.org-info .org-bio { color: #4b5563; margin-bottom: 12px; }
-@media (max-width: 768px) {
-    .org-info .org-bio { font-size: 14px; margin-bottom: 8px; }
-}
-.org-links { display: flex; gap: 16px; font-size: 14px; color: #4b5563; flex-wrap: wrap; }
-@media (max-width: 768px) {
-    .org-links { justify-content: center; gap: 12px; font-size: 13px; }
-}
-.org-links a { color: #C8102E; }
 
 /* Stats */
 .stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(5, 1fr);
     gap: 16px;
     margin-bottom: 32px;
 }
@@ -513,21 +466,6 @@ export const HomePage: FC<{
             </div>
             
             <div class="container">
-                {/* Org Header */}
-                <div class="org-header">
-                    <img class="org-avatar" src={org?.avatar_url || `https://github.com/${ORG_NAME}.png`} alt={ORG_NAME} />
-                    <div class="org-info">
-                        <h1>{org?.name || ORG_NAME}</h1>
-                        <div class="org-name">@{ORG_NAME}</div>
-                        {org?.description && <div class="org-bio">{escapeHtml(org.description)}</div>}
-                        <div class="org-links">
-                            {org?.blog && <span>🔗 <a href={org.blog} rel="noopener">{org.blog}</a></span>}
-                            {org?.location && <span>📍 {escapeHtml(org.location)}</span>}
-                            <span><a href={`https://github.com/${ORG_NAME}`} rel="noopener">View on GitHub →</a></span>
-                        </div>
-                    </div>
-                </div>
-                
                 {/* Stats */}
                 <div class="stats">
                     <div class="stat-card">

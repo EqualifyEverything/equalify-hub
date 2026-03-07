@@ -83,7 +83,8 @@ const styles = `
 .doc-content h2 { font-size: 20px; margin: 24px 0 12px; color: #1f2937; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px; }
 .doc-content h3 { font-size: 16px; margin: 20px 0 10px; color: #1f2937; }
 .doc-content p { margin: 0 0 16px; }
-.doc-content ul, .doc-content ol { margin: 0 0 16px; padding-left: 24px; }
+.doc-content ul { margin: 0 0 16px; padding-left: 24px; list-style: disc; }
+.doc-content ol { margin: 0 0 16px; padding-left: 24px; list-style: decimal; }
 .doc-content li { margin: 4px 0; }
 .doc-content code { background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
 .doc-content pre { background: #1f2937; color: #e5e7eb; padding: 16px; border-radius: 6px; overflow-x: auto; margin: 0 0 16px; }
