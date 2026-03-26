@@ -552,6 +552,36 @@ export interface WaitlistEntry {
     ip: string;
 }
 
+async function syncToCampaignMonitor(name: string, email: string, product: string): Promise<void> {
+    const apiKey = process.env.CM_API_KEY;
+    const listId = process.env.CM_LIST_ID;
+    if (!apiKey || !listId) return;
+
+    try {
+        const res = await fetch(`https://api.createsend.com/api/v3.3/subscribers/${listId}.json`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Basic ${Buffer.from(`${apiKey}:x`).toString('base64')}`
+            },
+            body: JSON.stringify({
+                EmailAddress: email,
+                Name: name,
+                CustomFields: [
+                    { Key: 'product', Value: product }
+                ],
+                ConsentToTrack: 'Yes',
+                Resubscribe: true
+            })
+        });
+        if (!res.ok) {
+            console.error('CM sync failed:', res.status, await res.text());
+        }
+    } catch (error) {
+        console.error('CM sync error:', error);
+    }
+}
+
 export async function addToWaitlist(name: string, email: string, ip: string, product: string = 'equalify'): Promise<WaitlistEntry | null> {
     try {
         const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -570,6 +600,9 @@ export async function addToWaitlist(name: string, email: string, ip: string, pro
             TableName: TABLE_NAME,
             Item: entry
         }));
+
+        // Sync to Campaign Monitor (awaited so Lambda doesn't exit early)
+        await syncToCampaignMonitor(entry.name, entry.email, entry.product);
 
         return entry;
     } catch (error) {
