@@ -105,12 +105,9 @@ export const Nav: FC<{ user?: User; product?: string }> = ({ user, product }) =>
     );
 };
 
-// UIC Logo SVG component
+// UIC Logo component using actual org logo
 const UICLogo: FC = () => (
-    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="20" cy="20" r="20" fill="#C8102E"/>
-        <text x="20" y="26" text-anchor="middle" fill="white" font-size="14" font-weight="bold" font-family="Arial, sans-serif">UIC</text>
-    </svg>
+    <img src={config.orgLogo} alt="UIC" style="width:40px;height:40px;border-radius:50%;" />
 );
 
 // Call to action section before footer

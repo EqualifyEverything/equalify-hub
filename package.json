@@ -11,18 +11,18 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "hono": "^4.11.4"
+    "hono": "^4.12.9"
   },
   "imports": {
     "#src/*": "./*"
   },
   "type": "module",
   "devDependencies": {
-    "@aws-sdk/client-dynamodb": "^3.700.0",
-    "@aws-sdk/lib-dynamodb": "^3.700.0",
-    "@hono/node-server": "^1.13.8",
-    "esbuild": "^0.19.4",
-    "tailwindcss": "^4.1.18",
-    "tsx": "^4.7.0"
+    "@aws-sdk/client-dynamodb": "^3.1018.0",
+    "@aws-sdk/lib-dynamodb": "^3.1018.0",
+    "@hono/node-server": "^1.19.11",
+    "esbuild": "^0.27.4",
+    "tailwindcss": "^4.2.2",
+    "tsx": "^4.21.0"
   }
 }
