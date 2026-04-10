@@ -472,10 +472,43 @@ function generateReportMarkdown(issues: any[], month: string, gitActivity?: GitA
     return md;
 }
 
+// ── Fetch previous month's published report ──────────────────────────────────
+
+async function fetchPreviousReport(month: string, token: string): Promise<string | null> {
+    const date = new Date(month + '-15');
+    date.setMonth(date.getMonth() - 1);
+    const prevMonth = date.toISOString().substring(0, 7); // YYYY-MM
+    const path = `reports/${prevMonth}.md`;
+    const apiUrl = `https://api.github.com/repos/${OWNER}/${DOCS_REPO}/contents/${path}`;
+
+    try {
+        const result = await githubREST(apiUrl, token);
+        if (result.content) {
+            return Buffer.from(result.content, 'base64').toString('utf-8');
+        }
+    } catch { /* file doesn't exist */ }
+
+    console.log(`[REPORT] No previous report found at ${DOCS_REPO}/${path}`);
+    return null;
+}
+
 // ── Polish with Claude via Bedrock ────────────────────────────────────────────
 
-async function polishReport(rawMarkdown: string): Promise<string> {
+async function polishReport(rawMarkdown: string, month: string, token: string): Promise<string> {
     const client = new BedrockRuntimeClient({ region: 'us-east-2' });
+
+    const previousReport = await fetchPreviousReport(month, token);
+
+    const referenceSection = previousReport
+        ? `
+17. **Match the tone, structure, and style of last month's published report** shown in the reference below. Use it as a template for section ordering, sentence style, and level of detail.
+
+## Reference: Last month's published report
+
+${previousReport}
+
+## End of reference`
+        : '';
 
     const prompt = `You are a technical writer preparing a monthly development progress report for university faculty and stakeholders at UIC (University of Illinois Chicago). Equalify is a web accessibility scanning platform.
 
@@ -500,7 +533,7 @@ Take the raw markdown report below and rewrite it into a polished, professional 
 13. **Do not invent information** — only rewrite what's there
 14. **Do not add emoji**
 15. **Keep contributor names** (e.g., "C. Aitken", "T. Daniel") exactly as-is — do not convert them to GitHub @mentions
-16. Output ONLY the polished markdown — no commentary, no code fences
+16. Output ONLY the polished markdown — no commentary, no code fences${referenceSection}
 
 Raw report to polish:
 
@@ -618,7 +651,7 @@ export async function generateReport(params: ReportRequest) {
     // Polish with Claude via Bedrock if requested
     if (params.polish) {
         console.log('[REPORT] Polishing report with Claude via Bedrock...');
-        markdown = await polishReport(markdown);
+        markdown = await polishReport(markdown, month, token);
         console.log('[REPORT] Polishing complete');
     }
 
