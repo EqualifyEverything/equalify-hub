@@ -125,7 +125,7 @@ const SignupPage: FC<{ onList: boolean; error?: string; product?: string }> = ({
         <Layout title="Sign Up - Equalify" styles={styles} user={user} product={product}>
             <div class="container">
                 <h1>Sign Up</h1>
-                <p class="subtitle">Request early access. We'll reach out when your spot is ready.</p>
+                <p class="subtitle">Equalify's tools are rolling out in <a href="/roadmap" style="color:#C8102E;">phases</a>. Sign up to be the first to receive access.</p>
 
                 {onList ? (
                     <div class="success-box">

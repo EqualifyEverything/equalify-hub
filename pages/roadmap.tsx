@@ -48,20 +48,25 @@ const styles = `
 .roadmap-content p {
     margin: 0;
     font-size: 14px;
-    color: #6b7280;
+    color: #4b5563;
 }
 .roadmap-date {
     font-size: 12px;
-    color: #9ca3af;
+    color: #6b7280;
     margin-top: 8px;
 }
 
 /* KPI cards */
 .kpi-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
     margin-bottom: 32px;
+}
+@media (max-width: 768px) {
+    .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 .kpi-card {
     background: #f8f9fa;
@@ -77,7 +82,7 @@ const styles = `
 }
 .kpi-label {
     font-size: 14px;
-    color: #6b7280;
+    color: #4b5563;
     margin-top: 4px;
 }
 `;
@@ -89,7 +94,7 @@ export const RoadmapPage: FC = () => {
         <Layout title="Roadmap - Equalify Hub" styles={styles} user={user}>
             <div style="max-width:900px;margin:0 auto;padding:32px 48px 64px;">
                 <h1 style="font-size:32px;font-weight:700;color:#1f2937;margin:0 0 8px 0;">🗺️ Roadmap</h1>
-                <p style="color:#6b7280;margin:0 0 32px 0;font-size:16px;">
+                <p style="color:#4b5563;margin:0 0 32px 0;font-size:16px;">
                     Track our progress, upcoming features, and key milestones for the Equalify project.
                 </p>
                 
@@ -183,15 +188,6 @@ export const RoadmapPage: FC = () => {
                     </div>
                 </div>
                 
-                <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:16px;margin-top:24px;">
-                    <strong style="color:#92400e;">📢 Have a suggestion?</strong>
-                    <p style="margin:8px 0 0 0;font-size:14px;color:#92400e;">
-                        We'd love to hear what features matter most to you. 
-                        <a href="/feature-request" style="color:#92400e;text-decoration:underline;">
-                            Submit a feature request →
-                        </a>
-                    </p>
-                </div>
             </div>
         </Layout>
     );

@@ -202,8 +202,8 @@ function filenameToTitle(filename: string): string {
         .replace(/\b\w/g, (c: string) => c.toUpperCase());
 }
 
-// List view - shows all reports as clickable cards
-export const ReportsListPage: FC<{ reports: ReportListItem[] }> = ({ reports }) => {
+// List view - shows reports + updates
+export const ReportsListPage: FC<{ reports: ReportListItem[]; updates: ReportListItem[] }> = ({ reports, updates }) => {
     const user = getCurrentUser();
 
     return (
@@ -211,8 +211,10 @@ export const ReportsListPage: FC<{ reports: ReportListItem[] }> = ({ reports }) 
             <div style="max-width:900px;margin:0 auto;padding:32px 48px 64px;">
                 <h1 style="font-size:32px;font-weight:700;color:var(--color-text);margin:0 0 8px 0;">Reports</h1>
                 <p style="color:var(--color-text-secondary);margin:0 0 32px 0;font-size:16px;">
-                    Monthly KPI reports and performance metrics for Equalify.
+                    Monthly development reports, performance metrics, and project updates for Equalify.
                 </p>
+
+                <h2 style="font-size:20px;font-weight:600;color:var(--color-text);margin:0 0 16px 0;">Monthly Development Reports</h2>
 
                 {reports.length > 0 ? (
                     reports.map(report => (
@@ -228,8 +230,25 @@ export const ReportsListPage: FC<{ reports: ReportListItem[] }> = ({ reports }) 
                     ))
                 ) : (
                     <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:16px;">
-                        <p style="margin:0;color:#92400e;">No reports available yet. Check back soon!</p>
+                        <p style="margin:0;color:#713f12;">No reports available yet. Check back soon!</p>
                     </div>
+                )}
+
+                {updates.length > 0 && (
+                    <>
+                        <h2 style="font-size:20px;font-weight:600;color:var(--color-text);margin:40px 0 16px 0;">Updates</h2>
+                        {updates.map(update => (
+                            <a href={`/updates/${update.slug}`} class="report-card">
+                                <h3>{update.title}</h3>
+                                {update.description && (
+                                    <p>{update.description}</p>
+                                )}
+                                {update.dateFormatted && (
+                                    <div class="report-date">{update.dateFormatted}</div>
+                                )}
+                            </a>
+                        ))}
+                    </>
                 )}
             </div>
         </Layout>
@@ -275,75 +294,80 @@ export const ReportsDocPage: FC<{ report: ReportFile }> = ({ report }) => {
     );
 };
 
+// Fetch a folder of markdown docs from equalify-docs repo
+async function fetchDocFolder(folder: string, token: string): Promise<ReportListItem[]> {
+    try {
+        const contents = await fetchGitHub(
+            `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/${folder}`,
+            token
+        );
+
+        if (!Array.isArray(contents)) return [];
+
+        const mdFiles = contents.filter((f: any) => f.name.endsWith('.md'));
+
+        const items = await Promise.all(mdFiles.map(async (file: any) => {
+            try {
+                const fileData = await fetchGitHub(
+                    `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/${folder}/${file.name}`,
+                    token
+                );
+
+                if (fileData && fileData.content) {
+                    const content = Buffer.from(fileData.content, 'base64').toString('utf-8');
+                    const fallbackTitle = filenameToTitle(file.name);
+                    const { frontmatter } = parseFrontmatter(content, fallbackTitle);
+
+                    return {
+                        name: file.name,
+                        slug: file.name.replace('.md', ''),
+                        title: frontmatter.title,
+                        description: frontmatter.description,
+                        author: frontmatter.author,
+                        date: frontmatter.date,
+                        dateFormatted: frontmatter.dateFormatted
+                    };
+                }
+            } catch (error) {
+                console.error(`Error fetching ${file.name}:`, error);
+            }
+
+            const fallbackTitle = filenameToTitle(file.name);
+            return {
+                name: file.name,
+                slug: file.name.replace('.md', ''),
+                title: fallbackTitle,
+                description: '',
+                author: '',
+                date: '',
+                dateFormatted: ''
+            };
+        }));
+
+        items.sort((a, b) => {
+            if (!a.date && !b.date) return a.title.localeCompare(b.title);
+            if (!a.date) return 1;
+            if (!b.date) return -1;
+            return b.date.localeCompare(a.date);
+        });
+
+        return items;
+    } catch (error) {
+        console.error(`Error fetching ${folder}:`, error);
+        return [];
+    }
+}
+
 // Handler for list view
 export async function reportsHandler(c: Context) {
     const token = getGitHubToken();
 
-    let reports: ReportListItem[] = [];
-    try {
-        const contents = await fetchGitHub(
-            'https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/reports',
-            token
-        );
+    const [reports, updates] = await Promise.all([
+        fetchDocFolder('reports', token),
+        fetchDocFolder('updates', token),
+    ]);
 
-        if (Array.isArray(contents)) {
-            const mdFiles = contents.filter((f: any) => f.name.endsWith('.md'));
-
-            // Fetch content for each file to get frontmatter
-            const reportPromises = mdFiles.map(async (file: any) => {
-                try {
-                    const fileData = await fetchGitHub(
-                        `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/reports/${file.name}`,
-                        token
-                    );
-
-                    if (fileData && fileData.content) {
-                        const content = Buffer.from(fileData.content, 'base64').toString('utf-8');
-                        const fallbackTitle = filenameToTitle(file.name);
-                        const { frontmatter } = parseFrontmatter(content, fallbackTitle);
-
-                        return {
-                            name: file.name,
-                            slug: file.name.replace('.md', ''),
-                            title: frontmatter.title,
-                            description: frontmatter.description,
-                            author: frontmatter.author,
-                            date: frontmatter.date,
-                            dateFormatted: frontmatter.dateFormatted
-                        };
-                    }
-                } catch (error) {
-                    console.error(`Error fetching ${file.name}:`, error);
-                }
-
-                // Fallback if content fetch fails
-                const fallbackTitle = filenameToTitle(file.name);
-                return {
-                    name: file.name,
-                    slug: file.name.replace('.md', ''),
-                    title: fallbackTitle,
-                    description: '',
-                    author: '',
-                    date: '',
-                    dateFormatted: ''
-                };
-            });
-
-            reports = await Promise.all(reportPromises);
-
-            // Sort by date descending (newest first), files without dates go last
-            reports.sort((a, b) => {
-                if (!a.date && !b.date) return a.title.localeCompare(b.title);
-                if (!a.date) return 1;
-                if (!b.date) return -1;
-                return b.date.localeCompare(a.date);
-            });
-        }
-    } catch (error) {
-        console.error('Error fetching reports:', error);
-    }
-
-    return c.html(<ReportsListPage reports={reports} />);
+    return c.html(<ReportsListPage reports={reports} updates={updates} />);
 }
 
 // Handler for single report view

@@ -1,112 +1,30 @@
 import type { FC } from 'hono/jsx';
 import type { Context } from 'hono';
 import { BaseLayout, Nav, Footer, site } from '#src/components/Layout';
-import { escapeHtml } from '#src/components/utils';
-import { getCurrentUser, getGitHubToken, fetchGitHub as fetchGitHubWithAuth } from '#src/utils/auth';
-import config from '#src/utils/config';
-
-const ORG_NAME = config.githubOrg;
+import { getCurrentUser } from '#src/utils/auth';
 
 const styles = `
 body {
     min-height: 100vh;
     background: #ffffff;
 }
-.container { max-width: 1200px; margin: 0 auto; padding: 24px 48px; }
-@media (max-width: 768px) {
-    .container { padding: 16px 20px; }
-}
 
-/* Stats */
-.stats {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
-    margin-bottom: 32px;
-}
-@media (max-width: 768px) {
-    .stats {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-        margin-bottom: 24px;
-    }
-}
-.stat-card {
-    background: #f8f9fa;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    padding: 16px;
+/* Notification Banner */
+.notification-banner {
+    background: #C8102E;
+    color: #ffffff;
     text-align: center;
+    padding: 12px 24px;
+    font-size: 15px;
 }
-@media (max-width: 768px) {
-    .stat-card { padding: 12px 8px; }
-}
-.stat-value { font-size: 32px; font-weight: 600; color: #1f2937; }
-@media (max-width: 768px) {
-    .stat-value { font-size: 24px; }
-}
-.stat-label { font-size: 14px; color: #4b5563; margin-top: 4px; }
-.stat-value.stars { color: #d97706; }
-.stat-value.forks { color: #2563eb; }
-.stat-value.issues { color: #C8102E; }
-.stat-value.repos { color: #059669; }
-
-/* Two column layout */
-.main-content {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 32px;
-}
-@media (min-width: 900px) {
-    .main-content { grid-template-columns: 2fr 1fr; }
-}
-
-/* Repo cards */
-.section-title {
-    font-size: 16px;
+.notification-banner a {
+    color: #ffffff;
+    text-decoration: underline;
     font-weight: 600;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #1f2937;
 }
-.repo-card {
-    background: #f8f9fa;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    padding: 16px;
-    margin-bottom: 12px;
+.notification-banner a:hover {
+    color: #e5e7eb;
 }
-.repo-card h3 { margin: 0 0 8px 0; font-size: 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: #1f2937; }
-.repo-card h3 a { color: #C8102E; }
-.repo-card .desc { color: #4b5563; font-size: 14px; margin-bottom: 12px; }
-.repo-card .meta { display: flex; gap: 16px; font-size: 12px; color: #6b7280; flex-wrap: wrap; }
-.lang-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
-.badge { font-size: 12px; font-weight: 400; padding: 2px 8px; border-radius: 24px; }
-.badge.private { background: #e5e7eb; color: #6b7280; }
-.badge.archived { background: #fee2e2; color: #C8102E; }
-
-/* Issues */
-.issues-section {
-    background: #f8f9fa;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    padding: 16px;
-}
-.issue-item {
-    padding: 12px 0;
-    border-bottom: 1px solid #e5e7eb;
-}
-.issue-item:last-child { border-bottom: none; }
-.issue-title { margin-bottom: 4px; }
-.issue-title a { color: #1f2937; font-weight: 500; }
-.issue-title a:hover { color: #C8102E; }
-.issue-meta { font-size: 12px; color: #6b7280; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-.issue-meta a { color: #6b7280; }
-.issue-meta a:hover { color: #C8102E; }
-.repo-link { font-weight: 500; }
-.label { font-size: 11px; padding: 2px 6px; border-radius: 12px; font-weight: 500; }
 
 /* Hero Section */
 .hero {
@@ -198,228 +116,115 @@ body {
     transform: translateY(-2px);
 }
 
-/* Quick Links below hero */
-.quick-links {
-    background: #f8f9fa;
-    padding: 24px 48px;
-    border-bottom: 1px solid #d1d5db;
-}
-@media (max-width: 768px) {
-    .quick-links { padding: 16px 20px; }
-}
-.quick-links-inner {
+/* Product Cards */
+.products-section {
     max-width: 1200px;
     margin: 0 auto;
-    display: flex;
-    justify-content: center;
-    gap: 48px;
-    flex-wrap: wrap;
+    padding: 64px 48px;
 }
 @media (max-width: 768px) {
-    .quick-links-inner {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-    }
+    .products-section { padding: 40px 20px; }
 }
-.quick-link {
+.products-section h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+    text-align: center;
+    margin: 0 0 8px;
+}
+.products-section .section-desc {
+    text-align: center;
+    color: #6b7280;
+    margin: 0 0 40px;
+    font-size: 16px;
+    line-height: 1.6;
+}
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+@media (max-width: 768px) {
+    .products-grid { grid-template-columns: 1fr; }
+}
+.product-card {
+    background: #f8f9fa;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    padding: 32px 24px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
-    color: #4b5563;
-    font-size: 14px;
+}
+.product-card:hover {
+    border-color: #C8102E;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
     text-decoration: none;
 }
-@media (max-width: 768px) {
-    .quick-link {
-        flex-direction: column;
-        text-align: center;
-        gap: 6px;
-        font-size: 12px;
-        padding: 12px 8px;
-        background: #ffffff;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
-    }
-}
-.quick-link:hover {
-    color: #C8102E;
-}
-.quick-link-icon {
-    width: 40px;
-    height: 40px;
-    background: #ffffff;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
+.product-icon {
+    width: 64px;
+    height: 64px;
+    background: #001e62;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    margin-bottom: 20px;
 }
-@media (max-width: 768px) {
-    .quick-link-icon {
-        width: 36px;
-        height: 36px;
-        font-size: 16px;
-        border: none;
-        background: transparent;
-    }
-}
-
-/* Section divider */
-.section-divider {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 32px 48px 16px;
-}
-@media (max-width: 768px) {
-    .section-divider { padding: 24px 20px 12px; }
-}
-.section-divider h2 {
-    font-size: 24px;
-    font-weight: 600;
+.product-card h3 {
+    font-size: 20px;
+    font-weight: 700;
     color: #1f2937;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    margin: 0 0 8px;
 }
-@media (max-width: 768px) {
-    .section-divider h2 { font-size: 20px; gap: 8px; }
-    .section-divider h2 svg { width: 20px; height: 20px; }
-}
-.section-divider p {
+.product-card p {
+    font-size: 14px;
     color: #6b7280;
-    margin: 8px 0 0 0;
-    font-size: 15px;
+    margin: 0 0 16px;
+    line-height: 1.6;
 }
-@media (max-width: 768px) {
-    .section-divider p { font-size: 13px; }
+.product-link {
+    font-size: 14px;
+    font-weight: 600;
+    color: #C8102E;
+    margin-top: auto;
 }
 `;
 
-function formatNumber(num: number): string {
-    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-    if (num >= 1000) return `${(num / 1000).toFixed(1)}k`;
-    return String(num);
-}
-
-function formatDate(dateStr: string): string {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 0) return 'today';
-    if (diffDays === 1) return 'yesterday';
-    if (diffDays < 7) return `${diffDays} days ago`;
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
-    if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
-    return `${Math.floor(diffDays / 365)} years ago`;
-}
-
-function getLanguageColor(lang: string): string {
-    const colors: Record<string, string> = {
-        'JavaScript': '#f1e05a',
-        'TypeScript': '#3178c6',
-        'Python': '#3572A5',
-        'Java': '#b07219',
-        'Go': '#00ADD8',
-        'Rust': '#dea584',
-        'Ruby': '#701516',
-        'PHP': '#4F5D95',
-        'C++': '#f34b7d',
-        'C': '#555555',
-        'C#': '#178600',
-        'Swift': '#F05138',
-        'Kotlin': '#A97BFF',
-        'HTML': '#e34c26',
-        'CSS': '#563d7c',
-        'Shell': '#89e051',
-        'Vue': '#41b883',
-    };
-    return colors[lang] || '#8b949e';
-}
-
-const RepoCard: FC<{ repo: any }> = ({ repo }) => (
-    <div class="repo-card">
-        <h3>
-            <a href={`/${repo.full_name}`}>{escapeHtml(repo.name)}</a>
-            {repo.private && <span class="badge private">Private</span>}
-            {repo.archived && <span class="badge archived">Archived</span>}
-        </h3>
-        {repo.description && <div class="desc">{escapeHtml(repo.description)}</div>}
-        <div class="meta">
-            {repo.language && (
-                <span>
-                    <span class="lang-dot" style={`background:${getLanguageColor(repo.language)}`}></span>
-                    {escapeHtml(repo.language)}
-                </span>
-            )}
-            {repo.stargazers_count > 0 && <span>★ {formatNumber(repo.stargazers_count)}</span>}
-            {repo.forks_count > 0 && <span>⑂ {formatNumber(repo.forks_count)}</span>}
-            {repo.open_issues_count > 0 && <span>🔴 {repo.open_issues_count} issues</span>}
-            <span>Updated {formatDate(repo.updated_at)}</span>
-        </div>
-    </div>
-);
-
-const IssueItem: FC<{ issue: any }> = ({ issue }) => {
-    const repoName = issue.repository_url?.split('/').pop() || '';
-    return (
-        <div class="issue-item">
-            <div class="issue-title">
-                <a href={`/${ORG_NAME}/${repoName}/issues/${issue.number}`}>{escapeHtml(issue.title)}</a>
-            </div>
-            <div class="issue-meta">
-                <a href={`/${ORG_NAME}/${repoName}`} class="repo-link">{repoName}</a>
-                #{issue.number} opened {formatDate(issue.created_at)} by{' '}
-                <a href={`/${issue.user?.login}`}>{issue.user?.login}</a>
-                {issue.labels?.slice(0, 3).map((l: any) => (
-                    <span class="label" style={`background:#${l.color}20;color:#${l.color};border:1px solid #${l.color}40;`}>
-                        {escapeHtml(l.name)}
-                    </span>
-                ))}
-            </div>
-        </div>
-    );
-};
-
-export const HomePage: FC<{
-    org: any;
-    repos: any[];
-    issues: any[];
-    totalStars: number;
-    totalForks: number;
-    totalOpenIssues: number;
-    issuesClosed: number;
-    contributorCount: number;
-}> = ({ org, repos, issues, totalStars, totalForks, totalOpenIssues, issuesClosed, contributorCount }) => {
+export const HomePage: FC = () => {
     const user = getCurrentUser();
-    
+
     return (
-        <BaseLayout title={`${site.name} – Developer tools for EqualifyEverything`} styles={styles}>
+        <BaseLayout title={`${site.name} – UIC's Open Source Web Accessibility Ecosystem`} styles={styles}>
             <Nav user={user} />
-            
+
+            {/* Reflow Beta Notification Banner */}
+            <div class="notification-banner">
+                Equalify Reflow Beta now available! Translate PDFs into accessible documents.{' '}
+                <a href="/reflow">More Info &rsaquo;</a>
+            </div>
+
             {/* Hero Section */}
             <section class="hero">
                 <div class="hero-content">
                     <span class="hero-badge">UIC Digital Accessibility</span>
-                    <h1>Welcome to the Equalify Hub</h1>
+                    <h1>Introducing Equalify</h1>
                     <p>
-                        Your central resource for Equalify – UIC's open-source web accessibility platform. 
-                        Find documentation, track development progress, and learn how to contribute.
+                        UIC's open source web accessibility ecosystem. We currently offer tools
+                        to track accessibility issues and convert PDFs into accessible documents.
                     </p>
                     <div class="hero-buttons">
-                        <a href="/user-guide" class="hero-btn hero-btn-primary">
+                        <a href="/roadmap" class="hero-btn hero-btn-primary">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                <polyline points="14 2 14 8 20 8"/>
-                                <line x1="16" y1="13" x2="8" y2="13"/>
-                                <line x1="16" y1="17" x2="8" y2="17"/>
-                                <polyline points="10 9 9 9 8 9"/>
+                                <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+                                <line x1="8" y1="2" x2="8" y2="18"/>
+                                <line x1="16" y1="6" x2="16" y2="22"/>
                             </svg>
-                            User Guide
+                            Roadmap
                         </a>
                         <a href="/signup" class="hero-btn hero-btn-secondary">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -433,145 +238,64 @@ export const HomePage: FC<{
                     </div>
                 </div>
             </section>
-            
-            {/* Quick Links */}
-            <div class="quick-links">
-                <div class="quick-links-inner">
-                    <a href="/user-guide" class="quick-link">
-                        <span class="quick-link-icon">📖</span>
-                        <span><strong>User Guide</strong><br/>How to use Equalify</span>
-                    </a>
-                    <a href={`https://github.com/${ORG_NAME}`} class="quick-link" rel="noopener">
-                        <span class="quick-link-icon">💻</span>
-                        <span><strong>Source Code</strong><br/>View on GitHub</span>
-                    </a>
-                    <a href="https://osf.it.uic.edu/" class="quick-link" rel="noopener">
-                        <span class="quick-link-icon">🎓</span>
-                        <span><strong>Open Source Fund</strong><br/>UIC initiative</span>
-                    </a>
-                </div>
-            </div>
 
-            {/* Section Header for Dashboard */}
-            <div class="section-divider">
-                <h2>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                        <line x1="3" y1="9" x2="21" y2="9"/>
-                        <line x1="9" y1="21" x2="9" y2="9"/>
-                    </svg>
-                    Development Dashboard
-                </h2>
-                <p>Live activity from the EqualifyEverything GitHub organization</p>
-            </div>
-            
-            <div class="container">
-                {/* Stats */}
-                <div class="stats">
-                    <div class="stat-card">
-                        <div class="stat-value stars">{formatNumber(totalStars)}</div>
-                        <div class="stat-label">Total Stars</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value forks">{formatNumber(totalForks)}</div>
-                        <div class="stat-label">Total Forks</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value issues">{formatNumber(totalOpenIssues)}</div>
-                        <div class="stat-label">Open Issues</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" style="color:#059669;">{formatNumber(issuesClosed)}</div>
-                        <div class="stat-label">Issues Closed</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" style="color:#7c3aed;">{formatNumber(contributorCount)}</div>
-                        <div class="stat-label">Contributors</div>
-                    </div>
-                </div>
-                
-                {/* Main Content */}
-                <div class="main-content">
-                    {/* Repos Column */}
-                    <div>
-                        <div class="section-title">📦 Repositories</div>
-                        {repos.filter(r => !r.fork && !r.archived).slice(0, 20).map(repo => <RepoCard repo={repo} />)}
-                        {repos.length === 0 && <p style="color:#8b949e;">No repositories found</p>}
-                    </div>
-                    
-                    {/* Issues Column */}
-                    <div>
-                        <div class="section-title">🔴 Recent Issues</div>
-                        <div class="issues-section">
-                            {issues.length > 0 
-                                ? issues.map(issue => <IssueItem issue={issue} />)
-                                : <p style="color:#8b949e;text-align:center;">No open issues found</p>
-                            }
+            {/* Product Cards */}
+            <section class="products-section">
+                <h2>Our Tools</h2>
+                <p class="section-desc">
+                    Explore the Equalify ecosystem — purpose-built tools for web accessibility.
+                </p>
+                <div class="products-grid">
+                    <a href="/dashboard" class="product-card">
+                        <div class="product-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="3" y1="9" x2="21" y2="9"/>
+                                <line x1="9" y1="21" x2="9" y2="9"/>
+                            </svg>
                         </div>
-                    </div>
+                        <h3>Equalify Dashboard</h3>
+                        <p>
+                            Track and manage web accessibility issues across your sites. Scan, audit, and monitor
+                            your organization's accessibility compliance.
+                        </p>
+                        <span class="product-link">Learn more &rarr;</span>
+                    </a>
+                    <a href="/reflow" class="product-card">
+                        <div class="product-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                            </svg>
+                        </div>
+                        <h3>Equalify Reflow</h3>
+                        <p>
+                            Convert PDFs into accessible, reflowable content. An open-source pipeline
+                            powered by AI to escape static files.
+                        </p>
+                        <span class="product-link">Learn more &rarr;</span>
+                    </a>
+                    <a href="https://github.com/EqualifyEverything" class="product-card">
+                        <div class="product-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                            </svg>
+                        </div>
+                        <h3>Open Source</h3>
+                        <p>
+                            All Equalify tools are open source. Browse our repositories, contribute code,
+                            and help make the web more accessible.
+                        </p>
+                        <span class="product-link">View on GitHub &rarr;</span>
+                    </a>
                 </div>
-            </div>
+            </section>
         </BaseLayout>
     );
 };
 
-async function fetchOrgData() {
-    const token = getGitHubToken();
-    
-    try {
-        const [org, repos] = await Promise.all([
-            fetchGitHubWithAuth(`https://api.github.com/orgs/${ORG_NAME}`, token),
-            fetchGitHubWithAuth(`https://api.github.com/orgs/${ORG_NAME}/repos?sort=updated&per_page=100&type=all`, token)
-        ]);
-        
-        return { org, repos: Array.isArray(repos) ? repos : [] };
-    } catch (error) {
-        console.error('Error fetching org data:', error);
-        return { org: null, repos: [] };
-    }
-}
-
-async function fetchOrgIssues(repos: any[]) {
-    const token = getGitHubToken();
-    let openIssues: any[] = [];
-    
-    try {
-        const issuePromises = repos.slice(0, 10).map(repo =>
-            fetchGitHubWithAuth(
-                `https://api.github.com/repos/${ORG_NAME}/${repo.name}/issues?state=open&per_page=5`,
-                token
-            ).then(result => Array.isArray(result) ? result : []).catch(() => [])
-        );
-        
-        const issueResults = await Promise.all(issuePromises);
-        openIssues = issueResults.flat().filter(i => !i.pull_request);
-        openIssues.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-        
-        return openIssues.slice(0, 10);
-    } catch (error) {
-        console.error('Error fetching issues:', error);
-        return [];
-    }
-}
-
 export async function homeHandler(c: Context) {
-    const { org, repos } = await fetchOrgData();
-    const issues = await fetchOrgIssues(repos);
-    
-    const totalStars = repos.reduce((sum: number, r: any) => sum + (r.stargazers_count || 0), 0);
-    const totalForks = repos.reduce((sum: number, r: any) => sum + (r.forks_count || 0), 0);
-    const totalOpenIssues = repos.reduce((sum: number, r: any) => sum + (r.open_issues_count || 0), 0);
-
-    return c.html(
-        <HomePage 
-            org={org}
-            repos={repos}
-            issues={issues}
-            totalStars={totalStars}
-            totalForks={totalForks}
-            totalOpenIssues={totalOpenIssues}
-            issuesClosed={245}
-            contributorCount={12}
-        />
-    );
+    return c.html(<HomePage />);
 }

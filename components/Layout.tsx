@@ -56,12 +56,11 @@ export const Nav: FC<{ user?: User; product?: string }> = ({ user, product }) =>
                         <span>{site.name}</span>
                     </a>
                     <div class="nav-links">
-                        <a href="/user-guide">User Guide</a>
-                        <a href="/technical-docs">Technical</a>
-                        <a href="/roadmap">Roadmap</a>
-                        <a href="/updates">Updates</a>
-                        <a href="/reports">Reports</a>
+                        <a href="/">Home</a>
+                        <a href="/dashboard">Dashboard</a>
                         <a href="/reflow">Reflow</a>
+                        <a href="/roadmap">Roadmap</a>
+                        <a href="/reports">Reports</a>
                         <a href="/about">About</a>
                         {user ? (
                             <>
@@ -84,12 +83,11 @@ export const Nav: FC<{ user?: User; product?: string }> = ({ user, product }) =>
                     </button>
                 </div>
                 <div class="nav-mobile">
-                    <a href="/user-guide">User Guide</a>
-                    <a href="/technical-docs">Technical</a>
-                    <a href="/roadmap">Roadmap</a>
-                    <a href="/updates">Updates</a>
-                    <a href="/reports">Reports</a>
+                    <a href="/">Home</a>
+                    <a href="/dashboard">Dashboard</a>
                     <a href="/reflow">Reflow</a>
+                    <a href="/roadmap">Roadmap</a>
+                    <a href="/reports">Reports</a>
                     <a href="/about">About</a>
                     {user ? (
                         <>
@@ -101,6 +99,7 @@ export const Nav: FC<{ user?: User; product?: string }> = ({ user, product }) =>
                     )}
                 </div>
             </nav>
+            <script dangerouslySetInnerHTML={{ __html: `(function(){var p=location.pathname;document.querySelectorAll('.nav-links a, .nav-mobile a').forEach(function(a){var h=a.getAttribute('href');if(!h||h==='/signup'||a.classList.contains('sign-in-btn')||a.classList.contains('sign-in-mobile'))return;if(h==='/'?p==='/':p===h||p.startsWith(h+'/'))a.classList.add('active');});})();` }} />
         </header>
     );
 };
@@ -289,9 +288,19 @@ nav a {
     font-size: 15px; 
     white-space: nowrap; 
 }
-nav a:hover { 
-    color: #C8102E; 
-    text-decoration: none; 
+nav a:hover {
+    color: #C8102E;
+    text-decoration: none;
+}
+nav .nav-links a.active {
+    color: #1f2937;
+    box-shadow: 0 2px 0 0 #C8102E;
+}
+.nav-mobile a.active {
+    color: #C8102E;
+    font-weight: 600;
+    border-bottom: none;
+    padding-bottom: 0;
 }
 .sign-in-btn {
     background: #C8102E !important;
@@ -408,10 +417,10 @@ nav a:hover {
 .footer-bottom p {
     margin: 0;
     font-size: 13px;
-    color: #6b7280;
+    color: #4b5563;
 }
 .footer-bottom a {
-    color: #6b7280;
+    color: #4b5563;
 }
 .footer-bottom a:hover {
     color: #C8102E;

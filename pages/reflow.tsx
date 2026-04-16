@@ -354,7 +354,10 @@ export const ReflowListPage: FC<{ docs: ReflowListItem[] }> = ({ docs }) => {
                     Escaping static files into semantic freedom. An open-source pipeline that converts PDFs into accessible, reflowable content.
                 </p>
                 <div class="reflow-hero-buttons">
-                    <a href="#docs" class="btn-primary">
+                    <a href="https://reflow.equalify.uic.edu" class="btn-primary" rel="noopener" target="_blank">
+                        Try the Reflow Beta
+                    </a>
+                    <a href="#docs" class="btn-secondary">
                         Documentation
                     </a>
                     <a href="/signup/reflow" class="btn-secondary">
