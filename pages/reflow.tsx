@@ -182,6 +182,23 @@ const styles = `
     margin-top: 8px;
 }
 
+/* Category sections on the list */
+.reflow-category {
+    margin-top: 32px;
+}
+.reflow-category:first-of-type { margin-top: 0; }
+.reflow-category-heading {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 4px;
+}
+.reflow-category-sub {
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    margin: 0 0 16px;
+}
+
 /* Single reflow doc view */
 .reflow-header {
     display: flex;
@@ -225,6 +242,13 @@ const styles = `
     border-color: #C8102E;
     color: #C8102E;
 }
+.reflow-crumb {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+}
 .reflow-meta {
     font-size: 14px;
     color: var(--color-text-secondary);
@@ -255,12 +279,20 @@ const styles = `
 
 interface ReflowListItem {
     name: string;
-    slug: string;
+    slug: string;          // path slug, e.g. "how-to/use-the-wordpress-plugin"
+    category: string;      // top-level dir name, '' for root-level files
     title: string;
     description: string;
     author: string;
     date: string;
     dateFormatted: string;
+}
+
+interface ReflowCategory {
+    key: string;           // folder name (or '' for root-level)
+    label: string;         // display name
+    description: string;   // one-line description
+    docs: ReflowListItem[];
 }
 
 interface ReflowFile {
@@ -271,6 +303,7 @@ interface ReflowFile {
     dateFormatted: string;
     content: string;
     html_url: string;
+    categoryLabel: string;  // display label for the crumb, '' if uncategorised
 }
 
 interface Frontmatter {
@@ -279,6 +312,46 @@ interface Frontmatter {
     dateFormatted: string;
     description: string;
     author: string;
+}
+
+// Category display config. Keys map to top-level folder names under
+// `reflow/`; anything not listed here still renders — it just uses a
+// generic title-cased label derived from the folder name.
+const CATEGORY_CONFIG: Record<string, { label: string; description: string; order: number }> = {
+    '': {
+        label: 'Overview',
+        description: 'Start here.',
+        order: 0,
+    },
+    'tutorials': {
+        label: 'Tutorials',
+        description: 'Guided, hands-on walkthroughs for learning by doing.',
+        order: 1,
+    },
+    'how-to': {
+        label: 'How-to guides',
+        description: 'Task recipes for specific jobs.',
+        order: 2,
+    },
+    'reference': {
+        label: 'Reference',
+        description: 'Authoritative lookups — tables, endpoint shapes, options.',
+        order: 3,
+    },
+    'explanation': {
+        label: 'Explanation',
+        description: 'Background, design rationale, and concepts.',
+        order: 4,
+    },
+};
+
+// Filenames we hide from the list view entirely (index / meta files).
+const HIDDEN_FILENAMES = new Set(['README.md']);
+
+// Which ref of equalify-docs to fetch. Defaults to `main`; override via
+// the EQUALIFY_DOCS_REF env var when previewing a docs branch locally.
+function getDocsRef(): string {
+    return process.env.EQUALIFY_DOCS_REF || 'main';
 }
 
 // Parse YAML frontmatter from markdown content
@@ -333,7 +406,7 @@ function parseFrontmatter(content: string, fallbackTitle: string): { frontmatter
     return { frontmatter, body };
 }
 
-// Convert filename to fallback title
+// Convert filename or path-leaf to fallback title
 function filenameToTitle(filename: string): string {
     return filename
         .replace('.md', '')
@@ -341,9 +414,28 @@ function filenameToTitle(filename: string): string {
         .replace(/\b\w/g, (c: string) => c.toUpperCase());
 }
 
-// List view - landing page + docs listing
-export const ReflowListPage: FC<{ docs: ReflowListItem[] }> = ({ docs }) => {
+// Derive a display label for a category (folder name). Configured
+// categories use their label; anything else gets title-cased.
+function categoryLabel(key: string): string {
+    if (CATEGORY_CONFIG[key]) return CATEGORY_CONFIG[key].label;
+    if (!key) return 'Overview';
+    return key.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+}
+
+function categoryDescription(key: string): string {
+    return CATEGORY_CONFIG[key]?.description ?? '';
+}
+
+function categoryOrder(key: string): number {
+    // Known keys get their configured order; unknown keys come after the
+    // configured ones, alphabetised.
+    return CATEGORY_CONFIG[key]?.order ?? 1000;
+}
+
+// List view - landing page + grouped docs listing
+export const ReflowListPage: FC<{ categories: ReflowCategory[] }> = ({ categories }) => {
     const user = getCurrentUser();
+    const hasAnyDocs = categories.some(c => c.docs.length > 0);
 
     return (
         <Layout title="Reflow - Equalify Hub" styles={styles} user={user} product="reflow">
@@ -394,19 +486,29 @@ export const ReflowListPage: FC<{ docs: ReflowListItem[] }> = ({ docs }) => {
             {/* Documentation listing */}
             <div id="docs" class="reflow-section" style="padding-top:0;">
                 <h2 class="docs-heading">Documentation</h2>
-                <p class="docs-subheading">Technical documentation and guides for Reflow.</p>
+                <p class="docs-subheading">Pick the entry point that matches what you're trying to do.</p>
 
-                {docs.length > 0 ? (
-                    docs.map(doc => (
-                        <a href={`/reflow/${doc.slug}`} class="reflow-card">
-                            <h3>{doc.title}</h3>
-                            {doc.description && (
-                                <p>{doc.description}</p>
-                            )}
-                            {doc.dateFormatted && (
-                                <div class="reflow-date">{doc.dateFormatted}</div>
-                            )}
-                        </a>
+                {hasAnyDocs ? (
+                    categories.map(category => (
+                        category.docs.length > 0 ? (
+                            <div class="reflow-category">
+                                <h3 class="reflow-category-heading">{category.label}</h3>
+                                {category.description && (
+                                    <p class="reflow-category-sub">{category.description}</p>
+                                )}
+                                {category.docs.map(doc => (
+                                    <a href={`/reflow/${doc.slug}`} class="reflow-card">
+                                        <h3>{doc.title}</h3>
+                                        {doc.description && (
+                                            <p>{doc.description}</p>
+                                        )}
+                                        {doc.dateFormatted && (
+                                            <div class="reflow-date">{doc.dateFormatted}</div>
+                                        )}
+                                    </a>
+                                ))}
+                            </div>
+                        ) : null
                     ))
                 ) : (
                     <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:16px;">
@@ -433,7 +535,12 @@ export const ReflowDocPage: FC<{ doc: ReflowFile }> = ({ doc }) => {
                 </a>
 
                 <div class="reflow-header">
-                    <h1>{doc.title}</h1>
+                    <div>
+                        {doc.categoryLabel && (
+                            <div class="reflow-crumb">{doc.categoryLabel}</div>
+                        )}
+                        <h1>{doc.title}</h1>
+                    </div>
                     <a href={doc.html_url} class="edit-btn" rel="noopener" target="_blank">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -457,90 +564,166 @@ export const ReflowDocPage: FC<{ doc: ReflowFile }> = ({ doc }) => {
     );
 };
 
+// Fetch every .md file under reflow/ in one Git Trees API call (recursive),
+// then enrich each with frontmatter via the Contents API (cached).
+async function listReflowDocs(token: string | null): Promise<ReflowListItem[]> {
+    // Git Trees API with recursive=1 returns every path in one shot.
+    const tree = await fetchGitHub(
+        `https://api.github.com/repos/EqualifyEverything/equalify-docs/git/trees/${getDocsRef()}?recursive=1`,
+        token,
+    );
+
+    if (!tree || !Array.isArray(tree.tree)) return [];
+
+    const blobs: Array<{ path: string }> = tree.tree
+        .filter((item: any) =>
+            item.type === 'blob' &&
+            typeof item.path === 'string' &&
+            item.path.startsWith('reflow/') &&
+            item.path.endsWith('.md') &&
+            !HIDDEN_FILENAMES.has(item.path.split('/').pop() as string)
+        )
+        .map((item: any) => ({ path: item.path as string }));
+
+    const docPromises = blobs.map(async ({ path }) => {
+        // Strip the `reflow/` prefix; everything after is the slug and
+        // category info we need to render.
+        const relative = path.slice('reflow/'.length);  // e.g. "how-to/use-the-wordpress-plugin.md"
+        const lastSlash = relative.lastIndexOf('/');
+        const category = lastSlash === -1 ? '' : relative.slice(0, lastSlash);
+        const filename = lastSlash === -1 ? relative : relative.slice(lastSlash + 1);
+        const slug = relative.replace(/\.md$/, '');  // URL-safe path slug
+        const fallbackTitle = filenameToTitle(filename);
+
+        try {
+            const fileData = await fetchGitHub(
+                `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/${path}?ref=${encodeURIComponent(getDocsRef())}`,
+                token,
+            );
+
+            if (fileData && fileData.content) {
+                const content = Buffer.from(fileData.content, 'base64').toString('utf-8');
+                const { frontmatter } = parseFrontmatter(content, fallbackTitle);
+                return {
+                    name: filename,
+                    slug,
+                    category,
+                    title: frontmatter.title,
+                    description: frontmatter.description,
+                    author: frontmatter.author,
+                    date: frontmatter.date,
+                    dateFormatted: frontmatter.dateFormatted,
+                };
+            }
+        } catch (error) {
+            console.error(`Error fetching ${path}:`, error);
+        }
+
+        return {
+            name: filename,
+            slug,
+            category,
+            title: fallbackTitle,
+            description: '',
+            author: '',
+            date: '',
+            dateFormatted: '',
+        };
+    });
+
+    const docs = await Promise.all(docPromises);
+
+    // Sort within each category: dated items by date descending, then by
+    // title. Orphan date-less items go last, alphabetical.
+    docs.sort((a, b) => {
+        if (!a.date && !b.date) return a.title.localeCompare(b.title);
+        if (!a.date) return 1;
+        if (!b.date) return -1;
+        return b.date.localeCompare(a.date);
+    });
+
+    return docs;
+}
+
+// Group a flat list of docs by top-level folder, respecting CATEGORY_CONFIG
+// ordering for known keys and alphabetising unknown ones.
+function groupIntoCategories(docs: ReflowListItem[]): ReflowCategory[] {
+    const byKey = new Map<string, ReflowListItem[]>();
+    for (const doc of docs) {
+        const key = doc.category;
+        if (!byKey.has(key)) byKey.set(key, []);
+        byKey.get(key)!.push(doc);
+    }
+
+    const keys = Array.from(byKey.keys());
+    keys.sort((a, b) => {
+        const oa = categoryOrder(a);
+        const ob = categoryOrder(b);
+        if (oa !== ob) return oa - ob;
+        return a.localeCompare(b);
+    });
+
+    return keys.map(key => ({
+        key,
+        label: categoryLabel(key),
+        description: categoryDescription(key),
+        docs: byKey.get(key)!,
+    }));
+}
+
 // Handler for list view
 export async function reflowHandler(c: Context) {
     const token = getGitHubToken();
 
-    let docs: ReflowListItem[] = [];
+    let categories: ReflowCategory[] = [];
     try {
-        const contents = await fetchGitHub(
-            'https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/reflow',
-            token
-        );
-
-        if (Array.isArray(contents)) {
-            const mdFiles = contents.filter((f: any) => f.name.endsWith('.md'));
-
-            const docPromises = mdFiles.map(async (file: any) => {
-                try {
-                    const fileData = await fetchGitHub(
-                        `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/reflow/${file.name}`,
-                        token
-                    );
-
-                    if (fileData && fileData.content) {
-                        const content = Buffer.from(fileData.content, 'base64').toString('utf-8');
-                        const fallbackTitle = filenameToTitle(file.name);
-                        const { frontmatter } = parseFrontmatter(content, fallbackTitle);
-
-                        return {
-                            name: file.name,
-                            slug: file.name.replace('.md', ''),
-                            title: frontmatter.title,
-                            description: frontmatter.description,
-                            author: frontmatter.author,
-                            date: frontmatter.date,
-                            dateFormatted: frontmatter.dateFormatted
-                        };
-                    }
-                } catch (error) {
-                    console.error(`Error fetching ${file.name}:`, error);
-                }
-
-                const fallbackTitle = filenameToTitle(file.name);
-                return {
-                    name: file.name,
-                    slug: file.name.replace('.md', ''),
-                    title: fallbackTitle,
-                    description: '',
-                    author: '',
-                    date: '',
-                    dateFormatted: ''
-                };
-            });
-
-            docs = await Promise.all(docPromises);
-
-            // Sort by date descending (newest first), files without dates go last
-            docs.sort((a, b) => {
-                if (!a.date && !b.date) return a.title.localeCompare(b.title);
-                if (!a.date) return 1;
-                if (!b.date) return -1;
-                return b.date.localeCompare(a.date);
-            });
-        }
+        const docs = await listReflowDocs(token);
+        categories = groupIntoCategories(docs);
     } catch (error) {
         console.error('Error fetching reflow docs:', error);
     }
 
-    return c.html(<ReflowListPage docs={docs} />);
+    return c.html(<ReflowListPage categories={categories} />);
 }
 
-// Handler for single doc view
+// Handler for single doc view. Slug may be a nested path, e.g.
+// "how-to/use-the-wordpress-plugin". Registered against the
+// `/reflow/*` wildcard route (see app.tsx / dev.tsx).
 export async function reflowDocHandler(c: Context) {
-    const slug = c.req.param('slug');
+    // Pull the trailing path off `c.req.path` rather than trusting a
+    // named parameter — matches the pattern used by the repo routes
+    // (`/:owner/:repo/tree/:branch/*`).
+    const rawSlug = c.req.path.replace(/^\/reflow\/?/, '').replace(/\/$/, '');
+    // Decode once so humans can link to slugs with URI-encoded characters,
+    // but stop short of re-decoding the result (avoid double-decode CVE shape).
+    let slug: string;
+    try {
+        slug = decodeURIComponent(rawSlug);
+    } catch {
+        slug = rawSlug;
+    }
+
+    // Defend against traversal — slugs must not start with '/' or contain
+    // '..' segments. If anything looks off, drop to the list view.
+    if (!slug || slug.startsWith('/') || slug.split('/').some(seg => seg === '..' || seg === '.')) {
+        return c.redirect('/reflow');
+    }
+
     const token = getGitHubToken();
     const filename = `${slug}.md`;
+    const lastSlash = slug.lastIndexOf('/');
+    const category = lastSlash === -1 ? '' : slug.slice(0, lastSlash);
+    const leafName = lastSlash === -1 ? slug : slug.slice(lastSlash + 1);
 
     try {
         const fileData = await fetchGitHub(
-            `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/reflow/${filename}`,
-            token
+            `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/reflow/${filename}?ref=${encodeURIComponent(getDocsRef())}`,
+            token,
         );
 
         if (fileData && fileData.content) {
             const content = Buffer.from(fileData.content, 'base64').toString('utf-8');
-            const fallbackTitle = filenameToTitle(filename);
+            const fallbackTitle = filenameToTitle(leafName);
             const { frontmatter, body } = parseFrontmatter(content, fallbackTitle);
 
             const doc: ReflowFile = {
@@ -550,7 +733,8 @@ export async function reflowDocHandler(c: Context) {
                 date: frontmatter.date,
                 dateFormatted: frontmatter.dateFormatted,
                 content: renderMarkdown(body),
-                html_url: fileData.html_url
+                html_url: fileData.html_url,
+                categoryLabel: category ? categoryLabel(category) : '',
             };
 
             return c.html(<ReflowDocPage doc={doc} />);

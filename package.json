@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx @tailwindcss/cli -i ./styles/input.css -o ./styles/tailwind.css --minify && node --import tsx --loader ./dev/css-loader.mjs ./dev.tsx",
+    "start": "npx @tailwindcss/cli -i ./styles/input.css -o ./styles/tailwind.css --minify && node --env-file-if-exists=.env --import tsx --loader ./dev/css-loader.mjs ./dev.tsx",
     "build": "npx @tailwindcss/cli -i ./styles/input.css -o ./styles/tailwind.css --minify && esbuild ./index.ts --bundle --platform=node --outdir=dist --external:@aws-sdk --jsx=automatic --jsx-import-source=hono/jsx --loader:.tsx=tsx --loader:.css=text --minify && cd dist && zip -r lambda.zip * > /dev/null && aws --profile equalifyuic lambda update-function-code --function-name equalifyuic-hub --zip-file \"fileb://lambda.zip\" > /dev/null && rm -rf lambda.zip",
     "sso": "aws sso login --profile equalifyuic"
   },

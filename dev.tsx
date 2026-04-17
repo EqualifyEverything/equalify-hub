@@ -12,6 +12,7 @@ import { technicalDocsHandler, technicalDocsDocHandler } from '#src/pages/techni
 import { RoadmapPage } from '#src/pages/roadmap';
 import { feedbackHandler, submitFeatureHandler, voteHandler } from '#src/pages/feedback';
 import { homeHandler } from '#src/pages/home';
+import { reflowHandler, reflowDocHandler } from '#src/pages/reflow';
 
 // Route handlers
 import { github, githubPro, callback, logout } from '#src/routes/public/auth';
@@ -71,6 +72,8 @@ app.get('/user-guide', userGuideHandler);
 app.get('/user-guide/:slug', userGuideDocHandler);
 app.get('/technical-docs', technicalDocsHandler);
 app.get('/technical-docs/:slug', technicalDocsDocHandler);
+app.get('/reflow', reflowHandler);
+app.get('/reflow/*', reflowDocHandler);
 app.get('/roadmap', (c) => c.html(<RoadmapPage />));
 app.get('/feedback', feedbackHandler);
 app.post('/feedback/submit', submitFeatureHandler);
@@ -91,7 +94,7 @@ app.get('/:owner/:repo/commits', commits);
 app.get('/:owner/:repo/commits/:branch', commits);
 app.get('/:owner/:repo/commits/:branch/*', commits);
 
-const port = 3000;
+const port = parseInt(process.env.PORT || '3000', 10);
 console.log(`🚀 Server running at http://localhost:${port}`);
 
 serve({
