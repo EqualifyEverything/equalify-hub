@@ -35,6 +35,14 @@ export const BigLogo: FC = () => (
     </svg>
 );
 
+// UIC circle mark — "UIC" white text on red circle, inline SVG (no external deps)
+export const UICMark: FC<{ size?: number }> = ({ size = 64 }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width={size} height={size} role="img" aria-label="UIC">
+        <circle cx="32" cy="32" r="32" fill="#C8102E"/>
+        <text x="32" y="32" text-anchor="middle" dominant-baseline="central" fill="#ffffff" font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="20" letter-spacing="0.5">UIC</text>
+    </svg>
+);
+
 // User type from auth
 type User = {
     login: string;
@@ -43,7 +51,7 @@ type User = {
 } | null;
 
 export const Nav: FC<{ user?: User; product?: string }> = ({ user, product }) => {
-    const signupLabel = 'Sign Up for Equalify';
+    const signupLabel = 'Sign Up for Updates';
     const signupHref = '/signup';
     return (
         <header class="site-header">
@@ -57,11 +65,9 @@ export const Nav: FC<{ user?: User; product?: string }> = ({ user, product }) =>
                     </a>
                     <div class="nav-links">
                         <a href="/">Home</a>
-                        <a href="/dashboard">Dashboard</a>
-                        <a href="/reflow">Reflow</a>
-                        <a href="/roadmap">Roadmap</a>
-                        <a href="/reports">Reports</a>
                         <a href="/about">About</a>
+                        <a href="/dashboard">Equalify Dashboard</a>
+                        <a href="/reflow">Equalify Reflow</a>
                         {user ? (
                             <>
                                 <a href={`/${user.login}`} style="display:flex;align-items:center;gap:8px;">
@@ -84,11 +90,9 @@ export const Nav: FC<{ user?: User; product?: string }> = ({ user, product }) =>
                 </div>
                 <div class="nav-mobile">
                     <a href="/">Home</a>
-                    <a href="/dashboard">Dashboard</a>
-                    <a href="/reflow">Reflow</a>
-                    <a href="/roadmap">Roadmap</a>
-                    <a href="/reports">Reports</a>
                     <a href="/about">About</a>
+                    <a href="/dashboard">Equalify Dashboard</a>
+                    <a href="/reflow">Equalify Reflow</a>
                     {user ? (
                         <>
                             <a href={`/${user.login}`}>{user.login}</a>
@@ -104,7 +108,7 @@ export const Nav: FC<{ user?: User; product?: string }> = ({ user, product }) =>
     );
 };
 
-// UIC Logo component using actual org logo
+// UIC Logo used in footer
 const UICLogo: FC = () => (
     <img src={config.orgLogo} alt="UIC" style="width:40px;height:40px;border-radius:50%;" />
 );

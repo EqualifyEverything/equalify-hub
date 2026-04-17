@@ -201,6 +201,20 @@ function filenameToTitle(filename: string): string {
         .replace(/\b\w/g, (c: string) => c.toUpperCase());
 }
 
+// Attribute reports/updates to Equalify Dashboard in their titles
+// Examples:
+//   "April 2026 Development Report" -> "April 2026 Equalify Dashboard Development Report"
+//   "New Features & Bug Fixes" -> "Equalify Dashboard: New Features & Bug Fixes"
+function attributeTitle(title: string): string {
+    if (!title || title.toLowerCase().includes('equalify dashboard')) return title;
+    // Insert "Equalify Dashboard" before "Development Report"
+    if (/development report/i.test(title)) {
+        return title.replace(/development report/i, 'Equalify Dashboard Development Report');
+    }
+    // Otherwise prefix with "Equalify Dashboard: "
+    return `Equalify Dashboard: ${title}`;
+}
+
 // List view - shows reports + updates
 export const ReportsListPage: FC<{ reports: ReportListItem[]; updates: ReportListItem[] }> = ({ reports, updates }) => {
     const user = getCurrentUser();
@@ -218,7 +232,7 @@ export const ReportsListPage: FC<{ reports: ReportListItem[]; updates: ReportLis
                 {reports.length > 0 ? (
                     reports.map(report => (
                         <a href={`/reports/${report.slug}`} class="report-card">
-                            <h3>{report.title}</h3>
+                            <h3>{attributeTitle(report.title)}</h3>
                             {report.description && (
                                 <p>{report.description}</p>
                             )}
@@ -238,7 +252,7 @@ export const ReportsListPage: FC<{ reports: ReportListItem[]; updates: ReportLis
                         <h2 style="font-size:20px;font-weight:600;color:var(--color-text);margin:40px 0 16px 0;">Updates</h2>
                         {updates.map(update => (
                             <a href={`/updates/${update.slug}`} class="report-card">
-                                <h3>{update.title}</h3>
+                                <h3>{attributeTitle(update.title)}</h3>
                                 {update.description && (
                                     <p>{update.description}</p>
                                 )}
@@ -257,9 +271,10 @@ export const ReportsListPage: FC<{ reports: ReportListItem[]; updates: ReportLis
 // Single report view - shows one report's content
 export const ReportsDocPage: FC<{ report: ReportFile }> = ({ report }) => {
     const user = getCurrentUser();
+    const displayTitle = attributeTitle(report.title);
 
     return (
-        <Layout title={`${report.title} - Reports - Equalify Hub`} styles={styles} user={user}>
+        <Layout title={`${displayTitle} - Reports - Equalify Hub`} styles={styles} user={user}>
             <div style="max-width:900px;margin:0 auto;padding:32px 48px 64px;">
                 <a href="/reports" class="back-link">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -269,7 +284,7 @@ export const ReportsDocPage: FC<{ report: ReportFile }> = ({ report }) => {
                 </a>
 
                 <div class="report-header">
-                    <h1>{report.title}</h1>
+                    <h1>{displayTitle}</h1>
                     <a href={report.html_url} class="edit-btn" rel="noopener" target="_blank">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>

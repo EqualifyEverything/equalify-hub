@@ -100,7 +100,7 @@ const SignupForm: FC<{ error?: string; product?: string }> = ({ error, product }
                         </label>
                         <label>
                             <input type="checkbox" name="product" value="reflow" checked={product === 'reflow'} />
-                            Reflow
+                            Equalify Reflow
                         </label>
                     </div>
                 </div>
@@ -124,8 +124,8 @@ const SignupPage: FC<{ onList: boolean; error?: string; product?: string }> = ({
     return (
         <Layout title="Sign Up - Equalify" styles={styles} user={user} product={product}>
             <div class="container">
-                <h1>Sign Up</h1>
-                <p class="subtitle">Equalify's tools are rolling out in <a href="/roadmap" style="color:#C8102E;">phases</a>. Sign up to be the first to receive access.</p>
+                <h1>Sign Up for Updates</h1>
+                <p class="subtitle">Equalify's tools are rolling out in <a href="/about#roadmap" style="color:#C8102E;">phases</a>. Sign up to be the first to receive access.</p>
 
                 {onList ? (
                     <div class="success-box">
