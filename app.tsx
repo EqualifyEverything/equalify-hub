@@ -78,7 +78,7 @@ app.get('/updates/:slug', updatesDocHandler);
 app.get('/reports', reportsHandler);
 app.get('/reports/:slug', reportsDocHandler);
 app.get('/reflow', reflowHandler);
-app.get('/reflow/:slug', reflowDocHandler);
+app.get('/reflow/*', reflowDocHandler);
 app.get('/roadmap', (c) => c.html(<RoadmapPage />));
 // Backward-compatible redirects for old doc URLs
 app.get('/user-guide', (c) => c.redirect('/dashboard', 301));
