@@ -7,7 +7,7 @@ import { renderMarkdown } from '#src/utils/markdown';
 const styles = `
 /* Hero */
 .dashboard-hero {
-    background: linear-gradient(135deg, #001e62 0%, #001845 100%);
+    background: #001e62;
     color: #ffffff;
     padding: 64px 24px;
     text-align: center;
@@ -16,10 +16,11 @@ const styles = `
     font-size: 40px;
     font-weight: 700;
     margin: 0 0 16px;
+    color: #ffffff;
 }
 .dashboard-hero .tagline {
     font-size: 20px;
-    color: rgba(255,255,255,0.85);
+    color: #ffffff;
     max-width: 700px;
     margin: 0 auto 32px;
     line-height: 1.5;
@@ -47,11 +48,11 @@ const styles = `
 }
 .btn-primary:hover { background: #a00d25; }
 .btn-secondary {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.2);
     color: #ffffff;
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.5);
 }
-.btn-secondary:hover { background: rgba(255,255,255,0.2); }
+.btn-secondary:hover { background: rgba(255,255,255,0.3); }
 
 /* Docs section */
 .docs-section {

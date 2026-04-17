@@ -430,6 +430,11 @@ nav .nav-links a.active {
     background: #001e62;
 }
 
+/* Ensure links in body content are underlined (link-in-text-block a11y) */
+main a:not([class]) {
+    text-decoration: underline;
+}
+
 @media (min-width: 600px) {
     nav { gap: 24px; }
 }
@@ -456,7 +461,9 @@ export const Layout: FC<LayoutProps> = ({ title, styles, user, product, children
             </head>
             <body>
                 <Nav user={user} product={product} />
-                {children}
+                <main>
+                    {children}
+                </main>
                 <Footer />
             </body>
         </html>

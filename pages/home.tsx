@@ -28,31 +28,17 @@ body {
 
 /* Hero Section */
 .hero {
-    background: linear-gradient(135deg, #001e62 0%, #001845 100%);
+    background: #001e62;
     padding: 80px 48px;
     text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-.hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    opacity: 0.5;
 }
 .hero-content {
     max-width: 800px;
     margin: 0 auto;
-    position: relative;
-    z-index: 1;
 }
 .hero-badge {
     display: inline-block;
-    background: rgba(200, 16, 46, 0.9);
+    background: #C8102E;
     color: #ffffff;
     font-size: 12px;
     font-weight: 600;
@@ -74,7 +60,7 @@ body {
     .hero { padding: 48px 24px; }
 }
 .hero p {
-    color: rgba(255, 255, 255, 0.9);
+    color: #ffffff;
     font-size: 20px;
     line-height: 1.6;
     margin: 0 0 32px 0;
@@ -106,12 +92,12 @@ body {
     transform: translateY(-2px);
 }
 .hero-btn-secondary {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.2);
     color: #ffffff;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.5);
 }
 .hero-btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.3);
     text-decoration: none;
     transform: translateY(-2px);
 }
@@ -201,6 +187,7 @@ export const HomePage: FC = () => {
     return (
         <BaseLayout title={`${site.name} – UIC's Open Source Web Accessibility Ecosystem`} styles={styles}>
             <Nav user={user} />
+            <main>
 
             {/* Reflow Beta Notification Banner */}
             <div class="notification-banner">
@@ -292,6 +279,7 @@ export const HomePage: FC = () => {
                     </a>
                 </div>
             </section>
+            </main>
         </BaseLayout>
     );
 };

@@ -33,9 +33,8 @@ const styles = `
 }
 .report-card .report-date {
     font-size: 12px;
-    color: var(--color-text-secondary);
+    color: #4b5563;
     margin-top: 8px;
-    opacity: 0.8;
 }
 
 /* Single report view */

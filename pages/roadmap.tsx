@@ -35,7 +35,7 @@ const styles = `
 }
 .status-planned {
     background: #f3f4f6;
-    color: #6b7280;
+    color: #4b5563;
 }
 .roadmap-content {
     flex: 1;
