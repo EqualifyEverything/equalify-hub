@@ -11,7 +11,6 @@ import { AboutPage } from '#src/pages/about';
 import { userGuideHandler, userGuideDocHandler } from '#src/pages/user-guide';
 import { technicalDocsHandler, technicalDocsDocHandler } from '#src/pages/technical-docs';
 import { dashboardHandler, dashboardUserGuideDocHandler, dashboardTechnicalDocHandler } from '#src/pages/dashboard';
-import { RoadmapPage } from '#src/pages/roadmap';
 import { updatesHandler, updatesDocHandler } from '#src/pages/updates';
 import { reportsHandler, reportsDocHandler } from '#src/pages/reports';
 import { reflowHandler, reflowDocHandler } from '#src/pages/reflow';
@@ -79,7 +78,7 @@ app.get('/reports', reportsHandler);
 app.get('/reports/:slug', reportsDocHandler);
 app.get('/reflow', reflowHandler);
 app.get('/reflow/:slug', reflowDocHandler);
-app.get('/roadmap', (c) => c.html(<RoadmapPage />));
+app.get('/roadmap', (c) => c.redirect('/about#roadmap', 301));
 // Backward-compatible redirects for old doc URLs
 app.get('/user-guide', (c) => c.redirect('/dashboard', 301));
 app.get('/user-guide/:slug', (c) => c.redirect(`/dashboard/user-guide/${c.req.param('slug')}`, 301));

@@ -127,7 +127,7 @@ body {
 }
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 24px;
 }
 @media (max-width: 768px) {
@@ -179,6 +179,41 @@ body {
     color: #C8102E;
     margin-top: auto;
 }
+
+/* Open Source Callout */
+.open-source-callout {
+    margin-top: 40px;
+    background: #f8f9fa;
+    border: 1px solid #d1d5db;
+    border-left: 4px solid #001e62;
+    border-radius: 8px;
+    padding: 24px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+@media (max-width: 600px) {
+    .open-source-callout {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+.open-source-callout h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 8px;
+}
+.open-source-callout p {
+    font-size: 14px;
+    color: #4b5563;
+    margin: 0;
+    line-height: 1.6;
+}
+.open-source-callout a {
+    color: #C8102E;
+    font-weight: 600;
+}
 `;
 
 export const HomePage: FC = () => {
@@ -198,14 +233,13 @@ export const HomePage: FC = () => {
             {/* Hero Section */}
             <section class="hero">
                 <div class="hero-content">
-                    <span class="hero-badge">UIC Digital Accessibility</span>
                     <h1>Introducing Equalify</h1>
                     <p>
                         UIC's open source web accessibility ecosystem. We currently offer tools
                         to track accessibility issues and convert PDFs into accessible documents.
                     </p>
                     <div class="hero-buttons">
-                        <a href="/roadmap" class="hero-btn hero-btn-primary">
+                        <a href="/about#roadmap" class="hero-btn hero-btn-primary">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
                                 <line x1="8" y1="2" x2="8" y2="18"/>
@@ -220,7 +254,7 @@ export const HomePage: FC = () => {
                                 <line x1="20" y1="8" x2="20" y2="14"/>
                                 <line x1="23" y1="11" x2="17" y2="11"/>
                             </svg>
-                            Sign Up for Equalify
+                            Sign Up for Updates
                         </a>
                     </div>
                 </div>
@@ -228,7 +262,7 @@ export const HomePage: FC = () => {
 
             {/* Product Cards */}
             <section class="products-section">
-                <h2>Our Tools</h2>
+                <h2>Our Products</h2>
                 <p class="section-desc">
                     Explore the Equalify ecosystem — purpose-built tools for web accessibility.
                 </p>
@@ -264,19 +298,21 @@ export const HomePage: FC = () => {
                         </p>
                         <span class="product-link">Learn more &rarr;</span>
                     </a>
-                    <a href="https://github.com/EqualifyEverything" class="product-card">
-                        <div class="product-icon">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
-                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-                            </svg>
-                        </div>
+                </div>
+
+                <div class="open-source-callout">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#001e62" stroke-width="2">
+                        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                    </svg>
+                    <div>
                         <h3>Open Source</h3>
                         <p>
-                            All Equalify tools are open source. Browse our repositories, contribute code,
-                            and help make the web more accessible.
+                            All Equalify tools are open source and maintained by the{' '}
+                            University of Illinois Chicago (UIC) Digital Accessibility Engineering team.
+                            Browse our repositories, contribute code, and help make the web more accessible.{' '}
+                            <a href="https://github.com/EqualifyEverything" rel="noopener" target="_blank">View on GitHub &rarr;</a>
                         </p>
-                        <span class="product-link">View on GitHub &rarr;</span>
-                    </a>
+                    </div>
                 </div>
             </section>
             </main>

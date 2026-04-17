@@ -112,7 +112,7 @@ export const home = async () => {
                </a>
                <a href="/logout">Sign out</a>
            </div>`
-        : `<a href="/signup" style="margin-left:auto;">Sign Up for Equalify</a>`;
+        : `<a href="/signup" style="margin-left:auto;">Sign Up for Updates</a>`;
 
     // Fetch org data
     const { org, repos } = await fetchOrgData();

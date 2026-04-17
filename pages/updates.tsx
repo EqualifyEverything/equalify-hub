@@ -202,6 +202,15 @@ function filenameToTitle(filename: string): string {
         .replace(/\b\w/g, (c: string) => c.toUpperCase());
 }
 
+// Attribute updates to Equalify Dashboard in their titles
+function attributeTitle(title: string): string {
+    if (!title || title.toLowerCase().includes('equalify dashboard')) return title;
+    if (/development report/i.test(title)) {
+        return title.replace(/development report/i, 'Equalify Dashboard Development Report');
+    }
+    return `Equalify Dashboard: ${title}`;
+}
+
 // List view - shows all updates as clickable cards
 export const UpdatesListPage: FC<{ updates: UpdateListItem[] }> = ({ updates }) => {
     const user = getCurrentUser();
@@ -217,7 +226,7 @@ export const UpdatesListPage: FC<{ updates: UpdateListItem[] }> = ({ updates }) 
                 {updates.length > 0 ? (
                     updates.map(update => (
                         <a href={`/updates/${update.slug}`} class="update-card">
-                            <h3>{update.title}</h3>
+                            <h3>{attributeTitle(update.title)}</h3>
                             {update.description && (
                                 <p>{update.description}</p>
                             )}
@@ -239,9 +248,10 @@ export const UpdatesListPage: FC<{ updates: UpdateListItem[] }> = ({ updates }) 
 // Single update view - shows one update's content
 export const UpdatesDocPage: FC<{ update: UpdateFile }> = ({ update }) => {
     const user = getCurrentUser();
-    
+    const displayTitle = attributeTitle(update.title);
+
     return (
-        <Layout title={`${update.title} - Updates - Equalify Hub`} styles={styles} user={user}>
+        <Layout title={`${displayTitle} - Updates - Equalify Hub`} styles={styles} user={user}>
             <div style="max-width:900px;margin:0 auto;padding:32px 48px 64px;">
                 <a href="/updates" class="back-link">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -249,9 +259,9 @@ export const UpdatesDocPage: FC<{ update: UpdateFile }> = ({ update }) => {
                     </svg>
                     Back to Updates
                 </a>
-                
+
                 <div class="update-header">
-                    <h1>{update.title}</h1>
+                    <h1>{displayTitle}</h1>
                     <a href={update.html_url} class="edit-btn" rel="noopener" target="_blank">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>

@@ -15,12 +15,11 @@ Sitemap: https://equalify.uic.edu/sitemap.xml`);
 export const sitemap = (c: Context) => {
     const pages = [
         { loc: 'https://equalify.uic.edu/', priority: '1.0', changefreq: 'daily' },
+        { loc: 'https://equalify.uic.edu/about', priority: '0.9', changefreq: 'monthly' },
         { loc: 'https://equalify.uic.edu/dashboard', priority: '0.9', changefreq: 'monthly' },
         { loc: 'https://equalify.uic.edu/reflow', priority: '0.9', changefreq: 'monthly' },
-        { loc: 'https://equalify.uic.edu/roadmap', priority: '0.8', changefreq: 'monthly' },
         { loc: 'https://equalify.uic.edu/reports', priority: '0.7', changefreq: 'monthly' },
         { loc: 'https://equalify.uic.edu/signup', priority: '0.7', changefreq: 'monthly' },
-        { loc: 'https://equalify.uic.edu/about', priority: '0.6', changefreq: 'monthly' },
     ];
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
