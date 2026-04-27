@@ -8,9 +8,7 @@ import { setEvent } from '#src/utils/event';
 
 // Migrated pages (JSX components)
 import { AboutPage } from '#src/pages/about';
-import { userGuideHandler, userGuideDocHandler } from '#src/pages/user-guide';
-import { technicalDocsHandler, technicalDocsDocHandler } from '#src/pages/technical-docs';
-import { dashboardHandler, dashboardUserGuideDocHandler, dashboardTechnicalDocHandler } from '#src/pages/dashboard';
+import { dashboardHandler, dashboardUserGuideListHandler, dashboardTechnicalListHandler, dashboardUserGuideDocHandler, dashboardTechnicalDocHandler } from '#src/pages/dashboard';
 import { updatesHandler, updatesDocHandler } from '#src/pages/updates';
 import { reportsHandler, reportsDocHandler } from '#src/pages/reports';
 import { reflowHandler, reflowDocHandler } from '#src/pages/reflow';
@@ -70,7 +68,9 @@ app.get('/logout', logout);
 app.get('/', homeHandler);
 app.get('/about', (c) => c.html(<AboutPage />));
 app.get('/dashboard', dashboardHandler);
+app.get('/dashboard/user-guide', dashboardUserGuideListHandler);
 app.get('/dashboard/user-guide/:slug', dashboardUserGuideDocHandler);
+app.get('/dashboard/technical', dashboardTechnicalListHandler);
 app.get('/dashboard/technical/:slug', dashboardTechnicalDocHandler);
 app.get('/updates', updatesHandler);
 app.get('/updates/:slug', updatesDocHandler);
@@ -78,12 +78,12 @@ app.get('/reports', reportsHandler);
 app.get('/reports/:slug', reportsDocHandler);
 app.get('/reflow', reflowHandler);
 app.get('/reflow/*', reflowDocHandler);
-app.get('/roadmap', (c) => c.redirect('/about#roadmap', 301));
-// Backward-compatible redirects for old doc URLs
-app.get('/user-guide', (c) => c.redirect('/dashboard', 301));
-app.get('/user-guide/:slug', (c) => c.redirect(`/dashboard/user-guide/${c.req.param('slug')}`, 301));
-app.get('/technical-docs', (c) => c.redirect('/dashboard', 301));
-app.get('/technical-docs/:slug', (c) => c.redirect(`/dashboard/technical/${c.req.param('slug')}`, 301));
+app.get('/roadmap', (c) => c.redirect('/about#roadmap', 302));
+// Backward-compatible redirects for old doc URLs (302 to avoid aggressive browser caching)
+app.get('/user-guide', (c) => c.redirect('/dashboard/user-guide', 302));
+app.get('/user-guide/:slug', (c) => c.redirect(`/dashboard/user-guide/${c.req.param('slug')}`, 302));
+app.get('/technical-docs', (c) => c.redirect('/dashboard/technical', 302));
+app.get('/technical-docs/:slug', (c) => c.redirect(`/dashboard/technical/${c.req.param('slug')}`, 302));
 app.get('/signup', signupHandler);
 app.get('/signup/reflow', signupReflowHandler);
 app.post('/signup/submit', signupSubmitHandler);

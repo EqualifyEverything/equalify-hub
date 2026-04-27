@@ -287,6 +287,46 @@ export const DashboardPage: FC<{ userDocs: DocListItem[]; technicalDocs: DocList
     );
 };
 
+// Focused list page (just User Guide or just Technical Docs)
+export const DashboardSectionListPage: FC<{ docs: DocListItem[]; section: 'user-guide' | 'technical' }> = ({ docs, section }) => {
+    const user = getCurrentUser();
+    const isUserGuide = section === 'user-guide';
+    const title = isUserGuide ? 'User Guide' : 'Technical Documentation';
+    const description = isUserGuide
+        ? 'Guides for end users on how to use Equalify effectively.'
+        : 'API documentation, architecture guides, and developer resources for contributors.';
+    const linkPrefix = `/dashboard/${section}`;
+
+    return (
+        <Layout title={`${title} - Equalify Dashboard`} styles={styles} user={user}>
+            <div style="max-width:900px;margin:0 auto;padding:32px 48px 64px;">
+                <a href="/dashboard" class="back-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    Back to Equalify Dashboard
+                </a>
+
+                <h1 style="font-size:32px;font-weight:700;color:#1f2937;margin:0 0 8px 0;">{title}</h1>
+                <p style="color:#4b5563;margin:0 0 32px 0;font-size:16px;">{description}</p>
+
+                {docs.length > 0 ? (
+                    docs.map(doc => (
+                        <a href={`${linkPrefix}/${doc.slug}`} class="doc-card">
+                            <h3>{doc.title}</h3>
+                            <p>{doc.description}</p>
+                        </a>
+                    ))
+                ) : (
+                    <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:16px;">
+                        <p style="margin:0;color:#713f12;">Documentation is being loaded. Please refresh the page.</p>
+                    </div>
+                )}
+            </div>
+        </Layout>
+    );
+};
+
 // Single doc view (shared by both user-guide and technical docs)
 export const DashboardDocPage: FC<{ doc: DocFile; section: string }> = ({ doc, section }) => {
     const user = getCurrentUser();
@@ -295,11 +335,11 @@ export const DashboardDocPage: FC<{ doc: DocFile; section: string }> = ({ doc, s
     return (
         <Layout title={`${doc.title} - ${sectionLabel} - Equalify Dashboard`} styles={styles} user={user}>
             <div style="max-width:900px;margin:0 auto;padding:32px 48px 64px;">
-                <a href="/dashboard" class="back-link">
+                <a href={`/dashboard/${section}`} class="back-link">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M19 12H5M12 19l-7-7 7-7"/>
                     </svg>
-                    Back to Equalify Dashboard
+                    Back to {sectionLabel}
                 </a>
 
                 <div class="doc-header">
@@ -368,6 +408,20 @@ export async function dashboardHandler(c: Context) {
     ]);
 
     return c.html(<DashboardPage userDocs={userDocs} technicalDocs={technicalDocs} />);
+}
+
+// Handler for the focused User Guide list page
+export async function dashboardUserGuideListHandler(c: Context) {
+    const token = getGitHubToken();
+    const docs = await fetchDocList('user', userGuideMetadata, token);
+    return c.html(<DashboardSectionListPage docs={docs} section="user-guide" />);
+}
+
+// Handler for the focused Technical Documentation list page
+export async function dashboardTechnicalListHandler(c: Context) {
+    const token = getGitHubToken();
+    const docs = await fetchDocList('technical', technicalDocMetadata, token);
+    return c.html(<DashboardSectionListPage docs={docs} section="technical" />);
 }
 
 // Handler for individual user-guide doc
