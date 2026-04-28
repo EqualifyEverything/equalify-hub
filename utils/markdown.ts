@@ -11,9 +11,39 @@ function escapeHtml(text: string): string {
         .replace(/"/g, '&quot;');
 }
 
+// Callout types with their styling (background, border, icon)
+const CALLOUT_TYPES: Record<string, { bg: string; border: string; color: string; label: string }> = {
+    tip: { bg: '#eff6ff', border: '#3b82f6', color: '#1e3a8a', label: 'Tip' },
+    note: { bg: '#f3f4f6', border: '#6b7280', color: '#1f2937', label: 'Note' },
+    important: { bg: '#fef3c7', border: '#f59e0b', color: '#713f12', label: 'Important' },
+    warning: { bg: '#fee2e2', border: '#ef4444', color: '#7f1d1d', label: 'Warning' },
+    success: { bg: '#dcfce7', border: '#22c55e', color: '#14532d', label: 'Success' },
+};
+
+// Convert GitHub blob URLs to raw URLs (for embedded images)
+// e.g. https://github.com/Org/Repo/blob/SHA/path/file.png → https://raw.githubusercontent.com/Org/Repo/SHA/path/file.png
+function rewriteGitHubBlobUrl(url: string): string {
+    return url.replace(
+        /^https:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)$/,
+        'https://raw.githubusercontent.com/$1/$2/$3/$4'
+    );
+}
+
 export function renderMarkdown(md: string): string {
     let html = md;
-    
+
+    // First pass: handle callout code blocks (```tip, ```important, ```warning, ```note, ```success)
+    // Render them as styled callouts before the generic code block handler runs
+    const callouts: string[] = [];
+    html = html.replace(/```(tip|note|important|warning|success)\n([\s\S]*?)```/g, (_, type, content) => {
+        const cfg = CALLOUT_TYPES[type];
+        // Render markdown inside callout content (recursively, simply)
+        const inner = renderInlineMarkdown(content.trim());
+        const calloutHtml = `<div class="md-callout md-callout-${type}" style="background:${cfg.bg};border-left:4px solid ${cfg.border};color:${cfg.color};padding:12px 16px;margin:16px 0;border-radius:6px;">${inner}</div>`;
+        callouts.push(calloutHtml);
+        return `%%CALLOUT${callouts.length - 1}%%`;
+    });
+
     // Preserve code blocks first (replace with placeholders)
     const codeBlocks: string[] = [];
     html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
@@ -156,6 +186,45 @@ export function renderMarkdown(md: string): string {
     inlineCode.forEach((code, i) => {
         html = html.replace(`%%INLINECODE${i}%%`, code);
     });
-    
+
+    // Restore callouts (after paragraph wrapping)
+    callouts.forEach((callout, i) => {
+        html = html.replace(`%%CALLOUT${i}%%`, callout);
+    });
+
+    // Strip <p> wrappers around restored block elements
+    html = html.replace(/<p>\s*(<div\s[^>]*class="md-callout[\s\S]*?<\/div>)\s*<\/p>/g, '$1');
+    html = html.replace(/<p>\s*(<pre[\s>][\s\S]*?<\/pre>)\s*<\/p>/g, '$1');
+
+    // Rewrite GitHub blob URLs in <img> tags to raw URLs (so embedded images actually load)
+    html = html.replace(/<img\s+([^>]*?)src="([^"]+)"([^>]*?)>/g, (_, before, src, after) => {
+        return `<img ${before}src="${rewriteGitHubBlobUrl(src)}"${after}>`;
+    });
+
+    return html;
+}
+
+// Lightweight inline markdown renderer for callout content
+// Supports: bold, italic, links, inline code, line breaks
+function renderInlineMarkdown(text: string): string {
+    let html = text;
+    // Inline code first
+    const codes: string[] = [];
+    html = html.replace(/`([^`]+)`/g, (_, code) => {
+        codes.push(`<code>${escapeHtml(code)}</code>`);
+        return ` C${codes.length - 1} `;
+    });
+    // Links: [text](url)
+    html = html.replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g, '<a href="$2" rel="noopener">$1</a>');
+    // Bold and italic
+    html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g, '<em>$1</em>');
+    // Line breaks → <br>
+    html = html.replace(/\n/g, '<br>');
+    // Restore inline code
+    codes.forEach((code, i) => {
+        html = html.replace(` C${i} `, code);
+    });
     return html;
 }

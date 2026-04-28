@@ -69,7 +69,7 @@ app.get('/', homeHandler);
 app.get('/about', (c) => c.html(<AboutPage />));
 app.get('/dashboard', dashboardHandler);
 app.get('/dashboard/user-guide', dashboardUserGuideListHandler);
-app.get('/dashboard/user-guide/:slug', dashboardUserGuideDocHandler);
+app.get('/dashboard/user-guide/:section/:page', dashboardUserGuideDocHandler);
 app.get('/dashboard/technical', dashboardTechnicalListHandler);
 app.get('/dashboard/technical/:slug', dashboardTechnicalDocHandler);
 app.get('/updates', updatesHandler);
@@ -81,7 +81,8 @@ app.get('/reflow/*', reflowDocHandler);
 app.get('/roadmap', (c) => c.redirect('/about#roadmap', 302));
 // Backward-compatible redirects for old doc URLs (302 to avoid aggressive browser caching)
 app.get('/user-guide', (c) => c.redirect('/dashboard/user-guide', 302));
-app.get('/user-guide/:slug', (c) => c.redirect(`/dashboard/user-guide/${c.req.param('slug')}`, 302));
+// Old flat-slug user guide URLs no longer have a 1:1 mapping; redirect to the index
+app.get('/user-guide/:slug', (c) => c.redirect('/dashboard/user-guide', 302));
 app.get('/technical-docs', (c) => c.redirect('/dashboard/technical', 302));
 app.get('/technical-docs/:slug', (c) => c.redirect(`/dashboard/technical/${c.req.param('slug')}`, 302));
 app.get('/signup', signupHandler);
