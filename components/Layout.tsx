@@ -66,6 +66,7 @@ export const Nav: FC<{ user?: User; product?: string }> = ({ user, product }) =>
                     <div class="nav-links">
                         <a href="/">Home</a>
                         <a href="/about">About</a>
+                        <a href="/updates">Updates</a>
                         <a href="/dashboard">Equalify Dashboard</a>
                         <a href="/reflow">Equalify Reflow</a>
                         {user ? (
@@ -91,6 +92,7 @@ export const Nav: FC<{ user?: User; product?: string }> = ({ user, product }) =>
                 <div class="nav-mobile">
                     <a href="/">Home</a>
                     <a href="/about">About</a>
+                    <a href="/reports">Updates</a>
                     <a href="/dashboard">Equalify Dashboard</a>
                     <a href="/reflow">Equalify Reflow</a>
                     {user ? (

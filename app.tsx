@@ -72,9 +72,11 @@ app.get('/dashboard/user-guide', dashboardUserGuideListHandler);
 app.get('/dashboard/user-guide/:section/:page', dashboardUserGuideDocHandler);
 app.get('/dashboard/technical', dashboardTechnicalListHandler);
 app.get('/dashboard/technical/:slug', dashboardTechnicalDocHandler);
-app.get('/updates', updatesHandler);
+// Combined listing page (Monthly Reports + News + future Releases) lives at /updates
+app.get('/updates', reportsHandler);
 app.get('/updates/:slug', updatesDocHandler);
-app.get('/reports', reportsHandler);
+// Individual report pages keep their /reports/:slug URLs (they map to equalify-docs/reports/)
+app.get('/reports', (c) => c.redirect('/updates', 302));
 app.get('/reports/:slug', reportsDocHandler);
 app.get('/reflow', reflowHandler);
 app.get('/reflow/*', reflowDocHandler);

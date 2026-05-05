@@ -220,14 +220,14 @@ export const ReportsListPage: FC<{ reports: ReportListItem[]; updates: ReportLis
     const user = getCurrentUser();
 
     return (
-        <Layout title="Reports - Equalify Hub" styles={styles} user={user}>
+        <Layout title="Updates - Equalify Hub" styles={styles} user={user}>
             <div style="max-width:900px;margin:0 auto;padding:32px 48px 64px;">
-                <h1 style="font-size:32px;font-weight:700;color:var(--color-text);margin:0 0 8px 0;">Reports</h1>
+                <h1 style="font-size:32px;font-weight:700;color:var(--color-text);margin:0 0 8px 0;">Updates</h1>
                 <p style="color:var(--color-text-secondary);margin:0 0 32px 0;font-size:16px;">
-                    Monthly development reports, performance metrics, and project updates for Equalify.
+                    Monthly development reports, project news, and (soon) release notes for Equalify.
                 </p>
 
-                <h2 style="font-size:20px;font-weight:600;color:var(--color-text);margin:0 0 16px 0;">Monthly Development Reports</h2>
+                <h2 style="font-size:20px;font-weight:600;color:var(--color-text);margin:0 0 16px 0;">Monthly Reports</h2>
 
                 {reports.length > 0 ? (
                     reports.map(report => (
@@ -249,7 +249,7 @@ export const ReportsListPage: FC<{ reports: ReportListItem[]; updates: ReportLis
 
                 {updates.length > 0 && (
                     <>
-                        <h2 style="font-size:20px;font-weight:600;color:var(--color-text);margin:40px 0 16px 0;">Updates</h2>
+                        <h2 style="font-size:20px;font-weight:600;color:var(--color-text);margin:40px 0 16px 0;">News</h2>
                         {updates.map(update => (
                             <a href={`/updates/${update.slug}`} class="report-card">
                                 <h3>{attributeTitle(update.title)}</h3>
@@ -274,13 +274,13 @@ export const ReportsDocPage: FC<{ report: ReportFile }> = ({ report }) => {
     const displayTitle = attributeTitle(report.title);
 
     return (
-        <Layout title={`${displayTitle} - Reports - Equalify Hub`} styles={styles} user={user}>
+        <Layout title={`${displayTitle} - Updates - Equalify Hub`} styles={styles} user={user}>
             <div style="max-width:900px;margin:0 auto;padding:32px 48px 64px;">
-                <a href="/reports" class="back-link">
+                <a href="/updates" class="back-link">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M19 12H5M12 19l-7-7 7-7"/>
                     </svg>
-                    Back to Reports
+                    Back to Updates
                 </a>
 
                 <div class="report-header">
