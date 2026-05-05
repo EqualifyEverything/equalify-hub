@@ -26,7 +26,12 @@ const CONTRIBUTORS: Record<string, string> = {
     'bbertucc': 'B. Bertuccelli-Booth',
     'dylan-isaac': 'D. Isaac',
     'a11ydoer': 'J. Ku',
+    'amandaroper': 'A. Roper',
 };
+
+// Off-platform collaborators (no GitHub commits) — context for the polish prompt
+// so the LLM attributes design contributions to them when relevant content exists.
+const OFF_PLATFORM_COLLABORATORS = `Brother J and Christopher CK are blind accessibility experts who contributed design documents (via Microsoft Teams) for the equalify-a11y-extension — a manual user testing extension. When the report's commit highlights or completed work include changes to equalify-a11y-extension, attribute the design direction to them in the relevant bullets.`;
 
 // Accounts to exclude from git activity stats (test/bot accounts)
 const EXCLUDED_ACCOUNTS = new Set(['equalifyuic1', 'equalifyuic3']);
@@ -533,7 +538,8 @@ Take the raw markdown report below and rewrite it into a polished, professional 
 13. **Do not invent information** — only rewrite what's there
 14. **Do not add emoji**
 15. **Keep contributor names** (e.g., "C. Aitken", "T. Daniel") exactly as-is — do not convert them to GitHub @mentions
-16. Output ONLY the polished markdown — no commentary, no code fences${referenceSection}
+16. Output ONLY the polished markdown — no commentary, no code fences
+17. **Off-platform collaborators**: ${OFF_PLATFORM_COLLABORATORS} If the equalify-a11y-extension repository appears in the Active Repositories table or commit highlights, mention Brother J and Christopher CK in the relevant Completed Work bullet or Highlights bullet (e.g., "...built from design documents provided by Brother J and Christopher CK"). If the extension is not mentioned in the data, do not add them anywhere — only attribute them when their work is reflected in the underlying activity.${referenceSection}
 
 Raw report to polish:
 
