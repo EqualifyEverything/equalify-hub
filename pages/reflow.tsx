@@ -447,10 +447,7 @@ export const ReflowListPage: FC<{ categories: ReflowCategory[] }> = ({ categorie
                 </p>
                 <div class="reflow-hero-buttons">
                     <a href="https://reflow.equalify.uic.edu" class="btn-primary" rel="noopener" target="_blank">
-                        Try the Reflow Beta
-                    </a>
-                    <a href="https://github.com/EqualifyEverything/equalify-reflow" class="btn-secondary" rel="noopener" target="_blank">
-                        View on GitHub
+                        Try Reflow (UIC Users Only)
                     </a>
                 </div>
             </section>
