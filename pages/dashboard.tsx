@@ -3,6 +3,7 @@ import type { Context } from 'hono';
 import { Layout } from '#src/components/Layout';
 import { getCurrentUser, getGitHubToken, fetchGitHub } from '#src/utils/auth';
 import { renderMarkdown } from '#src/utils/markdown';
+import config from '#src/utils/config';
 
 const styles = `
 /* Hero */
@@ -463,7 +464,7 @@ export const DashboardPage: FC<{ userSections: UserGuideSection[]; technicalDocs
     const user = getCurrentUser();
 
     return (
-        <Layout title="Equalify Dashboard - Equalify Hub" styles={styles} user={user}>
+        <Layout title="Equalify Dashboard" styles={styles} user={user}>
             {/* Hero */}
             <section class="dashboard-hero">
                 <h1>Equalify Dashboard</h1>
@@ -472,11 +473,8 @@ export const DashboardPage: FC<{ userSections: UserGuideSection[]; technicalDocs
                     Scan, audit, and monitor your organization's accessibility compliance.
                 </p>
                 <div class="dashboard-hero-buttons">
-                    <a href="/signup" class="btn-primary">
-                        Sign Up for Dashboard
-                    </a>
-                    <a href="https://github.com/EqualifyEverything/equalify" class="btn-secondary" rel="noopener">
-                        View on GitHub
+                    <a href={config.equalifyAppUrl} class="btn-primary" rel="noopener" target="_blank">
+                        Open Equalify Dashboard
                     </a>
                 </div>
             </section>
