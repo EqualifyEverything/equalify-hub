@@ -384,8 +384,9 @@ const styles = `
 }
 `;
 
-// Convert a folder/file name like "1. Onboarding and Setup" or "1.1: Quick Start Guide.md"
-// into a URL-friendly slug ("1-onboarding-and-setup", "1-1-quick-start-guide").
+// Convert a folder/file name into a URL-friendly slug.
+// Handles both old format ("1. Onboarding and Setup", "1.1: Quick Start Guide.md")
+// and new hyphenated format ("1-onboarding-and-setup", "1-1-quick-start-guide.md").
 function slugify(name: string): string {
     return name
         .replace(/\.md$/i, '')
@@ -394,19 +395,50 @@ function slugify(name: string): string {
         .replace(/^-+|-+$/g, '');
 }
 
-// Strip leading number prefix ("1. " or "1.1: ") from a name to get the display title
+// Small words to keep lowercase in title case
+const LOWER_WORDS = new Set(['and', 'or', 'the', 'a', 'an', 'of', 'in', 'on', 'to', 'for', 'with', 'as', 'at', 'by']);
+
+// Strip leading number prefix and convert to a human-readable display title.
+// Handles both: "1. Onboarding and Setup" → "Onboarding and Setup"
+//           and: "1-onboarding-and-setup" → "Onboarding and Setup"
 function stripNumberPrefix(name: string): string {
-    return name
-        .replace(/\.md$/i, '')
-        .replace(/^\d+(?:\.\d+)?\s*[:.\)]\s*/, '')
-        .trim();
+    let s = name.replace(/\.md$/i, '');
+
+    // Strip leading numeric prefix: matches "1.", "1.1:", "1.1)", "1-", "1-1-", "1 ", etc.
+    s = s.replace(/^\d+(?:[-.]\d+)*\s*[:.\)\-]\s*/, '').trim();
+
+    // If the result is all-lowercase with hyphens (new format), convert hyphens to spaces
+    if (s.includes('-') && !/\s/.test(s)) {
+        s = s.replace(/-/g, ' ');
+    }
+
+    // Title-case: capitalize first letter of each word, but keep small connective words lowercase
+    return s.split(/\s+/).map((w, i) => {
+        if (!w) return w;
+        if (i > 0 && LOWER_WORDS.has(w.toLowerCase())) return w.toLowerCase();
+        return w.charAt(0).toUpperCase() + w.slice(1);
+    }).join(' ');
 }
 
-// Extract sortable order key from a folder/file name with leading number
+// Extract sortable order key from a folder/file name with leading number.
+// Handles both "1.1" (dot-separated) and "1-1" (hyphen-separated) formats.
 function orderKey(name: string): number[] {
-    const match = name.match(/^(\d+(?:\.\d+)*)/);
+    const match = name.match(/^(\d+(?:[-.]\d+)*)/);
     if (!match) return [9999];
-    return match[1].split('.').map(n => parseInt(n, 10));
+    return match[1].split(/[-.]/).map(n => parseInt(n, 10));
+}
+
+// Get the display page number ("1.1") from a filename in either format
+function getPageNumber(name: string): string {
+    const match = name.replace(/\.md$/i, '').match(/^(\d+(?:[-.]\d+)?)/);
+    if (!match) return '';
+    return match[1].replace(/-/g, '.');
+}
+
+// Get just the section number ("1") from a folder name in either format
+function getSectionNumber(name: string): string {
+    const match = name.match(/^(\d+)/);
+    return match ? match[1] : '';
 }
 
 function compareByOrder(a: string, b: string): number {
@@ -798,16 +830,16 @@ async function fetchUserGuideSections(token: string): Promise<UserGuideSection[]
 
         if (!Array.isArray(userContents)) return [];
 
-        // Find folders matching the numbered pattern (skip non-numbered folders like "User Guide Images")
+        // Find folders matching the numbered pattern (skip non-numbered folders like "User Guide Images").
+        // Accepts both old format ("1. Foo") and new hyphenated format ("1-foo").
         const sectionFolders = userContents
-            .filter((item: any) => item.type === 'dir' && /^\d+\.\s/.test(item.name))
+            .filter((item: any) => item.type === 'dir' && /^\d+[-.\s]/.test(item.name))
             .sort((a: any, b: any) => compareByOrder(a.name, b.name));
 
         // Fetch each section's pages in parallel
         const sections: UserGuideSection[] = await Promise.all(
             sectionFolders.map(async (folder: any) => {
-                const numberMatch = folder.name.match(/^(\d+)\./);
-                const sectionNumber = numberMatch ? numberMatch[1] : '';
+                const sectionNumber = getSectionNumber(folder.name);
                 const sectionTitle = stripNumberPrefix(folder.name);
                 const sectionSlug = slugify(folder.name);
 
@@ -821,15 +853,12 @@ async function fetchUserGuideSections(token: string): Promise<UserGuideSection[]
                         pages = folderContents
                             .filter((f: any) => f.type === 'file' && f.name.endsWith('.md'))
                             .sort((a: any, b: any) => compareByOrder(a.name, b.name))
-                            .map((f: any) => {
-                                const pageNumMatch = f.name.match(/^(\d+(?:\.\d+)?)/);
-                                return {
-                                    name: f.name,
-                                    slug: slugify(f.name),
-                                    title: stripNumberPrefix(f.name),
-                                    number: pageNumMatch ? pageNumMatch[1] : '',
-                                };
-                            });
+                            .map((f: any) => ({
+                                name: f.name,
+                                slug: slugify(f.name),
+                                title: stripNumberPrefix(f.name),
+                                number: getPageNumber(f.name),
+                            }));
                     }
                 } catch (error) {
                     console.error(`Error fetching pages for ${folder.name}:`, error);
