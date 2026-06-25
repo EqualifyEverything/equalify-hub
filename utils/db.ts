@@ -89,6 +89,21 @@ export async function getStaleGitHubCache(url: string): Promise<any | null> {
     }
 }
 
+// Delete a cached GitHub response (used when GitHub returns 404 so a stale entry
+// can't keep serving content that no longer exists upstream)
+export async function deleteGitHubCache(url: string): Promise<void> {
+    try {
+        const sk = hashUrl(url);
+        await docClient.send(new DeleteCommand({
+            TableName: TABLE_NAME,
+            Key: { pk: 'GHCACHE', sk }
+        }));
+        console.log(`[GHCACHE] DELETE for ${url}`);
+    } catch (error) {
+        console.error('Error deleting GitHub cache:', error);
+    }
+}
+
 // Set cached GitHub response
 export async function setGitHubCache(url: string, data: any): Promise<void> {
     try {

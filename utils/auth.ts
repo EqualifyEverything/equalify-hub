@@ -107,7 +107,7 @@ const GITHUB_FALLBACK_TOKENS = [
 // Persists across requests in the same Lambda container (warm starts).
 let firstWorkingTokenIndex = 0;
 
-import { getGitHubCache, getStaleGitHubCache, setGitHubCache } from './db';
+import { getGitHubCache, getStaleGitHubCache, setGitHubCache, deleteGitHubCache } from './db';
 
 // Fetch from GitHub with optional auth and 60-min caching
 // Falls back to stale cached data if all API attempts fail
@@ -122,20 +122,30 @@ export async function fetchGitHub(url: string, token?: string | null, skipCache 
     
     // Try fetching fresh data
     const freshResult = await fetchGitHubFresh(url, token, skipCache);
-    
+
     // If we got good data, return it
     if (freshResult && !freshResult.message && !freshResult.error) {
         return freshResult;
     }
-    
-    // Fresh fetch failed — try stale cache as last resort
+
+    // Definitive 404 from GitHub means the resource genuinely doesn't exist anymore.
+    // Don't fall back to stale cache (which would keep serving deleted content forever),
+    // and proactively clear any cached entry so it can't be revived via stale lookups.
+    if (freshResult?.message === 'Not Found') {
+        if (!skipCache) {
+            await deleteGitHubCache(url);
+        }
+        return freshResult;
+    }
+
+    // Fresh fetch failed for other reasons (rate limit, network) — try stale cache as last resort
     if (!skipCache) {
         const stale = await getStaleGitHubCache(url);
         if (stale) {
             return stale;
         }
     }
-    
+
     // Nothing worked — return whatever we got (error or empty)
     return freshResult;
 }
