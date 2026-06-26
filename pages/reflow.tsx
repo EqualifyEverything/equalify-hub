@@ -683,6 +683,125 @@ export async function reflowHandler(c: Context) {
     return c.html(<ReflowListPage categories={categories} />);
 }
 
+// Pages that have been removed from the docs but still get hit by old links.
+// Keyed by slug (no `.md`, no leading slash). Add new entries here when retiring
+// content so visitors land on a clear explanation instead of a silent redirect.
+interface DeprecationEntry {
+    title: string;
+    removedOn: string;     // ISO date
+    reason: string;
+    suggestedNext?: { href: string; label: string }[];
+}
+const DEPRECATED_SLUGS: Record<string, DeprecationEntry> = {
+    'how-to/use-the-wordpress-plugin': {
+        title: 'Use the WordPress plugin',
+        removedOn: '2026-06-10',
+        reason: 'The Equalify Reflow WordPress plugin has been retired. Reflow is now accessed through the hosted web app or directly via the HTTP API.',
+        suggestedNext: [
+            { href: '/reflow/how-to/use-the-web-app', label: 'Use the web app' },
+            { href: '/reflow/how-to/integrate-via-api', label: 'Integrate via the API' },
+            { href: '/reflow', label: 'Browse all Reflow docs' },
+        ],
+    },
+    'tutorials/process-your-first-pdf-with-wordpress': {
+        title: 'Process your first PDF with WordPress',
+        removedOn: '2026-06-10',
+        reason: 'The Equalify Reflow WordPress plugin has been retired. Follow the web-app tutorial instead — it walks the same pipeline end-to-end.',
+        suggestedNext: [
+            { href: '/reflow/tutorials/process-your-first-pdf-with-the-web-app', label: 'Process your first PDF with the web app' },
+            { href: '/reflow', label: 'Browse all Reflow docs' },
+        ],
+    },
+};
+
+const deprecationStyles = `
+.deprecation-wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 64px;
+}
+.deprecation-card {
+    background: #fef3c7;
+    border: 1px solid #fcd34d;
+    border-left: 4px solid #b45309;
+    border-radius: 8px;
+    padding: 24px 28px;
+}
+.deprecation-card h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #713f12;
+    margin: 0 0 6px;
+}
+.deprecation-meta {
+    font-size: 13px;
+    color: #92400e;
+    margin: 0 0 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+}
+.deprecation-card p {
+    margin: 0 0 18px;
+    color: #4b3a0f;
+    line-height: 1.6;
+}
+.deprecation-next {
+    margin-top: 8px;
+}
+.deprecation-next strong {
+    display: block;
+    color: #4b3a0f;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+.deprecation-next ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.deprecation-next li {
+    margin: 6px 0;
+}
+.deprecation-next a {
+    color: #C8102E;
+    text-decoration: none;
+    font-weight: 500;
+}
+.deprecation-next a:hover {
+    text-decoration: underline;
+}
+`;
+
+export const ReflowDeprecatedPage: FC<{ slug: string; entry: DeprecationEntry }> = ({ slug, entry }) => {
+    const user = getCurrentUser();
+    const removedOnFormatted = new Date(entry.removedOn + 'T00:00:00').toLocaleDateString('en-US', {
+        year: 'numeric', month: 'long', day: 'numeric',
+    });
+
+    return (
+        <Layout title={`${entry.title} (removed)`} styles={deprecationStyles} user={user} product="reflow">
+            <div class="deprecation-wrap">
+                <div class="deprecation-card" role="alert">
+                    <p class="deprecation-meta">Page removed</p>
+                    <h1>{entry.title}</h1>
+                    <p>This page was removed on {removedOnFormatted}. {entry.reason}</p>
+                    {entry.suggestedNext && entry.suggestedNext.length > 0 && (
+                        <div class="deprecation-next">
+                            <strong>Where to go next:</strong>
+                            <ul>
+                                {entry.suggestedNext.map(link => (
+                                    <li><a href={link.href}>{link.label} &rarr;</a></li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </Layout>
+    );
+};
+
 // Handler for single doc view. Slug may be a nested path, e.g.
 // "how-to/use-the-wordpress-plugin". Registered against the
 // `/reflow/*` wildcard route (see app.tsx / dev.tsx).
@@ -704,6 +823,14 @@ export async function reflowDocHandler(c: Context) {
     // '..' segments. If anything looks off, drop to the list view.
     if (!slug || slug.startsWith('/') || slug.split('/').some(seg => seg === '..' || seg === '.')) {
         return c.redirect('/reflow');
+    }
+
+    // If the slug is a known retired page, show a deprecation notice instead of
+    // silently redirecting — better UX for users following old links from
+    // bookmarks, emails, or external sites.
+    const deprecation = DEPRECATED_SLUGS[slug];
+    if (deprecation) {
+        return c.html(<ReflowDeprecatedPage slug={slug} entry={deprecation} />, 410);
     }
 
     const token = getGitHubToken();
