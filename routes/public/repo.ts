@@ -27,6 +27,10 @@ export const repo = async (c: Context) => {
             return c.html(renderError(`Repository ${owner}/${repoName} not found`), 404);
         }
 
+        if (repoInfo.archived) {
+            return c.html(renderError(`Repository ${owner}/${repoName} is archived and not available on this hub`), 404);
+        }
+
         const defaultBranch = repoInfo.default_branch || 'main';
         const actualBranch = pathParts[3] || defaultBranch;
 
@@ -666,7 +670,7 @@ function renderUserProfile(user: any, repos: any[]): string {
     const currentUser = getCurrentUser();
     
     const repoCards = repos
-        .filter(r => !r.fork)
+        .filter(r => !r.fork && !r.archived)
         .slice(0, 30)
         .map(r => `
             <div class="repo-card">

@@ -67,7 +67,8 @@ async function fetchOrgData() {
             fetchGitHubWithAuth(`https://api.github.com/orgs/${ORG_NAME}/repos?sort=updated&per_page=100&type=all`, token)
         ]);
         
-        return { org, repos: Array.isArray(repos) ? repos : [] };
+        // Archived repos are hidden from the hub entirely
+        return { org, repos: Array.isArray(repos) ? repos.filter((r: any) => !r.archived) : [] };
     } catch (error) {
         console.error('Error fetching org data:', error);
         return { org: null, repos: [] };
@@ -133,7 +134,6 @@ export const home = async () => {
                 <h3>
                     <a href="/${r.full_name}">${escapeHtml(r.name)}</a>
                     ${r.private ? `<span class="badge private">Private</span>` : ''}
-                    ${r.archived ? `<span class="badge archived">Archived</span>` : ''}
                 </h3>
                 ${r.description ? `<div class="desc">${escapeHtml(r.description)}</div>` : ''}
                 <div class="meta">
@@ -281,7 +281,6 @@ export const home = async () => {
         .lang-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
         .badge { font-size: 12px; font-weight: 400; padding: 2px 8px; border-radius: 24px; }
         .badge.private { background: #30363d; color: #8b949e; }
-        .badge.archived { background: #f8514940; color: #f85149; }
         
         /* Issues */
         .issues-section {

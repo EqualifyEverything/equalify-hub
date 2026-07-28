@@ -22,6 +22,10 @@ export const commits = async (c: Context) => {
             return c.html(renderError(`Repository ${owner}/${repo} not found`), 404);
         }
 
+        if (repoInfo.archived) {
+            return c.html(renderError(`Repository ${owner}/${repo} is archived and not available on this hub`), 404);
+        }
+
         // If viewing a specific commit
         if (sha && sha !== 'commits') {
             const commit = await fetchGitHub(`https://api.github.com/repos/${owner}/${repo}/commits/${sha}`);

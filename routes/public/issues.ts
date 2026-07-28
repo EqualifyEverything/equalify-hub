@@ -8,6 +8,12 @@ function fetchGitHub(url: string) {
     return fetchGitHubWithAuth(url, token);
 }
 
+// Archived repos are hidden from the hub entirely
+async function isRepoUnavailable(owner: string, repo: string): Promise<boolean> {
+    const data = await fetchGitHub(`https://api.github.com/repos/${owner}/${repo}`);
+    return !data || data.message === 'Not Found' || data.archived === true;
+}
+
 async function fetchIssue(owner: string, repo: string, issueNumber: string) {
     const data = await fetchGitHub(
         `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}`
@@ -41,7 +47,8 @@ export const issues = async (c: Context) => {
     const repo = c.req.param('repo');
     const issueNumber = c.req.param('number');
 
-    const issue = await fetchIssue(owner, repo, issueNumber);
+    const unavailable = await isRepoUnavailable(owner, repo);
+    const issue = unavailable ? null : await fetchIssue(owner, repo, issueNumber);
     if (!issue) {
         return c.html(renderPage('Issue Not Found', `
             <div class="container">
@@ -132,6 +139,16 @@ export const issues = async (c: Context) => {
 export const issuesList = async (c: Context) => {
     const owner = c.req.param('owner');
     const repo = c.req.param('repo');
+
+    if (await isRepoUnavailable(owner, repo)) {
+        return c.html(renderPage('Repository Not Found', `
+            <div class="container">
+                <h1>Repository ${escapeHtml(owner)}/${escapeHtml(repo)} not found</h1>
+                <p>This repository may not exist or is no longer available on this hub.</p>
+                <p><a href="/">Back to home</a></p>
+            </div>
+        `), 404);
+    }
 
     const data = await fetchGitHub(
         `https://api.github.com/repos/${owner}/${repo}/issues?state=open&per_page=50`
