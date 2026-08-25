@@ -173,6 +173,13 @@ export const Footer: FC = () => {
                         <a href="https://illinois.edu" rel="noopener">Urbana-Champaign</a>
                         <a href="https://www.uis.edu" rel="noopener">Springfield</a>
                     </div>
+
+                    <div class="footer-column">
+                        <h3>Our Team</h3>
+                        <a href="https://accessibility.uic.edu" rel="noopener">Digital Accessibility Team</a>
+                        {/* Update to https://dase.uic.edu once DNS lands */}
+                        <a href={process.env.DASE_HUB_URL || 'https://e22c7tsd4mraj7wgh7gg7l66sq0nykku.lambda-url.us-east-2.on.aws'} rel="noopener">DASE Hub</a>
+                    </div>
                 </div>
             </div>
             
