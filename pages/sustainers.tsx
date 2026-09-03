@@ -402,9 +402,8 @@ const SustainersPage: FC<{ stats: BlockerStats; submitted?: boolean; error?: str
                 <h1>Become an Equalify Open Source Sustainer</h1>
                 <p class="tagline">
                     The University of Illinois Chicago is recruiting sustaining partners for Equalify, an Open Source
-                    digital accessibility platform already in use at 58 higher-ed institutions. Sustainers cut
-                    accessibility tooling costs, shape the product roadmap, and share the maintenance burden with
-                    peer universities.
+                    digital accessibility platform. Sustainers cut accessibility tooling costs, shape the product
+                    roadmap, and share the maintenance burden with peer universities.
                 </p>
                 <div class="hero-buttons">
                     <a href="#apply" class="btn-primary">Become a Sustainer</a>

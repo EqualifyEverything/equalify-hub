@@ -65,6 +65,12 @@ const styles = `
     color: #4b5563;
     margin-top: 4px;
 }
+.kpi-note {
+    font-size: 13px;
+    color: #6b7280;
+    margin: -16px 0 32px;
+}
+.kpi-note a { color: #C8102E; }
 
 /* Milestones */
 .milestones-heading {
@@ -131,24 +137,30 @@ export const AboutPage: FC = () => {
                     Track our progress, upcoming features, and key milestones for the Equalify project.
                 </p>
 
+                {/* Platform KPIs — August 2026 baseline from the monthly development report
+                    (equalify-docs/reports/2026-09.md, "Platform KPI Baseline"). Update monthly. */}
                 <div class="kpi-grid">
                     <div class="kpi-card">
-                        <div class="kpi-value">158</div>
-                        <div class="kpi-label">GitHub Stars</div>
+                        <div class="kpi-value">231,383</div>
+                        <div class="kpi-label">Pages Scanned</div>
                     </div>
                     <div class="kpi-card">
-                        <div class="kpi-value">245</div>
-                        <div class="kpi-label">Issues Closed</div>
+                        <div class="kpi-value">18</div>
+                        <div class="kpi-label">Active Users</div>
                     </div>
                     <div class="kpi-card">
-                        <div class="kpi-value">12</div>
-                        <div class="kpi-label">Contributor Count</div>
+                        <div class="kpi-value">210</div>
+                        <div class="kpi-label">Sessions Started</div>
                     </div>
                     <div class="kpi-card">
-                        <div class="kpi-value">Q1 2026</div>
-                        <div class="kpi-label">Next Major Release</div>
+                        <div class="kpi-value">1</div>
+                        <div class="kpi-label">Releases Published</div>
                     </div>
                 </div>
+                <p class="kpi-note">
+                    Platform KPIs for August 2026. Month-over-month figures and definitions are in the{' '}
+                    <a href="/reports/2026-09">September 2026 Development Report</a>.
+                </p>
 
                 <h3 class="milestones-heading">Milestones</h3>
 
@@ -198,12 +210,15 @@ export const AboutPage: FC = () => {
 
                 <div class="roadmap-item">
                     <div class="roadmap-status">
-                        <span class="status-badge status-planned">Planned</span>
+                        <span class="status-badge status-completed">Launched</span>
                     </div>
                     <div class="roadmap-content">
                         <h3>Open Source Contributor Program</h3>
-                        <p>Onboarding process and tooling for external contributors to the UIC accessibility mission.</p>
-                        <div class="roadmap-date">Q2 2026</div>
+                        <p>
+                            Onboarding process and tooling for external contributors to the UIC accessibility mission.{' '}
+                            <a href="/sustainers">Become an Equalify Sustainer &rarr;</a>
+                        </p>
+                        <div class="roadmap-date">September 2026</div>
                     </div>
                 </div>
 
