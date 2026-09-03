@@ -283,7 +283,34 @@ async function fetchGitActivity(token: string, since: string, until: string): Pr
 
 // ── Report markdown generation ────────────────────────────────────────────────
 
-function generateReportMarkdown(issues: any[], month: string, gitActivity?: GitActivity): string {
+// ── Ticket activity (GitHub issues opened/closed in the period) ──────────────
+
+interface IssueActivity {
+    openedMain: number; // issues created in the main repo
+    openedOrg: number;  // issues created across all org repos
+    closedMain: number; // issues closed in the main repo
+}
+
+async function fetchIssueActivity(token: string, since: string, until: string): Promise<IssueActivity> {
+    const range = `${since.slice(0, 10)}..${until.slice(0, 10)}`;
+    const count = async (q: string): Promise<number> => {
+        try {
+            const res = await githubREST(`https://api.github.com/search/issues?q=${encodeURIComponent(q)}&per_page=1`, token);
+            return typeof res?.total_count === 'number' ? res.total_count : 0;
+        } catch (err) {
+            console.error(`[REPORT] Issue search failed for "${q}":`, err);
+            return 0;
+        }
+    };
+    const [openedMain, openedOrg, closedMain] = await Promise.all([
+        count(`repo:${OWNER}/${MAIN_REPO} is:issue created:${range}`),
+        count(`org:${OWNER} is:issue created:${range}`),
+        count(`repo:${OWNER}/${MAIN_REPO} is:issue closed:${range}`),
+    ]);
+    return { openedMain, openedOrg, closedMain };
+}
+
+function generateReportMarkdown(issues: any[], month: string, gitActivity?: GitActivity, issueActivity?: IssueActivity): string {
     // Merge data from all issues
     let allTasks: Task[] = [];
     let allComments: any[] = [];
@@ -381,6 +408,11 @@ function generateReportMarkdown(issues: any[], month: string, gitActivity?: GitA
         md += `| Repositories with activity | **${gitActivity.activeRepos.size}** |\n`;
     }
     md += `| Issue edits (activity) | ${totalEdits} |\n`;
+    if (issueActivity) {
+        md += `| Tickets opened (${MAIN_REPO}) | **${issueActivity.openedMain}** |\n`;
+        md += `| Tickets opened (all repos) | ${issueActivity.openedOrg} |\n`;
+        md += `| Tickets closed (${MAIN_REPO}) | ${issueActivity.closedMain} |\n`;
+    }
     if (issues.length > 1) {
         md += `| Source issues | ${issues.length} |\n`;
     }
@@ -646,13 +678,12 @@ export async function generateReport(params: ReportRequest) {
     sinceDate.setMonth(sinceDate.getMonth() - 1); // Start 1 month before
     const untilDate = new Date(monthDate);
     untilDate.setMonth(untilDate.getMonth() + 1); // End of reporting month
-    const gitActivity = await fetchGitActivity(
-        token,
-        sinceDate.toISOString(),
-        untilDate.toISOString()
-    );
+    const [gitActivity, issueActivity] = await Promise.all([
+        fetchGitActivity(token, sinceDate.toISOString(), untilDate.toISOString()),
+        fetchIssueActivity(token, sinceDate.toISOString(), untilDate.toISOString()),
+    ]);
 
-    let markdown = generateReportMarkdown(issues, month, gitActivity);
+    let markdown = generateReportMarkdown(issues, month, gitActivity, issueActivity);
 
     // Polish with Claude via Bedrock if requested
     if (params.polish) {

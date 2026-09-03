@@ -508,6 +508,9 @@ export const DashboardPage: FC<{ userSections: UserGuideSection[]; technicalDocs
                     <a href={config.equalifyAppUrl} class="btn-primary" rel="noopener" target="_blank">
                         Open Equalify Dashboard
                     </a>
+                    <a href="https://github.com/EqualifyEverything/equalify" class="btn-secondary" rel="noopener" target="_blank">
+                        View on GitHub
+                    </a>
                 </div>
             </section>
 

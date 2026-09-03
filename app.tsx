@@ -14,6 +14,7 @@ import { reportsHandler, reportsDocHandler } from '#src/pages/reports';
 import { reflowHandler, reflowDocHandler } from '#src/pages/reflow';
 import { feedbackHandler, submitFeatureHandler, voteHandler, deleteFeatureHandler } from '#src/pages/feedback';
 import { signupHandler, signupReflowHandler, signupSubmitHandler } from '#src/pages/signup';
+import { sustainersHandler, sustainersSubmitHandler } from '#src/pages/sustainers';
 import { homeHandler } from '#src/pages/home';
 
 // Route handlers (all native Hono now)
@@ -90,6 +91,8 @@ app.get('/technical-docs/:slug', (c) => c.redirect(`/dashboard/technical/${c.req
 app.get('/signup', signupHandler);
 app.get('/signup/reflow', signupReflowHandler);
 app.post('/signup/submit', signupSubmitHandler);
+app.get('/sustainers', sustainersHandler);
+app.post('/sustainers/submit', sustainersSubmitHandler);
 app.get('/feedback', feedbackHandler);
 app.post('/feedback/submit', submitFeatureHandler);
 app.post('/feedback/vote', voteHandler);

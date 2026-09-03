@@ -18,6 +18,7 @@ export const sitemap = (c: Context) => {
         { loc: 'https://equalify.uic.edu/about', priority: '0.9', changefreq: 'monthly' },
         { loc: 'https://equalify.uic.edu/dashboard', priority: '0.9', changefreq: 'monthly' },
         { loc: 'https://equalify.uic.edu/reflow', priority: '0.9', changefreq: 'monthly' },
+        { loc: 'https://equalify.uic.edu/sustainers', priority: '0.9', changefreq: 'monthly' },
         { loc: 'https://equalify.uic.edu/updates', priority: '0.7', changefreq: 'monthly' },
         { loc: 'https://equalify.uic.edu/signup', priority: '0.7', changefreq: 'monthly' },
     ];

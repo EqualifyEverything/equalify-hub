@@ -69,6 +69,7 @@ export const Nav: FC<{ user?: User; product?: string }> = ({ user, product }) =>
                         <a href="/updates">Updates</a>
                         <a href="/dashboard">Equalify Dashboard</a>
                         <a href="/reflow">Equalify Reflow</a>
+                        <a href="/sustainers">Sustainers</a>
                         {user ? (
                             <>
                                 <a href={`/${user.login}`} style="display:flex;align-items:center;gap:8px;">
@@ -95,6 +96,7 @@ export const Nav: FC<{ user?: User; product?: string }> = ({ user, product }) =>
                     <a href="/reports">Updates</a>
                     <a href="/dashboard">Equalify Dashboard</a>
                     <a href="/reflow">Equalify Reflow</a>
+                    <a href="/sustainers">Sustainers</a>
                     {user ? (
                         <>
                             <a href={`/${user.login}`}>{user.login}</a>

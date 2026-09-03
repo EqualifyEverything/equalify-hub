@@ -224,10 +224,10 @@ export const HomePage: FC = () => {
             <Nav user={user} />
             <main>
 
-            {/* Reflow Beta Notification Banner */}
+            {/* Sustainers Notification Banner */}
             <div class="notification-banner">
-                Equalify Reflow Beta now available! Translate PDFs into accessible documents.{' '}
-                <a href="/reflow">More Info &rsaquo;</a>
+                Support Equalify! Sustainers program now launched.{' '}
+                <a href="/sustainers">More Info &rsaquo;</a>
             </div>
 
             {/* Hero Section */}

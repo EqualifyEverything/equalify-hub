@@ -567,7 +567,7 @@ export interface WaitlistEntry {
     ip: string;
 }
 
-async function syncToCampaignMonitor(name: string, email: string, product: string): Promise<void> {
+export async function syncToCampaignMonitor(name: string, email: string, product: string): Promise<void> {
     const apiKey = process.env.CM_API_KEY;
     const listId = process.env.CM_LIST_ID;
     if (!apiKey || !listId) return;
@@ -622,6 +622,51 @@ export async function addToWaitlist(name: string, email: string, ip: string, pro
         return entry;
     } catch (error) {
         console.error('Error adding to waitlist:', error);
+        return null;
+    }
+}
+
+// ============ SUSTAINERS ============
+
+export interface SustainerApplication {
+    pk: string; // 'SUSTAINER'
+    sk: string; // timestamp-based ID
+    id: string;
+    institution: string;
+    commitment: 'staff-hours' | 'donation';
+    official_name: string;
+    official_title: string;
+    official_email: string;
+    designee_name: string;
+    designee_title: string;
+    designee_email: string;
+    designee_department: string;
+    notes: string;
+    created_at: string;
+    ip: string;
+}
+
+export type SustainerApplicationInput = Omit<SustainerApplication, 'pk' | 'sk' | 'id' | 'created_at'>;
+
+export async function addSustainerApplication(input: SustainerApplicationInput): Promise<SustainerApplication | null> {
+    try {
+        const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const entry: SustainerApplication = {
+            pk: 'SUSTAINER',
+            sk: id,
+            id,
+            ...input,
+            created_at: new Date().toISOString(),
+        };
+
+        await docClient.send(new PutCommand({
+            TableName: TABLE_NAME,
+            Item: entry
+        }));
+
+        return entry;
+    } catch (error) {
+        console.error('Error adding sustainer application:', error);
         return null;
     }
 }

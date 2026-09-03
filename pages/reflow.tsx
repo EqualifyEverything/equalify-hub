@@ -449,6 +449,9 @@ export const ReflowListPage: FC<{ categories: ReflowCategory[] }> = ({ categorie
                     <a href="https://reflow.equalify.uic.edu" class="btn-primary" rel="noopener" target="_blank">
                         Try Reflow (UIC Users Only)
                     </a>
+                    <a href="https://github.com/EqualifyEverything/equalify-reflow" class="btn-secondary" rel="noopener" target="_blank">
+                        View on GitHub
+                    </a>
                 </div>
             </section>
 
@@ -465,7 +468,7 @@ export const ReflowListPage: FC<{ categories: ReflowCategory[] }> = ({ categorie
                         <p>Tight feedback loops, real document collections, iterative improvement.</p>
                     </div>
                     <div class="phase-card">
-                        <h3>Phase 2: Partners</h3>
+                        <h3>Phase 2: Sustainers</h3>
                         <p>Early access, roadmap influence, pressure-testing across document types.</p>
                     </div>
                     <div class="phase-card">
@@ -474,9 +477,9 @@ export const ReflowListPage: FC<{ categories: ReflowCategory[] }> = ({ categorie
                     </div>
                 </div>
                 <div class="partner-cta">
-                    <h3>Partners get: Early access + Roadmap commenting</h3>
-                    <p>We need accessibility experts, institutions with real document collections, and practitioners who understand day-to-day remediation.</p>
-                    <a href="/signup/reflow">Sign Up for Early Access</a>
+                    <h3>Sustainers get: Early access + Roadmap commenting</h3>
+                    <p>We need accessibility experts, institutions with real document collections, and practitioners who understand day-to-day remediation. Sustaining institutions join monthly roadmap meetings and get direct access to the core engineers.</p>
+                    <a href="/sustainers">Become a Sustainer</a>
                 </div>
             </section>
 
