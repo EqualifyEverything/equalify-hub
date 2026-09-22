@@ -3,6 +3,7 @@ import type { Context } from 'hono';
 import { Layout } from '#src/components/Layout';
 import { getCurrentUser, getGitHubToken, fetchGitHub } from '#src/utils/auth';
 import { renderMarkdown } from '#src/utils/markdown';
+import { contentsUrl, productDocs } from '#src/utils/docs';
 
 const styles = `
 /* Doc cards */
@@ -222,7 +223,7 @@ export async function userGuideHandler(c: Context) {
     let docs: DocListItem[] = [];
     try {
         const contents = await fetchGitHub(
-            'https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/user',
+            contentsUrl(productDocs, 'user'),
             token
         );
         
@@ -265,7 +266,7 @@ export async function userGuideDocHandler(c: Context) {
     
     try {
         const fileData = await fetchGitHub(
-            `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/user/${filename}`,
+            contentsUrl(productDocs, `user/${filename}`),
             token
         );
         

@@ -3,6 +3,7 @@ import type { Context } from 'hono';
 import { Layout } from '#src/components/Layout';
 import { getCurrentUser, getGitHubToken, fetchGitHub } from '#src/utils/auth';
 import { renderMarkdown } from '#src/utils/markdown';
+import { contentsUrl, hubDocs } from '#src/utils/docs';
 
 const styles = `
 /* Update cards */
@@ -292,7 +293,7 @@ export async function updatesHandler(c: Context) {
     let updates: UpdateListItem[] = [];
     try {
         const contents = await fetchGitHub(
-            'https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/updates',
+            contentsUrl(hubDocs, 'updates'),
             token
         );
         
@@ -303,7 +304,7 @@ export async function updatesHandler(c: Context) {
             const updatePromises = mdFiles.map(async (file: any) => {
                 try {
                     const fileData = await fetchGitHub(
-                        `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/updates/${file.name}`,
+                        contentsUrl(hubDocs, `updates/${file.name}`),
                         token
                     );
                     
@@ -364,7 +365,7 @@ export async function updatesDocHandler(c: Context) {
     
     try {
         const fileData = await fetchGitHub(
-            `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/updates/${filename}`,
+            contentsUrl(hubDocs, `updates/${filename}`),
             token
         );
         

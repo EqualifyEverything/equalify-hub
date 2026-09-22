@@ -3,6 +3,7 @@ import type { Context } from 'hono';
 import { Layout } from '#src/components/Layout';
 import { getCurrentUser, getGitHubToken, fetchGitHub } from '#src/utils/auth';
 import { renderMarkdown } from '#src/utils/markdown';
+import { contentsUrl, hubDocs } from '#src/utils/docs';
 
 const styles = `
 /* Report cards */
@@ -308,11 +309,11 @@ export const ReportsDocPage: FC<{ report: ReportFile }> = ({ report }) => {
     );
 };
 
-// Fetch a folder of markdown docs from equalify-docs repo
+// Fetch a folder of markdown docs from the hub docs repo (equalify-docs)
 async function fetchDocFolder(folder: string, token: string): Promise<ReportListItem[]> {
     try {
         const contents = await fetchGitHub(
-            `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/${folder}`,
+            contentsUrl(hubDocs, folder),
             token
         );
 
@@ -323,7 +324,7 @@ async function fetchDocFolder(folder: string, token: string): Promise<ReportList
         const items = await Promise.all(mdFiles.map(async (file: any) => {
             try {
                 const fileData = await fetchGitHub(
-                    `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/${folder}/${file.name}`,
+                    contentsUrl(hubDocs, `${folder}/${file.name}`),
                     token
                 );
 
@@ -392,7 +393,7 @@ export async function reportsDocHandler(c: Context) {
 
     try {
         const fileData = await fetchGitHub(
-            `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/reports/${filename}`,
+            contentsUrl(hubDocs, `reports/${filename}`),
             token
         );
 

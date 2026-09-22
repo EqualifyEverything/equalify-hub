@@ -3,6 +3,7 @@ import type { Context } from 'hono';
 import { Layout } from '#src/components/Layout';
 import { getCurrentUser, getGitHubToken, fetchGitHub } from '#src/utils/auth';
 import { renderMarkdown } from '#src/utils/markdown';
+import { contentsUrl, productDocs } from '#src/utils/docs';
 import config from '#src/utils/config';
 
 const styles = `
@@ -788,7 +789,7 @@ export const DashboardUserGuideDocPage: FC<{
 async function fetchDocList(folder: string, metadata: Record<string, { title: string; description: string; order: number }>, token: string): Promise<DocListItem[]> {
     try {
         const contents = await fetchGitHub(
-            `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/${folder}`,
+            contentsUrl(productDocs, folder),
             token
         );
 
@@ -827,7 +828,7 @@ async function fetchDocList(folder: string, metadata: Record<string, { title: st
 async function fetchUserGuideSections(token: string): Promise<UserGuideSection[]> {
     try {
         const userContents = await fetchGitHub(
-            `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/user`,
+            contentsUrl(productDocs, 'user'),
             token
         );
 
@@ -849,7 +850,7 @@ async function fetchUserGuideSections(token: string): Promise<UserGuideSection[]
                 let pages: UserGuidePage[] = [];
                 try {
                     const folderContents = await fetchGitHub(
-                        `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/user/${encodeURIComponent(folder.name)}`,
+                        contentsUrl(productDocs, `user/${folder.name}`),
                         token
                     );
                     if (Array.isArray(folderContents)) {
@@ -884,11 +885,11 @@ async function fetchUserGuideSections(token: string): Promise<UserGuideSection[]
     }
 }
 
-// Find the original folder/file name in equalify-docs that matches a given slug
+// Find the original folder/file name in the product docs repo that matches a given slug
 async function resolveUserGuidePath(sectionSlug: string, pageSlug: string, token: string): Promise<{ sectionName: string; pageName: string } | null> {
     try {
         const userContents = await fetchGitHub(
-            `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/user`,
+            contentsUrl(productDocs, 'user'),
             token
         );
         if (!Array.isArray(userContents)) return null;
@@ -899,7 +900,7 @@ async function resolveUserGuidePath(sectionSlug: string, pageSlug: string, token
         if (!sectionFolder) return null;
 
         const folderContents = await fetchGitHub(
-            `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/user/${encodeURIComponent(sectionFolder.name)}`,
+            contentsUrl(productDocs, `user/${sectionFolder.name}`),
             token
         );
         if (!Array.isArray(folderContents)) return null;
@@ -964,7 +965,7 @@ export async function dashboardUserGuideDocHandler(c: Context) {
         }
 
         const fileData = await fetchGitHub(
-            `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/user/${encodeURIComponent(section.name)}/${encodeURIComponent(page.name)}`,
+            contentsUrl(productDocs, `user/${section.name}/${page.name}`),
             token
         );
 
@@ -1016,7 +1017,7 @@ export async function dashboardTechnicalDocHandler(c: Context) {
 
     try {
         const fileData = await fetchGitHub(
-            `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/technical/${filename}`,
+            contentsUrl(productDocs, `technical/${filename}`),
             token
         );
 

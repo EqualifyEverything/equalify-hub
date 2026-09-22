@@ -14,9 +14,10 @@
 
 import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
 import config from '#src/utils/config';
+import { hubDocs } from '#src/utils/docs';
 
 const OWNER = config.githubOrg;
-const DOCS_REPO = 'equalify-docs';
+const DOCS_REPO = hubDocs.repo;
 const MAIN_REPO = 'equalify';
 
 // GitHub username → display name for faculty-facing reports

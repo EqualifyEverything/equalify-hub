@@ -3,6 +3,7 @@ import type { Context } from 'hono';
 import { Layout } from '#src/components/Layout';
 import { getCurrentUser, getGitHubToken, fetchGitHub } from '#src/utils/auth';
 import { renderMarkdown } from '#src/utils/markdown';
+import { contentsUrl, treeUrl, hubDocs } from '#src/utils/docs';
 
 const styles = `
 /* Hero */
@@ -348,12 +349,6 @@ const CATEGORY_CONFIG: Record<string, { label: string; description: string; orde
 // Filenames we hide from the list view entirely (index / meta files).
 const HIDDEN_FILENAMES = new Set(['README.md']);
 
-// Which ref of equalify-docs to fetch. Defaults to `main`; override via
-// the EQUALIFY_DOCS_REF env var when previewing a docs branch locally.
-function getDocsRef(): string {
-    return process.env.EQUALIFY_DOCS_REF || 'main';
-}
-
 // Parse YAML frontmatter from markdown content
 function parseFrontmatter(content: string, fallbackTitle: string): { frontmatter: Frontmatter; body: string } {
     const frontmatterMatch = content.match(/^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/);
@@ -569,7 +564,7 @@ export const ReflowDocPage: FC<{ doc: ReflowFile }> = ({ doc }) => {
 async function listReflowDocs(token: string | null): Promise<ReflowListItem[]> {
     // Git Trees API with recursive=1 returns every path in one shot.
     const tree = await fetchGitHub(
-        `https://api.github.com/repos/EqualifyEverything/equalify-docs/git/trees/${getDocsRef()}?recursive=1`,
+        treeUrl(hubDocs),
         token,
     );
 
@@ -597,7 +592,7 @@ async function listReflowDocs(token: string | null): Promise<ReflowListItem[]> {
 
         try {
             const fileData = await fetchGitHub(
-                `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/${path}?ref=${encodeURIComponent(getDocsRef())}`,
+                contentsUrl(hubDocs, path),
                 token,
             );
 
@@ -844,7 +839,7 @@ export async function reflowDocHandler(c: Context) {
 
     try {
         const fileData = await fetchGitHub(
-            `https://api.github.com/repos/EqualifyEverything/equalify-docs/contents/reflow/${filename}?ref=${encodeURIComponent(getDocsRef())}`,
+            contentsUrl(hubDocs, `reflow/${filename}`),
             token,
         );
 
