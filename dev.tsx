@@ -12,7 +12,7 @@ import { technicalDocsHandler, technicalDocsDocHandler } from '#src/pages/techni
 import { RoadmapPage } from '#src/pages/roadmap';
 import { feedbackHandler, submitFeatureHandler, voteHandler } from '#src/pages/feedback';
 import { homeHandler } from '#src/pages/home';
-import { reflowHandler, reflowDocHandler } from '#src/pages/reflow';
+import { irisHandler } from '#src/pages/iris';
 
 // Route handlers
 import { github, githubPro, callback, logout } from '#src/routes/public/auth';
@@ -72,8 +72,9 @@ app.get('/user-guide', userGuideHandler);
 app.get('/user-guide/:slug', userGuideDocHandler);
 app.get('/technical-docs', technicalDocsHandler);
 app.get('/technical-docs/:slug', technicalDocsDocHandler);
-app.get('/reflow', reflowHandler);
-app.get('/reflow/*', reflowDocHandler);
+app.get('/iris', irisHandler);
+app.get('/reflow', (c) => c.redirect('/iris', 302));
+app.get('/reflow/*', (c) => c.redirect('/iris', 302));
 app.get('/roadmap', (c) => c.html(<RoadmapPage />));
 app.get('/feedback', feedbackHandler);
 app.post('/feedback/submit', submitFeatureHandler);

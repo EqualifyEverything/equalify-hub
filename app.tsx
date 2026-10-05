@@ -11,7 +11,7 @@ import { AboutPage } from '#src/pages/about';
 import { dashboardHandler, dashboardUserGuideListHandler, dashboardTechnicalListHandler, dashboardUserGuideDocHandler, dashboardTechnicalDocHandler } from '#src/pages/dashboard';
 import { updatesHandler, updatesDocHandler } from '#src/pages/updates';
 import { reportsHandler, reportsDocHandler } from '#src/pages/reports';
-import { reflowHandler, reflowDocHandler } from '#src/pages/reflow';
+import { irisHandler } from '#src/pages/iris';
 import { feedbackHandler, submitFeatureHandler, voteHandler, deleteFeatureHandler } from '#src/pages/feedback';
 import { signupHandler, signupReflowHandler, signupSubmitHandler } from '#src/pages/signup';
 import { sustainersHandler, sustainersSubmitHandler } from '#src/pages/sustainers';
@@ -79,8 +79,10 @@ app.get('/updates/:slug', updatesDocHandler);
 // Individual report pages keep their /reports/:slug URLs (they map to equalify-docs/reports/)
 app.get('/reports', (c) => c.redirect('/updates', 302));
 app.get('/reports/:slug', reportsDocHandler);
-app.get('/reflow', reflowHandler);
-app.get('/reflow/*', reflowDocHandler);
+app.get('/iris', irisHandler);
+// Reflow was renamed to Iris — keep old links (bookmarks, DASE Hub, retired doc URLs) working
+app.get('/reflow', (c) => c.redirect('/iris', 302));
+app.get('/reflow/*', (c) => c.redirect('/iris', 302));
 app.get('/roadmap', (c) => c.redirect('/about#roadmap', 302));
 // Backward-compatible redirects for old doc URLs (302 to avoid aggressive browser caching)
 app.get('/user-guide', (c) => c.redirect('/dashboard/user-guide', 302));

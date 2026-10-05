@@ -5,7 +5,7 @@
  * `equalify` repo under `docs/`, so they can be updated in the same PR as the
  * code they describe. That repo is the source of truth for them.
  *
- * Hub-only content (Reflow docs, monthly reports, news updates) still lives in
+ * Hub-only content (monthly reports, news updates) still lives in
  * the `equalify-docs` repo.
  *
  * Both sources can be overridden via environment variables (see .env.example),
@@ -32,7 +32,7 @@ export const productDocs: DocsSource = {
     ref: process.env.PRODUCT_DOCS_REF || 'main',
 };
 
-/** Reflow docs, monthly reports, news updates — EqualifyEverything/equalify-docs */
+/** Monthly reports, news updates — EqualifyEverything/equalify-docs */
 export const hubDocs: DocsSource = {
     repo: process.env.HUB_DOCS_REPO || 'equalify-docs',
     basePath: trimSlashes(process.env.HUB_DOCS_PATH ?? ''),

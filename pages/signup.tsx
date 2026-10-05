@@ -100,7 +100,7 @@ const SignupForm: FC<{ error?: string; product?: string }> = ({ error, product }
                         </label>
                         <label>
                             <input type="checkbox" name="product" value="reflow" checked={product === 'reflow'} />
-                            Equalify Reflow
+                            Equalify Iris
                         </label>
                     </div>
                 </div>

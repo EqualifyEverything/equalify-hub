@@ -191,7 +191,7 @@ export const AboutPage: FC = () => {
                         <span class="status-badge status-in-progress">In Progress</span>
                     </div>
                     <div class="roadmap-content">
-                        <h3>AI PDF Accessibility Converter</h3>
+                        <h3><a href="/iris" style="color:#C8102E;">AI PDF Accessibility Converter</a></h3>
                         <p>Turn PDFs into accessible markdown.</p>
                         <div class="roadmap-date">Q1 2026</div>
                     </div>
