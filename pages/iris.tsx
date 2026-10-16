@@ -112,6 +112,32 @@ const styles = `
 .platform-body {
     padding: 24px;
 }
+.platform-card + .platform-card {
+    margin-top: 24px;
+}
+.platform-lead {
+    font-size: 16px;
+    color: #1f2937;
+    line-height: 1.6;
+    margin: 0 0 20px;
+}
+.platform-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #C8102E;
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 15px;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.platform-cta:hover {
+    background: #a00d25;
+    text-decoration: none;
+}
 .platform-steps {
     margin: 0 0 24px;
     padding-left: 24px;
@@ -240,8 +266,22 @@ export const IrisPage: FC = () => {
                 <h2>Try Equalify Iris Today</h2>
                 <p class="section-desc">
                     Wherever you upload or edit PDFs, Equalify Iris aims to be.
-                    Currently live in: <strong style="white-space:nowrap;">Red Multisite</strong>.
                 </p>
+
+                <div class="platform-card">
+                    <div class="platform-banner">
+                        <h3>Iris Uploader</h3>
+                        <span class="live-pill">Live</span>
+                    </div>
+                    <div class="platform-body">
+                        <p class="platform-lead">
+                            Quickly upload PDFs to convert into accessible HTML and tagged PDF.
+                        </p>
+                        <a href="https://iris.equalify.uic.edu/" class="platform-cta" rel="noopener" target="_blank">
+                            Try Iris Uploader
+                        </a>
+                    </div>
+                </div>
 
                 <div class="platform-card">
                     <div class="platform-banner">
