@@ -275,7 +275,8 @@ export const IrisPage: FC = () => {
                     </div>
                     <div class="platform-body">
                         <p class="platform-lead">
-                            Quickly upload PDFs to convert into accessible HTML and tagged PDF.
+                            <strong>Quickly upload PDFs to convert into accessible HTML and tagged PDF.</strong>{' '}
+                            Great for helping students fill out PDF forms.
                         </p>
                         <a href="https://iris.equalify.uic.edu/" class="platform-cta" rel="noopener" target="_blank">
                             Try Iris Uploader

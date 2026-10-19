@@ -20,6 +20,9 @@ const OWNER = config.githubOrg;
 const DOCS_REPO = hubDocs.repo;
 const MAIN_REPO = 'equalify';
 
+// Bedrock inference profiles for the polish step, in fallback order
+const POLISH_MODELS = ['us.anthropic.claude-opus-5-5', 'us.anthropic.claude-opus-5'];
+
 // GitHub username → display name for faculty-facing reports
 const CONTRIBUTORS: Record<string, string> = {
     'heythisischris': 'C. Aitken',
@@ -578,23 +581,37 @@ Raw report to polish:
 
 ${rawMarkdown}`;
 
-    const response = await client.send(new InvokeModelCommand({
-        modelId: 'us.anthropic.claude-opus-4-6-v1',
-        contentType: 'application/json',
-        accept: 'application/json',
-        body: JSON.stringify({
-            anthropic_version: 'bedrock-2023-05-31',
-            max_tokens: 16000,
-            thinking: {
-                type: 'enabled',
-                budget_tokens: 10000,
-            },
-            messages: [{ role: 'user', content: prompt }],
-        }),
-    }));
+    // Opus 5.5 first; Opus 5 only if a safety classifier declines (false positive)
+    let body: any;
+    for (const modelId of POLISH_MODELS) {
+        const response = await client.send(new InvokeModelCommand({
+            modelId,
+            contentType: 'application/json',
+            accept: 'application/json',
+            body: JSON.stringify({
+                anthropic_version: 'bedrock-2023-05-31',
+                // Thinking counts toward max_tokens, so leave room beyond the report itself
+                max_tokens: 32000,
+                // Thinking is always on for Opus 5.5 — effort controls depth (API default is medium)
+                thinking: { type: 'adaptive' },
+                output_config: { effort: 'medium' },
+                messages: [{ role: 'user', content: prompt }],
+            }),
+        }));
 
-    const body = JSON.parse(new TextDecoder().decode(response.body));
-    // With thinking enabled, response has thinking blocks + text blocks
+        body = JSON.parse(new TextDecoder().decode(response.body));
+        if (body.stop_reason !== 'refusal') break;
+        console.warn(`[REPORT] ${modelId} declined (${body.stop_details?.category ?? 'unknown'}) — trying next model`);
+    }
+
+    if (body.stop_reason === 'refusal') {
+        throw new Error(`Bedrock declined to polish report: ${JSON.stringify(body.stop_details)}`);
+    }
+    if (body.stop_reason === 'max_tokens') {
+        throw new Error('Bedrock hit max_tokens — polished report would be truncated');
+    }
+
+    // Response has (empty) thinking blocks + text blocks
     const textBlock = body.content?.find((b: any) => b.type === 'text');
     const polished = textBlock?.text;
 
