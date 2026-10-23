@@ -1,4 +1,5 @@
 import { getGitHubCache, getStaleGitHubCache, setGitHubCache } from '#src/utils/db';
+import config from '#src/utils/config';
 
 // Equalify's Hasura endpoint. With GRAPHQL_ADMIN_SECRET set (Lambda env), queries run as
 // admin so tables the anonymous role can't aggregate (e.g. blockers) are available.
@@ -48,17 +49,125 @@ function isStats(v: any): v is BlockerStats {
     return typeof v?.total === 'number' && typeof v?.last30d === 'number';
 }
 
-export async function getBlockerStats(): Promise<BlockerStats> {
-    const cached = await getGitHubCache(CACHE_KEY);
-    if (isStats(cached)) return cached;
-
+// Fresh cache (1 min) → fetch → cache; on failure, the stale copy (up to 7 days) or `fallback`.
+async function cachedJson<T>(key: string, fetcher: () => Promise<T>, isValid: (v: any) => v is T, fallback: T): Promise<T> {
+    const cached = await getGitHubCache(key);
+    if (isValid(cached)) return cached;
     try {
-        const stats = await fetchBlockerStats();
-        await setGitHubCache(CACHE_KEY, stats);
+        const fresh = await fetcher();
+        await setGitHubCache(key, fresh);
+        return fresh;
+    } catch (error) {
+        console.error(`Error fetching ${key}:`, error);
+        const stale = await getStaleGitHubCache(key);
+        return isValid(stale) ? stale : fallback;
+    }
+}
+
+export async function getBlockerStats(): Promise<BlockerStats> {
+    return cachedJson(CACHE_KEY, fetchBlockerStats, isStats, FALLBACK);
+}
+
+// ─── Platform KPIs (GET /public/getPublicStats) ───────────────────────────────
+// Shapes mirror apps/backend/utils/kpis.ts in the equalify repo, the one place
+// every platform KPI is defined. The hub shows the last full month by default
+// (`lastFullMonth`) and can show the live figures (`live`) on request.
+
+export interface PublicMonthlyKpi {
+    month: string;        // YYYY-MM (UTC)
+    sessions: number;
+    activeUsers: number;
+    unitsServed: number;
+    scanRuns: number;
+    htmlScans: number;    // page scans started
+    pdfScans: number;     // document scans started
+    newUsers: number;
+    newAudits: number;
+    partial: boolean;     // the current, incomplete month
+}
+
+export interface PublicRemediationKpi { month: string; auditsRescanned: number; resolvedIssues: number; newIssues: number; computedAt: string }
+
+export interface PublicStats {
+    generatedAt: string;
+    live: {
+        totalUsers: number;
+        newUsers30d: number;
+        activeUsers30d: number;
+        unitsServed30d: number;
+        auditOwners: number;
+        totalAudits: number;
+        totalUrls: number;
+        totalBlockers: number;
+        scanRuns30d: number;
+        htmlScans30d: number;
+        pdfScans30d: number;
+    };
+    monthly: PublicMonthlyKpi[];
+    snapshot: {
+        computedAt: string;
+        adoption: { uicHostsTracked: number; redSitesTracked: number; redSitesScanned30d: number; redSiteOwners: number; redHostsPending: number; computedAt: string } | null;
+        conformance: { monitoredPages: number; conformantPages: number; conformantShare: number; openBlockers: number; openBlockersLevelA: number; openBlockersLevelAA: number; computedAt: string } | null;
+        remediation: PublicRemediationKpi | null;              // current month to date
+        remediationPreviousMonth: PublicRemediationKpi | null; // last full month
+    } | null;
+    redSitesTotal: { total: number; asOf: string; source?: string } | null;
+}
+
+const PUBLIC_STATS_CACHE_KEY = 'equalify-stats://public';
+
+const isNum = (v: any) => typeof v === 'number' && Number.isFinite(v);
+
+function isPublicStats(v: any): v is PublicStats {
+    if (!v || typeof v.generatedAt !== 'string' || !Array.isArray(v.monthly)) return false;
+    const live = v.live;
+    if (!live || !['totalUsers', 'activeUsers30d', 'totalAudits', 'totalUrls', 'htmlScans30d', 'pdfScans30d'].every((k) => isNum(live[k]))) return false;
+    return v.monthly.every((m: any) => m && typeof m.month === 'string' && typeof m.partial === 'boolean'
+        && ['sessions', 'activeUsers', 'unitsServed', 'scanRuns', 'htmlScans', 'pdfScans', 'newUsers', 'newAudits'].every((k) => isNum(m[k])));
+}
+
+async function fetchPublicStats(timeoutMs: number): Promise<PublicStats> {
+    const response = await fetch(`${config.equalifyApiUrl}/public/getPublicStats`, {
+        headers: { 'User-Agent': 'Equalify-Hub' },
+        signal: AbortSignal.timeout(timeoutMs),
+    });
+    if (!response.ok) throw new Error(`Equalify API HTTP ${response.status}`);
+    const json = await response.json();
+    if (!isPublicStats(json)) throw new Error('Equalify API: unexpected getPublicStats shape');
+    return json;
+}
+
+/**
+ * Platform KPIs for a page render: cached like the GitHub responses (1 min fresh,
+ * 7 day stale fallback) with a short timeout so an API outage can't stall the page.
+ * Returns null if nothing is available.
+ */
+export async function getPublicStats(): Promise<PublicStats | null> {
+    return cachedJson<PublicStats | null>(PUBLIC_STATS_CACHE_KEY, () => fetchPublicStats(4_000), isPublicStats, null);
+}
+
+/**
+ * Platform KPIs for the monthly report: always fetched fresh (a stale copy could
+ * carry last week's partial figures), null if the API can't be reached.
+ */
+export async function getPublicStatsFresh(): Promise<PublicStats | null> {
+    try {
+        const stats = await fetchPublicStats(15_000);
+        await setGitHubCache(PUBLIC_STATS_CACHE_KEY, stats);
         return stats;
     } catch (error) {
-        console.error('Error fetching Equalify blocker stats:', error);
-        const stale = await getStaleGitHubCache(CACHE_KEY);
-        return isStats(stale) ? stale : FALLBACK;
+        console.error('Error fetching Equalify public stats (fresh):', error);
+        return null;
     }
+}
+
+/** The most recent complete calendar month, or null if the series is empty. */
+export function lastFullMonth(stats: PublicStats): PublicMonthlyKpi | null {
+    const full = stats.monthly.filter((m) => !m.partial);
+    return full.length ? full[full.length - 1] : null;
+}
+
+export function formatMonthLabel(month: string): string {
+    const [y, m] = month.split('-').map(Number);
+    return new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 }

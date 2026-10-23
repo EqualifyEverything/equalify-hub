@@ -15,6 +15,7 @@
 import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
 import config from '#src/utils/config';
 import { hubDocs } from '#src/utils/docs';
+import { getPublicStatsFresh, type PublicStats } from '#src/utils/equalifyStats';
 
 const OWNER = config.githubOrg;
 const DOCS_REPO = hubDocs.repo;
@@ -314,7 +315,48 @@ async function fetchIssueActivity(token: string, since: string, until: string): 
     return { openedMain, openedOrg, closedMain };
 }
 
-function generateReportMarkdown(issues: any[], month: string, gitActivity?: GitActivity, issueActivity?: IssueActivity): string {
+// ── Platform KPIs (from the Equalify API, same figures as the admin Statistics panel) ──
+
+function platformKpiSection(month: string, stats: PublicStats | null): string {
+    const idx = stats ? stats.monthly.findIndex((m) => m.month === month) : -1;
+    if (!stats || idx < 0) {
+        return `## Platform KPIs\n\n*Platform usage figures for ${month} were not available from the Equalify API when this report was generated.*\n\n`;
+    }
+    // The reporting month plus up to three earlier months, oldest first
+    const cols = stats.monthly.slice(Math.max(0, idx - 3), idx + 1);
+    const row = stats.monthly[idx];
+    const n = (v: number) => v.toLocaleString('en-US');
+    const line = (label: string, pick: (m: typeof row) => number, bold = false) =>
+        `| ${label} | ${cols.map((m) => (bold ? `**${n(pick(m))}**` : n(pick(m)))).join(' | ')} |\n`;
+    let md = `## Platform KPIs\n\n`;
+    md += `Platform usage, month over month, from the same source as the Equalify dashboard's Statistics panel (definitions: [Platform KPIs](https://github.com/${OWNER}/${MAIN_REPO}/blob/main/docs/technical/kpis.md)).${row.partial ? ` ${month} was still in progress when this report was generated.` : ''}\n\n`;
+    md += `| KPI | ${cols.map((m) => m.month).join(' | ')} |\n|-----|${cols.map(() => '------:').join('|')}|\n`;
+    md += line('Pages scanned (HTML)', (m) => m.htmlScans);
+    md += line('Pages scanned (PDF)', (m) => m.pdfScans);
+    md += line('**Pages scanned (total)**', (m) => m.htmlScans + m.pdfScans, true);
+    md += line('Scan runs (audit-level)', (m) => m.scanRuns);
+    md += line('Sessions started (app loads)', (m) => m.sessions);
+    md += line('Active users', (m) => m.activeUsers);
+    md += line('Units served (SSO)', (m) => m.unitsServed);
+    md += line('New users', (m) => m.newUsers);
+    md += line('New audits', (m) => m.newAudits);
+    md += `\n`;
+    const a = stats.snapshot?.adoption, c = stats.snapshot?.conformance, t = stats.redSitesTotal;
+    const r = [stats.snapshot?.remediationPreviousMonth, stats.snapshot?.remediation].find((x) => x && x.month === month) ?? null;
+    const extra: string[] = [];
+    if (a && t) extra.push(`| UIC Red sites monitored | ${n(a.redSitesTracked)} of ${n(t.total)} (${Math.round((a.redSitesTracked / t.total) * 100)}%)${a.redHostsPending > 0 ? `, ${n(a.redHostsPending)} hosts still being checked` : ''} |`);
+    if (a) extra.push(`| Red sites scanned in the last 30 days | ${n(a.redSitesScanned30d)} |`);
+    if (c) extra.push(`| Tracked pages with no open blockers | ${Math.round(c.conformantShare * 100)}% of ${n(c.monitoredPages)} |`);
+    if (c) extra.push(`| Open blockers (Level A / AA) | ${n(c.openBlockersLevelA)} / ${n(c.openBlockersLevelAA)} |`);
+    if (r) extra.push(`| Issues resolved / new in ${month} (audits rescanned) | ${n(r.resolvedIssues)} / ${n(r.newIssues)} (${n(r.auditsRescanned)}) |`);
+    if (extra.length) {
+        md += `| Title II figure | Value |\n|-----|------|\n${extra.join('\n')}\n\n`;
+        md += `*Adoption, conformance and remediation figures are the daily snapshot as of ${new Date(stats.snapshot!.computedAt).toISOString().slice(0, 10)}${t ? `; the Red site total is as of ${t.asOf}` : ''}.*\n\n`;
+    }
+    return md;
+}
+
+function generateReportMarkdown(issues: any[], month: string, gitActivity?: GitActivity, issueActivity?: IssueActivity, platformStats: PublicStats | null = null): string {
     // Merge data from all issues
     let allTasks: Task[] = [];
     let allComments: any[] = [];
@@ -421,6 +463,8 @@ function generateReportMarkdown(issues: any[], month: string, gitActivity?: GitA
         md += `| Source issues | ${issues.length} |\n`;
     }
     md += `\n`;
+
+    md += platformKpiSection(month, platformStats);
 
     // Development activity breakdown
     if (gitActivity && gitActivity.totalCommits > 0) {
@@ -558,7 +602,7 @@ Take the raw markdown report below and rewrite it into a polished, professional 
 1. **Keep the frontmatter (--- block) exactly as-is** — do not modify it
 2. **Add an Executive Summary** immediately after the H1 title and reporting period metadata, before Key Metrics. This should be 2-3 sentences summarizing the month's most important achievements and overall trajectory. Write it in a confident, positive tone appropriate for university leadership.
 3. **Add a Highlights section** (## Highlights) right after the Executive Summary, before Key Metrics. List the 3-5 most impactful completed items as concise bullet points. Pick items that would resonate with non-technical stakeholders — launches, user-facing features, stability improvements.
-4. **Key Metrics table**: Keep the structure and numbers exactly as-is, BUT if "New tasks added" is significant relative to "Tasks remaining", add an italic note below the table like: *(Note: X new tasks were identified and added during the reporting period, which accounts for the expanded backlog.)*
+4. **Key Metrics and Platform KPIs tables**: Keep the Platform KPIs section (heading, both tables and the italic note) verbatim, immediately after Key Metrics, even if the previous month's report had no such section. Keep the structure and numbers exactly as-is, BUT if "New tasks added" is significant relative to "Tasks remaining", add an italic note below the table like: *(Note: X new tasks were identified and added during the reporting period, which accounts for the expanded backlog.)*
 5. **Keep all section headers** (## Completed Work, ## Notable Events, etc.)
 6. **Rewrite task descriptions** into clear, concise, professional language:
    - Remove GitHub jargon, internal shorthand, and developer slang
@@ -696,12 +740,13 @@ export async function generateReport(params: ReportRequest) {
     sinceDate.setMonth(sinceDate.getMonth() - 1); // Start 1 month before
     const untilDate = new Date(monthDate);
     untilDate.setMonth(untilDate.getMonth() + 1); // End of reporting month
-    const [gitActivity, issueActivity] = await Promise.all([
+    const [gitActivity, issueActivity, platformStats] = await Promise.all([
         fetchGitActivity(token, sinceDate.toISOString(), untilDate.toISOString()),
         fetchIssueActivity(token, sinceDate.toISOString(), untilDate.toISOString()),
+        getPublicStatsFresh(),
     ]);
 
-    let markdown = generateReportMarkdown(issues, month, gitActivity, issueActivity);
+    let markdown = generateReportMarkdown(issues, month, gitActivity, issueActivity, platformStats);
 
     // Polish with Claude via Bedrock if requested
     if (params.polish) {

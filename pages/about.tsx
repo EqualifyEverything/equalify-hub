@@ -1,6 +1,7 @@
 import type { FC } from 'hono/jsx';
 import { Layout } from '#src/components/Layout';
 import { getCurrentUser } from '#src/utils/auth';
+import { lastFullMonth, formatMonthLabel, type PublicStats } from '#src/utils/equalifyStats';
 
 const styles = `
 .about-container {
@@ -71,6 +72,9 @@ const styles = `
     margin: -16px 0 32px;
 }
 .kpi-note a { color: #C8102E; }
+.kpi-live { margin: -8px 0 40px; }
+.kpi-live summary { cursor: pointer; color: #4b5563; font-size: 14px; }
+.kpi-live .kpi-note { margin-top: 8px; }
 
 /* Milestones */
 .milestones-heading {
@@ -119,7 +123,57 @@ const styles = `
 }
 `;
 
-export const AboutPage: FC = () => {
+const fmt = (n: number) => n.toLocaleString('en-US');
+
+// Platform KPI cards: the last full month from the Equalify API, with the live
+// figures behind a disclosure. Figures and definitions come from the same
+// endpoint the admin Statistics panel and the monthly reports use.
+const PlatformKpis: FC<{ stats: PublicStats | null }> = ({ stats }) => {
+    const month = stats ? lastFullMonth(stats) : null;
+    if (!stats || !month) {
+        return <p class="kpi-note">Platform usage figures are temporarily unavailable. See the <a href="/reports">monthly development reports</a>.</p>;
+    }
+    const red = stats.snapshot?.adoption ?? null;
+    const redTotal = stats.redSitesTotal;
+    const redShare = red && redTotal && redTotal.total > 0 ? Math.round((red.redSitesTracked / redTotal.total) * 100) : null;
+    const live = stats.live;
+    return (
+        <>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-value">{fmt(month.htmlScans + month.pdfScans)}</div>
+                    <div class="kpi-label">Pages Scanned</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">{fmt(month.activeUsers)}</div>
+                    <div class="kpi-label">Active Users</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">{fmt(month.sessions)}</div>
+                    <div class="kpi-label">Sessions Started</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">{redShare !== null ? `${redShare}%` : fmt(month.unitsServed)}</div>
+                    <div class="kpi-label">{redShare !== null ? 'UIC Red Sites Monitored' : 'Units Served'}</div>
+                </div>
+            </div>
+            <p class="kpi-note">
+                Platform KPIs for {formatMonthLabel(month.month)}.{' '}
+                {red && redTotal && <>{fmt(red.redSitesTracked)} of {fmt(redTotal.total)} live UIC Red sites are monitored with Equalify (Red site total as of {redTotal.asOf}{red.redHostsPending > 0 ? `; ${fmt(red.redHostsPending)} newly tracked hosts still being checked` : ''}).{' '}</>}
+                Month-over-month figures and definitions are in the <a href="/reports">monthly development reports</a>.
+            </p>
+            <details class="kpi-live">
+                <summary>Live right now</summary>
+                <p class="kpi-note">
+                    {fmt(live.totalUsers)} accounts, {fmt(live.activeUsers30d)} active in the last 30 days · {fmt(live.totalAudits)} audits tracking {fmt(live.totalUrls)} pages ·{' '}
+                    {fmt(live.htmlScans30d + live.pdfScans30d)} pages scanned in the last 30 days. Updated {new Date(stats.generatedAt).toLocaleString('en-US', { timeZone: 'America/Chicago', dateStyle: 'medium', timeStyle: 'short' })} Chicago time.
+                </p>
+            </details>
+        </>
+    );
+};
+
+export const AboutPage: FC<{ stats?: PublicStats | null }> = ({ stats = null }) => {
     const user = getCurrentUser();
 
     return (
@@ -137,30 +191,7 @@ export const AboutPage: FC = () => {
                     Track our progress, upcoming features, and key milestones for the Equalify project.
                 </p>
 
-                {/* Platform KPIs — August 2026 baseline from the monthly development report
-                    (equalify-docs/reports/2026-09.md, "Platform KPI Baseline"). Update monthly. */}
-                <div class="kpi-grid">
-                    <div class="kpi-card">
-                        <div class="kpi-value">231,383</div>
-                        <div class="kpi-label">Pages Scanned</div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-value">18</div>
-                        <div class="kpi-label">Active Users</div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-value">210</div>
-                        <div class="kpi-label">Sessions Started</div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-value">1</div>
-                        <div class="kpi-label">Releases Published</div>
-                    </div>
-                </div>
-                <p class="kpi-note">
-                    Platform KPIs for August 2026. Month-over-month figures and definitions are in the{' '}
-                    <a href="/reports/2026-09">September 2026 Development Report</a>.
-                </p>
+                <PlatformKpis stats={stats} />
 
                 <h3 class="milestones-heading">Milestones</h3>
 

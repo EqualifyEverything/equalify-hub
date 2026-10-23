@@ -59,6 +59,7 @@ The Hub uses environment variables for configuration. Copy `.env.example` to `.e
 |----------|----------|---------|-------------|
 | `EQUALIFY_APP_URL` | Yes | `https://app.equalify.uic.edu` | The URL of your Equalify application. "Sign into Equalify" buttons will link here. |
 | `SITE_NAME` | No | `Equalify Hub` | The display name for your Hub instance. |
+| `EQUALIFY_API_URL` | No | `https://api.equalifyapp.com` | The Equalify API the About page reads platform statistics from (`/public/getPublicStats`). |
 | `GITHUB_ORG` | No | `EqualifyEverything` | The GitHub organization to display repos/issues from. |
 | `FAVICON_URL` | No | `{EQUALIFY_APP_URL}/favicon.ico` | Custom favicon URL. |
 | `ORG_LOGO_URL` | No | GitHub org avatar | Custom organization logo URL. |

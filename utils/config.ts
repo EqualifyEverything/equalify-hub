@@ -23,6 +23,12 @@ export const config = {
      * @default "https://app.equalify.uic.edu"
      */
     equalifyAppUrl: process.env.EQUALIFY_APP_URL || 'https://app.equalify.uic.edu',
+    /**
+     * The URL of the Equalify API this Hub reads public statistics from
+     * (GET {EQUALIFY_API_URL}/public/getPublicStats)
+     * @default "https://api.equalifyapp.com"
+     */
+    equalifyApiUrl: process.env.EQUALIFY_API_URL || 'https://api.equalifyapp.com',
 
     /**
      * The GitHub organization to display repos/issues from

@@ -8,6 +8,7 @@ import { setEvent } from '#src/utils/event';
 
 // Migrated pages (JSX components)
 import { AboutPage } from '#src/pages/about';
+import { getPublicStats } from '#src/utils/equalifyStats';
 import { dashboardHandler, dashboardUserGuideListHandler, dashboardTechnicalListHandler, dashboardUserGuideDocHandler, dashboardTechnicalDocHandler } from '#src/pages/dashboard';
 import { updatesHandler, updatesDocHandler } from '#src/pages/updates';
 import { reportsHandler, reportsDocHandler } from '#src/pages/reports';
@@ -67,7 +68,7 @@ app.get('/logout', logout);
 
 // ============ MIGRATED ROUTES (Hono native JSX) ============
 app.get('/', homeHandler);
-app.get('/about', (c) => c.html(<AboutPage />));
+app.get('/about', async (c) => c.html(<AboutPage stats={await getPublicStats()} />));
 app.get('/dashboard', dashboardHandler);
 app.get('/dashboard/user-guide', dashboardUserGuideListHandler);
 app.get('/dashboard/user-guide/:section/:page', dashboardUserGuideDocHandler);
