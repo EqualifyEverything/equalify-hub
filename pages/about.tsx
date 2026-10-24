@@ -133,7 +133,10 @@ const PlatformKpis: FC<{ stats: PublicStats | null }> = ({ stats }) => {
     if (!stats || !month) {
         return <p class="kpi-note">Platform usage figures are temporarily unavailable. See the <a href="/reports">monthly development reports</a>.</p>;
     }
-    const red = stats.snapshot?.adoption ?? null;
+    // The Red share is only published once (nearly) every tracked host has had its
+    // first theme check; before that it would understate adoption.
+    const adoption = stats.snapshot?.adoption ?? null;
+    const red = adoption && adoption.redHostsPending <= Math.max(5, adoption.uicHostsTracked * 0.1) ? adoption : null;
     const redTotal = stats.redSitesTotal;
     const redShare = red && redTotal && redTotal.total > 0 ? Math.round((red.redSitesTracked / redTotal.total) * 100) : null;
     const live = stats.live;
